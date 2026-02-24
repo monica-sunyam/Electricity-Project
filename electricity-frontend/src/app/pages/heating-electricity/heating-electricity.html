@@ -1,1 +1,123 @@
-<p>heating-electricity works!</p>
+<div class="compare-all">
+  <div class="compare-price">
+    <div class="container-address">
+      <div class="feature-header">Heizstrom | Wärmepumpe-Vergleich</div>
+      <div class="feature-grid">
+        <div class="row row-1">
+          <input type="text" placeholder="Ihre Postleitzahl" class="box small">
+          <div class="input-arrow">
+            <input type="text" placeholder="Ottobeuren" class="box large">
+          </div>
+        </div>
+        <div class="row row-2">
+          <input type="text" placeholder="Ihre Straße" class="box large">
+          <input type="text" placeholder="Hausnummer" class="box small">
+        </div>
+      </div>
+      <div class="feature-header1">Haben Sie einen separaten Stromzähler für Ihre Wärmepumpe? <mat-icon
+          class="info-icon-home">
+          info_i
+        </mat-icon>
+      </div>
+      <div class="container-button">
+        <div class="container-option">
+          <button class="btn-button ja" [ngClass]="{ active: selectedOption === 'ja' }" (click)="select('ja')"> Ja
+          </button>
+          <button class="btn-button nein" [ngClass]="{ active: selectedOption === 'nein' }" (click)="select('nein')">
+            Nein</button>
+        </div>
+      </div>
+
+      <!-- Show when JA -->
+      <div class="container-ja" *ngIf="selectedOption === 'ja'">
+        <div class="feature-header1">Haben Sie einen Eintarif - oder Doppeltarifzähler? <mat-icon
+            class="info-icon-home">
+            info_i
+          </mat-icon>
+        </div>
+        <div class="container-button">
+          <div class="sub-container-option">
+            <button class="btn-button single-tariff" [class.active]="selectedTariff === 'single'"
+              (click)="tariff('single')">
+              Eintarifzähler </button>
+            <button class="btn-button double-tariff" [class.active]="selectedTariff === 'double'"
+              (click)="tariff('double')"> Doppeltarifzähler </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Show when NEIN -->
+      <div class="container-double" *ngIf="selectedTariff === 'double'">
+        <div class="feature-header1">Bitte gesamten Heizstrom-Verbrauch in kWh / Jahr eingeben
+        </div>
+        <div class="container-per-year double">
+          <div class="container-consumption double">
+            <input type="text" class="consumption-number" placeholder="1600">
+            <span class="watt-per-year">kWh / Jahr (HT)</span>
+          </div>
+          <div class="container-consumption double">
+            <input type="text" class="consumption-number" placeholder="1600">
+            <span class="watt-per-year">kWh / Jahr (NT)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-compare" *ngIf="selectedOption !== 'nein'">
+        <button class="compare"> Jetzt Vergleichen</button>
+      </div>
+    </div>
+
+    <div class="container-nein" *ngIf="showNoBanner">
+      <div class="close-banner" (click)="closeNoBanner()">X</div>
+      <div>
+        <div class="feature-header-no">
+          Aufgepasst beim Wechsel - Für Wärmepumpen-Strom.
+        </div>
+        <div class="container-description">
+          <div class="container-message">
+            <div class="message">Ohne separaten Zähler nutzen Sie bitte unseren Stromvergleich für den gesamten
+              Haushalt.</div>
+            <div class="message">Hier gehts zum <a href="#">Stromvergleich für den gesamten Haushalt</a>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-double-extra" *ngIf="selectedTariff !== 'double'">
+      <div class="container-callback">
+        <div class="container-wish">
+          <span><strong>Wünschen Sie eine persönliche Erstberatung per Telefon?</strong>
+            <br>
+            <span class="center-text">Dann fordern Sie jetzt Ihren Rückrufwunsch an.</span>
+          </span>
+        </div>
+        <div class="item-callback">
+          <button class="callback"> Rückruf anfordern
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-provider">
+    <div class="compare-provider">
+      <h1 class="item-provider">Heizstromanbieter</h1>
+      <h1 class="item-provider">vergleichen</h1>
+    </div>
+    <div class="discount-price">
+      <div class="item-discount-top">
+        <span class="item-price">Bis zu </span>
+      </div>
+      <div class="item-discount">
+        <span class="amount">850€</span>
+      </div>
+      <div class="item-discount-bottom">
+        <span class="item-price">sparen
+          <mat-icon class="info-icon">
+            info_i
+          </mat-icon>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

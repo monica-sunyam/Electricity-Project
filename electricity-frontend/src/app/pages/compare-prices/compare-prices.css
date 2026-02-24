@@ -2,6 +2,11 @@
   padding: 0.3rem 0.5rem 0.5rem 0.5rem;
 }
 
+.person-option{
+  /*   remaining in style.css  */
+  padding-top: 0.2rem;
+}
+
 .person.active img {
   filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg) brightness(95%) contrast(96%);
 }

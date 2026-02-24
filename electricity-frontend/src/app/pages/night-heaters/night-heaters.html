@@ -30,7 +30,10 @@
 
       <!-- Show when JA -->
       <div class="container-ja" *ngIf="selectedOption === 'ja'">
-        <div class="feature-header1">Bitte gesamten Ladestrom-Verbrauch in kWh / Jahr eingeben
+        <div class="feature-header1">Haben Sie einen Eintarif - oder Doppeltarifzähler? <mat-icon
+            class="info-icon-home">
+            info_i
+          </mat-icon>
         </div>
         <div class="container-button">
           <div class="sub-container-option">
@@ -50,6 +53,25 @@
         <div class="container-per-year">
           <div class="container-consumption">
             <input type="text" class="consumption-number" placeholder="1600">
+            <span class="watt-per-year">kWh / Jahr (HT)</span>
+          </div>
+          <div class="container-consumption">
+            <input type="text" class="consumption-number" placeholder="1600">
+            <span class="watt-per-year">kWh / Jahr (NT)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-double" *ngIf="selectedTariff === 'double'">
+        <div class="feature-header1">Bitte gesamten Heizstrom-Verbrauch in kWh / Jahr eingeben
+        </div>
+        <div class="container-per-year double">
+          <div class="container-consumption double">
+            <input type="text" class="consumption-number" placeholder="1600">
+            <span class="watt-per-year">kWh / Jahr (HT)</span>
+          </div>
+          <div class="container-consumption double">
+            <input type="text" class="consumption-number" placeholder="1600">
             <span class="watt-per-year">kWh / Jahr (NT)</span>
           </div>
         </div>
@@ -58,19 +80,6 @@
       <div class="container-compare">
         <button class="compare"> Jetzt Vergleichen</button>
       </div>
-
-      <div class="container-double-extra" *ngIf="selectedTariff === 'double'">
-
-        <div class="feature-header">Bitte gesamten Heizstrom-Verbrauch in kWh / Jahr eingeben
-        </div>
-        <div class="container-per-year">
-          <div class="container-consumption">
-            <input type="text" class="consumption-number" placeholder="1600">
-            <span class="watt-per-year">kWh / Jahr (NT)</span>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <div class="container-double-extra" *ngIf="selectedTariff !== 'double'">
@@ -87,7 +96,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="container-provider">

@@ -20,6 +20,7 @@ h1, h2, h3, h4, h5, h6 {
 .compare-all {
   display: flex;
   gap: 4rem;
+  width: 100%;
 
 }
 .container-address {
@@ -31,6 +32,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 1.5rem;
   align-items: center;
 }
+
 
 .container-callback {
   display: flex;
@@ -323,3 +325,73 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ----------------  */
+
+/*  --------------------------- common part for heizstrom, Ladestrom --------------------- */
+
+.container-button, .container-button-1, .container-button-2{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.container-option{
+  display: flex;
+  align-items: center;
+  padding: 0.46rem;
+  gap: 0;
+}
+
+.sub-container-option {
+  padding: 0.52rem;
+}
+
+
+.btn-button {
+  width: 10rem;
+  padding: 0.3rem 0rem 0.4rem 0rem;
+  color: #ffffff;
+  font-size: 16px;
+  background-color: #003366;
+  border: 1px solid #003366;
+  cursor: pointer;
+}
+
+.ja, .single-tariff {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.nein, .double-tariff {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+ .btn-button:hover {
+  background-color: #0085e0;
+  border: 1px solid #0085e0;
+ }
+
+.btn-button.active {
+  background-color: #0085e0;
+  border: 1px solid #0085e0;
+}
+
+
+.container-consumption {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+}
+
+.consumption-number{
+  flex: 1;
+  border: none;
+  font-size: 14px;
+  border-radius: 6px;
+  outline: none;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #4a4949;
+  width: 3.5rem;
+}
