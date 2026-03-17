@@ -1,0 +1,152 @@
+<div class="page-layout">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <div class="sidebar">
+
+    <!-- Ansprechpartner -->
+    <div class="card" style="border: 1px solid #003366;">
+      <div class="card-header" style="background-color:#003366; text-align: center; ">
+        Ihr persönlicher Ansprechpartner
+      </div>
+      <div class=" partner-photo-wrap">
+        <img src="assets/images/MM.png" alt="Familienbetrieb">
+      </div>
+      <div class="partner-info">
+        <div class="partner-name">Manuel Markovic</div>
+        <div class="container-main-btn">
+          <button class="main-btn partner-btn">
+            <span class="container-services">
+              <img src="assets/icons/Telefonhörer_Weiss.png" class="icon-telephone" alt="telephone">
+            </span>
+            <span class="btn-text">08157 / 999 42-0</span>
+          </button>
+          <button class="main-btn partner-btn">
+            <span class="container-services">
+              <img src="assets/icons/Mail.png" class="icon-email" alt="email">
+            </span>
+            <span class="btn-text">mm@energiehandel.bayern</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card" style="border: 1px solid #003366;">
+      <div class="container-contact-us">
+        <div class="main-container-service">
+          <div class="card-header" style="background-color:#003366 ;">Benötigen Sie Unterstützung?</div>
+          <div class="container-contact">
+            <div class="contact-us">
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Telefonhörer_Weiss.png" class="icon-telephone" alt="telephone">
+                </span>
+                <span class="btn-text">08157 / 999 42-0</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Lice-Chat_weiss.png" class="icon-wechat" alt="wechat">
+                </span>
+                <span class="btn-text">per Live-Chat</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/WhatsApp_weiss.png" class="icon-whatsapp" alt="whatsapp">
+                </span>
+                <span class="btn-text">per WhatsApp</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Mail.png" class="icon-email" alt="email">
+                </span>
+                <span class="btn-text">E-Mail</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Kontaktformular.png" class="icon-transport" alt="transport">
+                </span>
+                <span class="btn-text">Kontaktformular</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div><!-- /sidebar -->
+
+  <!-- ══════════ MAIN CONTENT ══════════ -->
+  <div class="main-content">
+
+    <!-- Progress stepper -->
+    <div class="progress-card">
+      <div class="progress-header">Nur noch wenige Klicks zu Ihrem neuen Tarif</div>
+      <div class="progress-steps">
+        <div class="step ">
+          <div class="step-circle">1</div>
+          <div class="step-label">Lieferadresse</div>
+        </div>
+        <div class="step ">
+          <div class="step-circle">2</div>
+          <div class="step-label">Anschlussdaten</div>
+        </div>
+        <div class="step ">
+          <div class="step-circle">3</div>
+          <div class="step-label">Zahlungsart</div>
+        </div>
+        <div class="step active">
+          <div class="step-circle">4</div>
+          <div class="step-label">Account</div>
+        </div>
+        <div class="step">
+          <div class="step-circle">5</div>
+          <div class="step-label">Abschluss</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lieferadresse section -->
+    <div class="section-panel">
+      <div class="section-header">
+        Haben Sie schon einen Account bei uns?
+      </div>
+
+
+      <div class="section-body">
+
+        <div class="toggle-row">
+          <div class="toggle-area">
+            <span>Wenn ja, empfehlen wir Ihnen, sich einzuloggen, damit der Auftrag in Ihrem Account gespeichert
+              wird.</span>
+            <span>Falls Sie noch keinen Account haben, empfehlen wir Ihnen, sich zu registrieren.</span>
+            <span>Alternativ können Sie auch als Gast fortfahren ohne Registrierung</span>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <div class="container-checkbox">
+            <div class="field-wrap-checkbox">
+              <label class="cb-row"><input type="checkbox" /></label>
+              Ja, weiter zum Login
+            </div>
+            <div class="field-wrap-checkbox">
+              <label class="cb-row"><input type="checkbox" /></label>
+              Nein, weiter zur Registrierung
+            </div>
+
+            <div class="field-wrap-checkbox">
+              <label class="cb-row"><input type="checkbox" /></label>
+              Als Gast fortfahren
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Submit ── -->
+        <div class="form-actions">
+          <button class="btn-primary" (click)="openPage()">Weiter zum Abschluss</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

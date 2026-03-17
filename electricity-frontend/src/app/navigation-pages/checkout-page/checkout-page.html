@@ -1,0 +1,222 @@
+<div class="page-layout">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <div class="sidebar">
+
+    <!-- Ansprechpartner -->
+    <div class="card" style="border: 1px solid #003366;">
+      <div class="card-header" style="background-color:#003366; text-align: center; ">
+        Ihr persönlicher Ansprechpartner
+      </div>
+      <div class=" partner-photo-wrap">
+        <img src="assets/images/MM.png" alt="Familienbetrieb">
+      </div>
+      <div class="partner-info">
+        <div class="partner-name">Manuel Markovic</div>
+        <div class="container-main-btn">
+          <button class="main-btn partner-btn">
+            <span class="container-services">
+              <img src="assets/icons/Telefonhörer_Weiss.png" class="icon-telephone" alt="telephone">
+            </span>
+            <span class="btn-text">08157 / 999 42-0</span>
+          </button>
+          <button class="main-btn partner-btn">
+            <span class="container-services">
+              <img src="assets/icons/Mail.png" class="icon-email" alt="email">
+            </span>
+            <span class="btn-text">mm@energiehandel.bayern</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card" style="border: 1px solid #003366;">
+      <div class="container-contact-us">
+        <div class="main-container-service">
+          <div class="card-header" style="background-color:#003366 ;">Benötigen Sie Unterstützung?</div>
+          <div class="container-contact">
+            <div class="contact-us">
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Telefonhörer_Weiss.png" class="icon-telephone" alt="telephone">
+                </span>
+                <span class="btn-text">08157 / 999 42-0</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Lice-Chat_weiss.png" class="icon-wechat" alt="wechat">
+                </span>
+                <span class="btn-text">per Live-Chat</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/WhatsApp_weiss.png" class="icon-whatsapp" alt="whatsapp">
+                </span>
+                <span class="btn-text">per WhatsApp</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Mail.png" class="icon-email" alt="email">
+                </span>
+                <span class="btn-text">E-Mail</span>
+              </button>
+              <button class="main-btn">
+                <span class="container-services">
+                  <img src="assets/icons/Kontaktformular.png" class="icon-transport" alt="transport">
+                </span>
+                <span class="btn-text">Kontaktformular</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div><!-- /sidebar -->
+
+  <!-- ══════════ MAIN CONTENT ══════════ -->
+  <div class="main-content">
+
+    <!-- Progress stepper -->
+    <div class="progress-card">
+      <div class="progress-header">Nur noch wenige Klicks zu Ihrem neuen Tarif</div>
+      <div class="progress-steps">
+        <div class="step ">
+          <div class="step-circle">1</div>
+          <div class="step-label">Lieferadresse</div>
+        </div>
+        <div class="step ">
+          <div class="step-circle">2</div>
+          <div class="step-label">Anschlussdaten</div>
+        </div>
+        <div class="step ">
+          <div class="step-circle">3</div>
+          <div class="step-label">Zahlungsart</div>
+        </div>
+        <div class="step ">
+          <div class="step-circle">4</div>
+          <div class="step-label">Account</div>
+        </div>
+        <div class="step active">
+          <div class="step-circle">5</div>
+          <div class="step-label">Abschluss</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="section-panel" *ngIf="!showConfirmation">
+      <div class="section-header">
+        Bestätigung
+      </div>
+
+      <div class="section-body">
+        <div class="toggle-row text">
+          Mit Klick auf „Kauf abschließen“
+        </div>
+
+        <div class="toggle-row text">
+          <div class="form-group"> <span>erteile ich dem Anbieter eine <a href=""
+                class="open-link">Versorgervollmacht,</a></span></div>
+          <div class="form-group"><span>akzeptiere ich die <a href="" class="open-link">AGB</a> des Anbieters und</span>
+          </div>
+          <div class="form-group"><span>akzeptiere ich die <a href="" class="open-link">AGB</a> der
+              Tarifvergleich.Bayern powered by
+              Energiehandel.Bayern</span></div>
+        </div>
+
+        <div class="toggle-row">
+          <span style="line-height: 1.5;">Es gelten die <a href="" class="open-link">Widerrufsbelehrung</a> und die <a
+              href="" class="open-link">Datenschutzinformationen</a> des
+            Anbieters. Zudem gilt die
+            Datenschutzerklärung der Tarifvergleich.Bayern. <br>
+            Ich bevollmächtige Tarifvergleich.Bayern zur Übermittlung meines aktuellen Angebots in meinem Namen an den
+            Anbieter zur weiteren Bearbeitung.</span>
+        </div>
+
+        <div class="toggle-row">
+          <span>Ich kann <a href="" class="open-link">hier</a> mein Angebot herunterladen, das eine Zusammenfassung der
+            wichtigsten Vertragsbedingungen
+            enthält.</span>
+        </div>
+
+        <div class="toggle-row date">
+          <div>
+            <span>Sie können innerhalb von 14 Tagen kostenlos widerrufen.</span>
+          </div>
+          <div>
+            <span>Alle Tarifvergleich.Bayern Leistungen sind kostenlos.</span>
+          </div>
+        </div>
+        <!-- ── Submit ── -->
+        <div class="form-actions">
+          <button class="btn-primary" (click)="openPage()">Kauf abschließen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-panel" *ngIf="showConfirmation">
+      <div class="section-header">
+        Vielen Dank für Ihren Auftrag!
+      </div>
+
+      <div class="section-body">
+        <div class="toggle-row text">
+          Ihr persönlicher Ansprechpartner, Herr Markovic, hat den Auftrag nun zur Bearbeitung und Kontrolle vorliegen
+          und wird sich abschließend zur
+          Qualitätssicherung nochmal bei Ihnen melden.
+        </div>
+
+        <div class="toggle-row text">Da wir auf persönlichen Kontakt sehr viel Wert legen, versuchen wir die
+          Kontaktaufnahme telefonisch vorzunehmen, Ihr Ansprechpartner meldet
+          sich also sehr wahrscheinlich per Telefon bei Ihnen.</div>
+
+
+
+        <div class="toggle-row text">
+          Wollen Sie Ihrem Ansprechpartner noch mitteilen, wann Sie am Besten telefonisch erreichbar sind?
+        </div>
+
+        <div class="toggle-row">
+          <div class="container-days">
+            <div class="field-wrap-days active"> Montag</div>
+            <div class="field-wrap-days"> Dienstag</div>
+            <div class="field-wrap-days">Mittwoch</div>
+          </div>
+          <div class="container-days">
+            <div class="field-wrap-days">Donnerstag </div>
+            <div class="field-wrap-days">Freitag </div>
+            <div class="field-wrap-days">Samstag</div>
+          </div>
+          <div class="container-time">
+            <div class="field-wrap-time">Vormittags von 08:00 - 11:00 Uhr </div>
+            <div class="field-wrap-time"> Mittags von 11:00 - 14:00 Uhr</div>
+          </div>
+          <div class="container-time">
+            <div class="field-wrap-time active">Nachmittags von 14:00 - 17:00 Uhr </div>
+            <div class="field-wrap-time"> Abends von 17:00 - 20:00 Uhr</div>
+          </div>
+        </div>
+
+        <div class="toggle-row text">
+          Möchten Sie Ihrem Ansprechpartner noch etwas mitteilen, z.B. zur Uhrzeit, wann Sie am Besten zu erreichen
+          sind?
+        </div>
+
+        <div class="toggle-row">
+          <div class="container-textarea">
+            <textarea name="form" rows="6" class="row-text" placeholder="Platz für Infos und Hinweise"></textarea>
+          </div>
+
+        </div>
+        <!-- ── Submit ── -->
+        <div class="form-actions">
+          <button class="btn-primary">Rückrufzeit & Infos übermitteln</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

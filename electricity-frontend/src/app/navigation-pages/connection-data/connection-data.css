@@ -1,0 +1,178 @@
+.section-body {display: flex; flex-direction: column;  gap: 12px;}
+.toggle-row {font-size: 14px; margin: 0;}
+.header {font-weight: 600;}
+.toggle-box { display: flex; flex: 1; }
+.form-row { display: flex; gap: 10px; margin-bottom: 10px; width: 100%; }
+.row-with-info > *:first-child { flex: 1; }
+
+.toggle-area {
+  display: flex; flex-direction: row;
+  gap: 6px;
+  width: 96%;
+  font-size: 14px;
+  padding: 15px;
+  border: 1px solid black;
+  border-radius: 8px;
+
+}
+
+.mat-datepicker-toggle .mat-icon {
+  font-size: 15px;
+  height: 10px;
+  width: 10px;
+}
+
+
+/* ── Express box ── */
+.row-with-info{ display: flex; flex-direction: row; gap: 10px; position:relative; align-items: center;}
+
+.express-box {
+  border: 1px solid #3ab54a;
+  border-left: 4px solid #3ab54a;
+  border-radius: 8px;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
+.container-express{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.express-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a2e;
+}
+
+.express-header svg { color: #3ab54a; flex-shrink: 0; }
+
+.express-desc {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+/* ── Input field ── */
+.field-wraper select {
+  border: 1px solid black;
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1a1a2e;
+  width: 100%;
+  padding: 12px 14px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.field-wraper input::placeholder { font-weight: 400; color: #bbb; }
+
+/* Select chevron */
+.select-wraper {
+  position: relative;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+}
+
+
+/* ── Kündigung box ── */
+.kuendigung-box {
+  border: 1px solid #4a4949;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.kuendigung-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.badge-green {
+  gap: 4px;
+  color: #00a651;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 30px;
+
+}
+
+
+
+.kuendigung-box::before {content: ""; position: absolute; width: 1px; background: #4a4949;  top: 0; bottom: 0; left: 50%; transform: translateX(-50%);}
+
+.kuendigung-bottom {
+  display: flex;
+  gap: 10px;
+}
+
+.kuendigung-opt {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1.5px solid #c8d8e8;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+  transition: background .15s, border-color .15s;
+}
+
+.kuendigung-opt:hover { background: #f5f9fd; }
+
+.kuendigung-opt.selected {
+  border-color: #3a9bd5;
+  background: #f0f8ff;
+  font-weight: 600;
+}
+
+.kuendigung-opt.selected .chk-square { background: #3a9bd5; border-color: #3a9bd5; }
+
+/* ── Link hint ── */
+.link-hint {
+  display: inline-block;
+  color: #3a9bd5;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.link-hint:hover { text-decoration: underline; }
+
+
+
+/* ── SVG helpers ── */
+.tick-white {
+  display: block;
+  width: 9px;
+  height: 9px;
+}
+
+

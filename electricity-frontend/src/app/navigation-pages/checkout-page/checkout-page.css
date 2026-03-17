@@ -1,0 +1,24 @@
+.section-body { display: flex;flex-direction: column; gap: 15px; font-size: 14px; padding: 20px; }
+.toggle-row { display: flex; flex-direction: column;}
+
+.open-link {
+  text-decoration: none;
+  color:#0085e0 ;
+}
+
+.open-link:hover {
+  text-decoration: none;
+}
+
+.date{font-weight: 600; color:#00a651 ;}
+.text {font-weight: 600;}
+
+
+.container-days, .container-time {display: flex; flex-direction: row; gap: 15px; flex-grow: 1; width: 100%;  }
+.field-wrap-days, .field-wrap-time { border-radius: 8px; border: 1px solid black; padding: 8px 10px; font-size: 14px; display: flex; flex: 1; justify-content: center; gap: 5px;}
+
+.field-wrap-days:hover, .field-wrap-time:hover, .field-wrap-days.active, .field-wrap-time.active  {background-color:#0085e0; color: #ffffff; border:1px solid #0085e0; }
+
+.container-textarea {display: flex; flex: 1; }
+
+.row-text {display: flex; flex: 1; border-radius: 8px; border: 1px solid black; padding: 8px 10px; font-size: 14px; resize: none; }
