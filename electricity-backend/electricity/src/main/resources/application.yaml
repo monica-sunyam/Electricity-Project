@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: electricity
+  datasource:
+    url: jdbc:postgresql://localhost:5432/electricity
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties: 
+      hibernate: 
+        format_sql: true	
+api:
+  energy:
+    url: https://gateway.eg-on.com
+    apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJnOExmWFluajVxUXdDQ3hmcyIsImFwcElkIjoiYUF4TTR6WFNpSG1qSFJNcXEiLCJzZXJ2aWNlTmFtZSI6IlVzZXJTZXJ2aWNlIiwiZWdvbkFwaUtleSI6IjhhYWVkOWY0ZjkxMDQ1ZGY1NjI5MjJlN2Q2YmVjYjhlIiwiaWF0IjoxNzcwOTA5ODkwfQ.95AXT8kMNaFk5d-_XOodQU5L0DbEZCjsMy-m4ZdVtdY
+
+server:
+  address: 0.0.0.0
+  port: 8080
+
+file:
+  upload-dir:
+    super-admin: "../../assets/super-admin"
