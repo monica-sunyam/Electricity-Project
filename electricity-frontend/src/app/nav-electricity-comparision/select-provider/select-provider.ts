@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -104,8 +104,10 @@ export class SelectProvider implements OnInit {
   selectedOption = 'Sortieren nach: Beste Treffer';
   activeTabMap: { [rateId: number]: string } = {};
   @ViewChild('popoverContainer', { static: false }) popoverContainer!: ElementRef;
+ 
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
@@ -132,7 +134,7 @@ export class SelectProvider implements OnInit {
       branch: this.branch,
     };
 
-    this.http.post<RatesResponse>('http://localhost:8080/get-rates', body).subscribe({
+    this.http.post<RatesResponse>('http://192.168.0.155:8080/get-rates', body).subscribe({
       next: (res) => {
         this.allRates = (res?.result ?? []).map((rate) => ({
           ...rate,
@@ -148,13 +150,14 @@ export class SelectProvider implements OnInit {
 
         this.applyFiltersAndSort();
 
-        /* ✅ expand AFTER filtering */
+        /* expand AFTER filtering */
         this.expandVisibleRates();
 
-        /* ✅ force dropdown open */
+        /* force dropdown open */
         this.isDropdownOpen = true;
         this.hasLoadedRates = true;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('API Error:', err);

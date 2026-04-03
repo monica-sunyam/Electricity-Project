@@ -4,29 +4,45 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule  } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, switchMap, of } from 'rxjs';
 import { AddressService } from './../../services/address.service';
 import { Registration } from '../../layout/registration/registration';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NgZone } from '@angular/core';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-electricity',
-  imports: [Registration, MatButtonModule, MatIconModule, MatInputModule, CommonModule, MatDialogModule, ReactiveFormsModule],
+  imports: [
+    Registration,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    CommonModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+  ],
   templateUrl: './electricity.html',
   styleUrl: './electricity.css',
 })
 export class Electricity implements OnInit {
-
   addressForm!: FormGroup;
-  cityOptions: { city: string; city_id: number }[] = [];
-  streetOptions: { street: string; street_id: number }[] = [];
+  cityOptions: { city: string; city_id: string }[] = [];
+  streetOptions: { street: string; street_id: string }[] = [];
 
-  constructor(public dialog: MatDialog,
+  constructor(
+    public dialog: MatDialog,
     private fb: FormBuilder,
-    private addressService: AddressService
+    private addressService: AddressService,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
   ) {}
 
-    discountinfo = `<p> <strong>So haben wir gerechnet </strong> </p>
+  discountinfo = `<p> <strong>So haben wir gerechnet </strong> </p>
       <p> Wohnort: <i> Dortmund, 44141 </i>
        Jahresverbrauch: <i> 4.000 kWh </i> </p>
       <p> Günstigster Tarif: immergrün! Spar Smart FairMax, Kosten im ersten Jahr: 920,84 Euro </p>
@@ -46,27 +62,24 @@ export class Electricity implements OnInit {
   baseConsumptions: Record<number, number> = {
     1: 1600,
     2: 2510,
-    3: 3500
+    3: 3500,
   };
 
   extraPerPerson = 850;
 
   ngOnInit(): void {
-  this.addressForm = this.fb.group({
-      postalCode: ['', [
-        Validators.required,
-        Validators.pattern(/^\d{5}$/)
-      ]],
+    this.addressForm = this.fb.group({
+      postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
 
-      city: [{ value: '', disabled: true }, Validators.required],
+      // city: [{ value: '', disabled: true }, Validators.required],
+      city: [{ value: null, disabled: true }, Validators.required],
 
-      street: [{ value: '', disabled: true }, Validators.required],
+      street: [{ value: null, disabled: true }, Validators.required],
 
-      houseNumber: [{ value: '', disabled: true }, [
-        Validators.required,
-        Validators.maxLength(6),
-        Validators.pattern(/^[a-zA-Z0-9\s\/]*$/)
-      ]]
+      houseNumber: [
+        { value: '', disabled: true },
+        [Validators.required, Validators.maxLength(6), Validators.pattern(/^[a-zA-Z0-9\s\/]*$/)],
+      ],
     });
 
     this.handlePostalCodeChanges();
@@ -75,75 +88,66 @@ export class Electricity implements OnInit {
   }
 
   private handlePostalCodeChanges() {
-  this.addressForm.get('postalCode')?.valueChanges
-    .pipe(
-      debounceTime(400),
-      switchMap(zip => {
-        this.resetCity();
+    this.addressForm
+      .get('postalCode')
+      ?.valueChanges.pipe(
+        debounceTime(500),
+        switchMap((zip) => {
+          this.resetCity();
+          this.resetStreet();
+          this.resetHouseNumber();
+
+          if (zip && zip.length === 5) {
+            return this.addressService.getCitiesByZip(zip);
+          }
+
+          return of([]);
+        }),
+      )
+      .subscribe((cities) => {
+        console.log('Cities:', cities);
+
+        this.cityOptions = cities;
+
+        if (cities.length > 0) {
+          this.addressForm.get('city')?.enable();
+
+          // const firstCity = cities[0].city_id;
+          // this.addressForm.get('city')?.setValue(firstCity);
+        }
+      });
+  }
+
+  private handleCityChanges() {
+    this.addressForm
+      .get('city')
+      ?.valueChanges.pipe(debounceTime(300))
+      .subscribe((placeId) => {
+        if (!placeId) return;
+
         this.resetStreet();
         this.resetHouseNumber();
 
-        if (this.addressForm.get('postalCode')?.valid) {
-          return this.addressService.getCitiesByZip(zip);
-        }
-        return of([]);
-      })
-    )
-    .subscribe(cities => {
-      // `cities` is the result from the API
-      this.cityOptions = cities; // now array of { city, city_id }
-      if (cities.length > 0) {
-        this.addressForm.get('city')?.enable();
-      }
-    });
-  }
-
-private handleCityChanges() {
-  this.addressForm.get('city')?.valueChanges.subscribe(selectedCityName => {
-  this.resetStreet();
-  this.resetHouseNumber();
-
-  if (selectedCityName) {
-    const selectedCityObj = this.cityOptions.find(c => c.city === selectedCityName);
-    if (selectedCityObj) {
-      this.addressService.getStreetsByCity(selectedCityName, selectedCityObj.city_id)
-        .subscribe(streets => {
-          this.streetOptions = streets; // array of { street, street_id }
-          if (streets.length > 0) {
-            this.addressForm.get('street')?.enable();
-          }
+        this.addressService.getStreetsByCity(placeId).subscribe((streets) => {
+          this.ngZone.run(() => {
+            this.streetOptions = streets;
+            this.cdr.detectChanges();
+            
+            if (streets.length > 0) {
+              this.addressForm.get('street')?.enable();
+            }
+          });
         });
-    }
+      });
   }
-});
-}
 
   private handleStreetChanges() {
-  this.addressForm.get('street')?.valueChanges
-    .pipe(
-      debounceTime(400)
-    )
-    .subscribe(streetQuery => {
+    this.addressForm.get('street')?.valueChanges.subscribe((street) => {
+      if (!street) return;
 
-      if (!streetQuery) return;
-
-      const cityName = this.addressForm.get('city')?.value;
-      const cityObj = this.cityOptions.find(c => c.city === cityName);
-
-      if (!cityObj) return;
-
-      this.addressService
-        .getStreetsByCity(streetQuery, cityObj.city_id)
-        .subscribe(streets => {
-          this.streetOptions = streets;
-
-          if (streets.length > 0) {
-            this.addressForm.get('houseNumber')?.enable();
-          }
-        });
-
+      this.addressForm.get('houseNumber')?.enable();
     });
-}
+  }
 
   private resetCity() {
     this.cityOptions = [];
@@ -162,9 +166,13 @@ private handleCityChanges() {
     this.addressForm.get('houseNumber')?.disable();
   }
 
+  trackByStreet(index: number, item: any) {
+    return item.street;
+  }
 
   selectPersons(persons: number) {
-    if (persons === 999) {   // mehr button trigger
+    if (persons === 999) {
+      // mehr button trigger
       this.showCustomInput = true;
       return;
     }
@@ -196,7 +204,7 @@ private handleCityChanges() {
     }
 
     const base = this.baseConsumptions[3];
-    return base + ((persons - 3) * this.extraPerPerson);
+    return base + (persons - 3) * this.extraPerPerson;
   }
 
   closeCustomInput() {
@@ -212,5 +220,4 @@ private handleCityChanges() {
     this.currentDialogText = text;
     this.dialog.open(template, { width: '200px', maxWidth: '80vw' });
   }
-
 }
