@@ -1,0 +1,53 @@
+<div class="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow">
+
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+            Kostenlose Services
+        </h2>
+
+        <a routerLink="/services/free/create"
+            class="px-4 py-2 text-sm bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition cursor-pointer">
+            + Service erstellen
+        </a>
+    </div>
+
+    @if (isLoading) {
+    <div class="flex items-center gap-2 text-gray-500 text-sm">
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-500"></div>
+        <span>Services werden geladen...</span>
+    </div>
+    }
+
+    @if (!isLoading && !errorMessage && services.length > 0) {
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left border-collapse">
+            <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                <tr>
+                    <th class="px-4 py-3">Service-Name</th>
+                    <th class="px-4 py-3">Erstellt am</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y dark:divide-gray-700">
+                @for (service of services; track $index) {
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                    <td class="px-4 py-3 font-medium text-gray-800 dark:text-white">
+                        {{ service.name }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">
+                        {{ service.createdOn * 1000 | date:'dd.MM.yyyy, HH:mm' }}
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+
+    @if (!isLoading && (errorMessage || services.length === 0)) {
+    <div class="text-center py-10">
+        <p class="text-gray-500 font-medium">Keine kostenlosen Services zum Anzeigen vorhanden</p>
+    </div>
+    }
+
+</div>
