@@ -48,6 +48,9 @@ public class AdminAsset {
 	@Column(name = "original_file_name")
 	private String originalFileName;
 	
+	@Column(name = "contact_number")
+	private String contactNumber;
+	
 	@Column(name = "saving")
 	private String saving;
 	

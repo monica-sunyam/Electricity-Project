@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.tarifvergleich.electricity.dto.AdminAssetDto;
 import com.tarifvergleich.electricity.dto.AdminServiceMenuDto;
 import com.tarifvergleich.electricity.service.AdminAssetService;
+import com.tarifvergleich.electricity.service.ViewService;
 import com.tarifvergleich.electricity.util.FileServiceSuperAdmin;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ import tools.jackson.databind.ObjectMapper;
 public class AdminAssetController {
 
 	private final AdminAssetService adminAssetService;
+	private final ViewService viewService;
 	private final FileServiceSuperAdmin fileUtil;
 
 	@PostMapping(value = "/add-menu")
@@ -97,5 +99,10 @@ public class AdminAssetController {
 
 	            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
 	            .body(resource);
+	}
+	
+	@PostMapping("/content")
+	public ResponseEntity<?> getAllContents(){
+		return ResponseEntity.ok(viewService.getAllView());
 	}
 }

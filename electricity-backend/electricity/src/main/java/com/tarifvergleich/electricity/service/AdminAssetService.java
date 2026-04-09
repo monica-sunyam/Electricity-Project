@@ -85,6 +85,7 @@ public class AdminAssetService {
 				adminAsset.setOriginalFileName(file.getOriginalFilename());
 			adminAsset.setSaving(assetDto.getSaving());
 			adminAsset.setSavingPriceDetail(assetDto.getSavingDetail());
+			adminAsset.setContactNumber(assetDto.getContact());
 
 			AdminAsset updateAsset = adminAssetRepo.save(adminAsset);
 
@@ -99,7 +100,9 @@ public class AdminAssetService {
 
 		AdminAsset asset = AdminAsset.builder().adminId(adminUser).heading(assetDto.getHeading())
 				.subHeading(assetDto.getSubHeading()).type(type).contentUrl(fileUrl).saving(assetDto.getSaving())
-				.savingPriceDetail(assetDto.getSavingDetail()).order(order)
+				.savingPriceDetail(assetDto.getSavingDetail())
+				.contactNumber(assetDto.getContact())
+				.order(order)
 				.originalFileName(file != null ? file.getOriginalFilename() : null).build();
 
 		adminUser.addAdminAsset(asset);

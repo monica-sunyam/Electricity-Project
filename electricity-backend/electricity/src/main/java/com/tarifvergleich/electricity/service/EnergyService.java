@@ -10,16 +10,21 @@ import org.springframework.web.client.RestClient;
 import com.tarifvergleich.electricity.dto.EnergyApiResponse;
 import com.tarifvergleich.electricity.exception.EnergyApiUnavailableException;
 
-import lombok.RequiredArgsConstructor;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
-@RequiredArgsConstructor
 public class EnergyService {
 
-	private final @Qualifier("energyApiClient") RestClient energyApi;
+	private final RestClient energyApi;
 	private final ObjectMapper objectMapper;
+	
+	public EnergyService(
+            @Qualifier("energyApiClient") RestClient energyApi, 
+            ObjectMapper objectMapper) {
+        this.energyApi = energyApi;
+        this.objectMapper = objectMapper;
+    }
 
 	public EnergyApiResponse getRates(Map<String, Object> filters) {
 		return energyApi.get().uri(uriBuilder -> {

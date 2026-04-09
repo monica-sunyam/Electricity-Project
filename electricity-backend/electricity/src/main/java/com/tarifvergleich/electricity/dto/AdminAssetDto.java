@@ -15,6 +15,7 @@ public class AdminAssetDto {
 	private Integer adminId;
 	private String heading;
 	private String subHeading;
+	private String contact;
 
 	private Integer order;
 	private Integer type;

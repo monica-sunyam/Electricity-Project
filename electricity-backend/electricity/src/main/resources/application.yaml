@@ -13,10 +13,17 @@ spring:
     properties: 
       hibernate: 
         format_sql: true	
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
 api:
   energy:
     url: https://gateway.eg-on.com
     apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJnOExmWFluajVxUXdDQ3hmcyIsImFwcElkIjoiYUF4TTR6WFNpSG1qSFJNcXEiLCJzZXJ2aWNlTmFtZSI6IlVzZXJTZXJ2aWNlIiwiZWdvbkFwaUtleSI6IjhhYWVkOWY0ZjkxMDQ1ZGY1NjI5MjJlN2Q2YmVjYjhlIiwiaWF0IjoxNzcwOTA5ODkwfQ.95AXT8kMNaFk5d-_XOodQU5L0DbEZCjsMy-m4ZdVtdY
+  geoapify:
+    url: https://api.geoapify.com
+    apikey: 71d6d1808c1d408ca74773b616b93824
 
 server:
   address: 0.0.0.0
