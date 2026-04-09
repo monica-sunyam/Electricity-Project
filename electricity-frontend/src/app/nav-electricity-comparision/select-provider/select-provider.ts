@@ -134,7 +134,7 @@ export class SelectProvider implements OnInit {
       branch: this.branch,
     };
 
-    this.http.post<RatesResponse>('http://localhost:8080/get-rates', body).subscribe({
+    this.http.post<RatesResponse>('http://192.168.0.155:8080/get-rates', body).subscribe({
       next: (res) => {
         this.allRates = (res?.result ?? []).map((rate) => ({
           ...rate,

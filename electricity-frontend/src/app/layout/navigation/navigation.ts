@@ -28,7 +28,7 @@ export interface NavItem {
   styleUrl: './navigation.css',
 })
 export class Navigation implements OnInit {
-  private readonly BASE_IMAGE_URL = 'http://localhost:8080/assets/super-admin/';
+  private readonly BASE_IMAGE_URL = 'http://192.168.0.155:8080/assets/super-admin/';
   navItems: NavItem[] = [];
   isLoading = true;
   isMenuOpen = false;
@@ -56,7 +56,7 @@ export class Navigation implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.http.post<any>('http://localhost:8080/api/content', {}).subscribe({
+    this.http.post<any>('http://192.168.0.155:8080/api/content', {}).subscribe({
       next: (data) => {
         if (data?.res && data?.menu?.nav) {
           this.navItems = [...data.menu.nav].sort((a, b) => a.order - b.order);

@@ -23,7 +23,7 @@ export class Discount implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.http.post<any>('http://localhost:8080/api/content', {}).subscribe({
+    this.http.post<any>('http://192.168.0.155:8080/api/content', {}).subscribe({
       next: (data) => {
         if (data?.res && data.service?.['free-service']) {
           // Filter for items with highlight: 1
