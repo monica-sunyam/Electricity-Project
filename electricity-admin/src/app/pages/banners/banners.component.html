@@ -1,57 +1,68 @@
 <div class="max-w-4xl mx-auto space-y-8 p-6">
-    
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+
+    <div
+        class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
         <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
             <h2 class="font-semibold text-gray-800 dark:text-white">Aktuelles Live-Banner</h2>
+            @if (bannerId) {
             <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">Aktiv</span>
+            } @else {
+            <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-500 rounded-full">Nicht gesetzt</span>
+            }
         </div>
-        
+
         <div class="aspect-[21/7] bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative">
             @if (currentBannerUrl) {
-                <img [src]="currentBannerUrl" class="w-full h-full object-cover" alt="Current Banner">
+            <img [src]="currentBannerUrl" class="w-full h-full object-cover" alt="Current Banner">
             } @else {
-                <div class="text-center text-gray-400">
-                    <p>Kein Banner konfiguriert</p>
-                </div>
+            <div class="text-center text-gray-400">
+                <p>Kein Banner konfiguriert</p>
+            </div>
             }
         </div>
     </div>
 
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6">
-        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Neues Banner hochladen</h3>
-        
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">
+            {{ bannerId ? 'Banner bearbeiten / ersetzen' : 'Neues Banner hochladen' }}
+        </h3>
+
         <form (ngSubmit)="onSubmit()" class="space-y-6">
-            
-            <div class="group relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center transition-colors hover:border-brand-500">
+
+            <div
+                class="group relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center transition-colors hover:border-brand-500">
                 <input type="file" (change)="onFileChange($event)" class="hidden" #fileInput accept="image/*">
-                
+
                 <div class="cursor-pointer" (click)="fileInput.click()">
                     @if (!imagePreview) {
-                        <div class="space-y-2">
-                            <div class="mx-auto w-12 h-12 bg-brand-50 dark:bg-brand-900/20 text-brand-500 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                            </div>
-                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Neues Bild auswählen</p>
-                            <p class="text-xs text-gray-500">Empfohlen: 1920x640px (Max 2MB)</p>
+                    <div class="space-y-2">
+                        <div
+                            class="mx-auto w-12 h-12 bg-brand-50 dark:bg-brand-900/20 text-brand-500 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
                         </div>
+                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Neues Bild auswählen</p>
+                        <p class="text-xs text-gray-500">Empfohlen: 1920x640px (Max 2MB)</p>
+                    </div>
                     } @else {
-                        <div class="relative inline-block w-full">
-                            <img [src]="imagePreview" class="max-h-64 mx-auto rounded-lg shadow-md" />
-                            <div class="mt-4 text-brand-500 text-sm font-medium">Klicken zum Ändern</div>
-                        </div>
+                    <div class="relative inline-block w-full">
+                        <img [src]="imagePreview" class="max-h-64 mx-auto rounded-lg shadow-md" />
+                        <div class="mt-4 text-brand-500 text-sm font-medium">Klicken zum Ändern</div>
+                    </div>
                     }
                 </div>
             </div>
 
             @if (errorMessage) {
-                <p class="text-sm text-red-500 text-center font-medium">{{ errorMessage }}</p>
+            <p class="text-sm text-red-500 text-center font-medium">{{ errorMessage }}</p>
             }
 
             <div class="flex justify-end pt-4 border-t border-gray-50 dark:border-gray-800">
-                <button type="submit" 
-                    [disabled]="isLoading || !imageFile"
+                <button type="submit" [disabled]="isLoading || !imageFile"
                     class="px-6 py-2.5 bg-brand-500 text-white rounded-lg font-semibold hover:bg-brand-600 transition disabled:opacity-50 shadow-lg shadow-brand-500/25">
-                    {{ isLoading ? 'Wird aktualisiert...' : 'Banner ersetzen' }}
+                    {{ isLoading ? 'Wird gespeichert...' : (bannerId ? 'Banner aktualisieren' : 'Banner erstellen') }}
                 </button>
             </div>
         </form>

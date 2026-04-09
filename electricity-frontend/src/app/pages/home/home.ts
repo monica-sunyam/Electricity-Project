@@ -1,11 +1,11 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Discount } from '../discount/discount';
 import { NeedSupport } from '../../layout/need-support/need-support';
+import { ContentService } from '../../services/content.service';
 
 @Component({
   selector: 'app-home',
@@ -15,12 +15,12 @@ import { NeedSupport } from '../../layout/need-support/need-support';
   styleUrl: './home.css',
 })
 export class Home implements OnInit {
-  private readonly BASE_IMAGE_URL = 'http://192.168.0.155:8080/assets/super-admin/';
   sidebarItems: any[] = [];
   freeServices: any[] = [];
+  otherServices: any[] = [];
+  aboutItems: any[] = [];
   isLoading = true;
 
-  // Map original filenames to the specific CSS classes from your static HTML
   private readonly ICON_CLASS_MAP: Record<string, string> = {
     'Stromvergleich.png': 'icon-cable',
     'Gasvergleich.png': 'icon',
@@ -29,7 +29,6 @@ export class Home implements OnInit {
     'Ladestrom.png': 'icon',
   };
 
-  // Map original filenames to their internal routes
   private readonly ROUTE_MAP: Record<string, string> = {
     'Stromvergleich.png': '/home/electricity',
     'Gasvergleich.png': '/home/gas',
@@ -38,7 +37,6 @@ export class Home implements OnInit {
     'Ladestrom.png': '/home/car-electricity',
   };
 
-  // Map original filenames to the custom display labels
   private readonly LABEL_MAP: Record<string, string> = {
     'Stromvergleich.png': 'Strom | Hausstrom',
     'Gasvergleich.png': 'Gas',
@@ -48,25 +46,38 @@ export class Home implements OnInit {
   };
 
   constructor(
-    private http: HttpClient,
+    private contentService: ContentService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.http.post<any>('http://192.168.0.155:8080/api/content', {}).subscribe({
+    this.contentService.getData().subscribe({
       next: (data) => {
         if (data?.res && data?.menu?.sidebar) {
-          // Sort items by the 'order' property from API
           this.sidebarItems = [...data.menu.sidebar].sort((a, b) => a.order - b.order);
         }
 
-        // New Free Service logic from the 'service' object
         if (data.service?.['free-service']) {
-          // Filter to only show items that are NOT highlighted, if that matches your design
           this.freeServices = data.service['free-service']
             .filter((s: any) => s.highlight === 0)
             .sort((a: any, b: any) => a.order - b.order);
         }
+
+        if (data.service?.['other-service']) {
+          const seen = new Set<string>();
+          this.otherServices = data.service['other-service']
+            .sort((a: any, b: any) => a.order - b.order)
+            .filter((s: any) => {
+              if (seen.has(s.heading)) return false;
+              seen.add(s.heading);
+              return true;
+            });
+        }
+
+        if (data.menu?.about) {
+          this.aboutItems = [...data.menu.about].sort((a, b) => a.order - b.order);
+        }
+
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -79,7 +90,7 @@ export class Home implements OnInit {
   }
 
   getImageUrl(contentUrl: string): string {
-    return `${this.BASE_IMAGE_URL}${contentUrl}`;
+    return this.contentService.getImageUrl(contentUrl);
   }
 
   getIconClass(fileName: string): string {

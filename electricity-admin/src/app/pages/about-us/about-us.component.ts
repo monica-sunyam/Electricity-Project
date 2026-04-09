@@ -101,8 +101,8 @@ export class AboutUsComponent implements OnInit {
       adminId: adminId,
       heading: this.heading,
       contact: this.contactNumber,
-      // WICHTIG: Der Key heißt für die API "subheading", der Wert kommt aus "description"
-      subheading: this.description, 
+      // WICHTIG: Der Key heißt für die API "subHeading", der Wert kommt aus "description"
+      subHeading: this.description, 
       type: 4 
     };
 

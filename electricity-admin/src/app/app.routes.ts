@@ -12,7 +12,6 @@ import { FreeServicesCreateComponent } from "./pages/free-services/free-services
 import { AboutUsComponent } from "./pages/about-us/about-us.component";
 import { BannersComponent } from "./pages/banners/banners.component";
 
-
 export const routes: Routes = [
   {
     path: "",
@@ -66,7 +65,21 @@ export const routes: Routes = [
         component: BannersComponent,
         title: "Banners",
       },
-    
+      {
+        path: "menus/navigation/edit/:id",
+        component: NavigationMenuCreateComponent,
+        title: "Edit Navigation Menu",
+      },
+      {
+        path: "menus/sidebar/edit/:id",
+        component: SidebarMenuCreateComponent,
+        title: "Edit Sidebar Menu",
+      },
+      {
+        path: "services/free/edit/:id",
+        component: FreeServicesCreateComponent,
+        title: "Edit Service",
+      },
     ],
   },
   {

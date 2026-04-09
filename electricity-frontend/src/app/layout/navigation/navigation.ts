@@ -28,7 +28,7 @@ export interface NavItem {
   styleUrl: './navigation.css',
 })
 export class Navigation implements OnInit {
-  private readonly BASE_IMAGE_URL = 'http://192.168.0.155:8080/assets/super-admin/';
+  private readonly BASE_IMAGE_URL = 'http://localhost:8080/assets/super-admin/';
   navItems: NavItem[] = [];
   isLoading = true;
   isMenuOpen = false;
@@ -41,19 +41,22 @@ export class Navigation implements OnInit {
     'Gewerbegas.png': 'nav-icons-outlined',
     'Grosskunde_2.png': 'nav-icons-grosskunde',
     '360_Vergleich.png': 'nav-icon-360',
-    'Tarifwecker_weiss.png': 'nav-icons-outlined'
+    'Tarifwecker_weiss.png': 'nav-icons-outlined',
   };
 
   private readonly ROUTE_MAP: Record<string, string> = {
     'Stromvergleich.png': '/electricity-comparision',
     'Gasvergleich.png': '/gas-comparision',
-    'Gewerbestrom.png': '/commercial-electricity'
+    'Gewerbestrom.png': '/commercial-electricity',
   };
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
-    this.http.post<any>('http://192.168.0.155:8080/api/content', {}).subscribe({
+    this.http.post<any>('http://localhost:8080/api/content', {}).subscribe({
       next: (data) => {
         if (data?.res && data?.menu?.nav) {
           this.navItems = [...data.menu.nav].sort((a, b) => a.order - b.order);
@@ -61,7 +64,10 @@ export class Navigation implements OnInit {
         this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: () => { this.isLoading = false; this.cdr.detectChanges(); }
+      error: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -77,6 +83,10 @@ export class Navigation implements OnInit {
     return this.ROUTE_MAP[fileName] || '#';
   }
 
-  toggleMenu() { this.isMenuOpen = !this.isMenuOpen; }
-  closeMenu() { this.isMenuOpen = false; }
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
 }

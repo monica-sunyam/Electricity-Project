@@ -14,7 +14,7 @@ import { environment } from "../../../../environments/environment.development";
 })
 export class FreeServicesListComponent implements OnInit {
   readonly imgBase = environment.imageBaseUrl;
-  
+
   services: any[] = [];
   isLoading = false;
   errorMessage = "";
@@ -51,5 +51,25 @@ export class FreeServicesListComponent implements OnInit {
         console.error("Fetch error:", err);
       },
     });
+  }
+
+  onDelete(id: number): void {
+    if (confirm("Möchten Sie diesen Service wirklich löschen?")) {
+      const payload = {
+        adminId: this.authService.getUserId(),
+        id: id, // Ensure this matches your backend's expected key
+      };
+
+      this.api.post("admin/delete-service-menu", payload).subscribe({
+        next: (res: any) => {
+          if (res?.res) {
+            this.services = this.services.filter((s) => s.id !== id);
+          } else {
+            alert(res?.errorMessage || "Fehler beim Löschen");
+          }
+        },
+        error: () => alert("Ein Fehler ist aufgetreten"),
+      });
+    }
   }
 }

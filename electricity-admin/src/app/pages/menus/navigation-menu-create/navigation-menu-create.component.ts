@@ -1,9 +1,10 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ApiService } from "../../../shared/services/api.service";
-import { RouterModule } from "@angular/router";
+import { RouterModule, ActivatedRoute, Router } from "@angular/router";
 import { AuthService } from "../../../shared/services/auth.service";
+import { environment } from "../../../../environments/environment";
 
 @Component({
   selector: "app-navigation-menu-create",
@@ -12,7 +13,10 @@ import { AuthService } from "../../../shared/services/auth.service";
   templateUrl: "./navigation-menu-create.component.html",
   styleUrl: "./navigation-menu-create.component.css",
 })
-export class NavigationMenuCreateComponent {
+export class NavigationMenuCreateComponent implements OnInit {
+  menuId: string | null = null;
+  isEditMode = false;
+  
   title = "";
   subtitle = "";
   imageFile: File | null = null;
@@ -21,23 +25,54 @@ export class NavigationMenuCreateComponent {
   isLoading = false;
   errorMessage = "";
 
-  constructor(private api: ApiService, private authService: AuthService) {}
+  constructor(
+    private api: ApiService,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
-  /* ================= FILE ================= */
+  ngOnInit() {
+    // Check for ID in the route parameters
+    this.menuId = this.route.snapshot.paramMap.get("id");
+    if (this.menuId) {
+      this.isEditMode = true;
+      this.loadMenuData();
+    }
+  }
+
+  loadMenuData() {
+    const payload = {
+      adminId: this.authService.getUserId(),
+      id: parseInt(this.menuId!),
+    };
+    
+    this.api.post("admin/fetch-menu", payload).subscribe({
+      next: (res) => {
+        if (res?.res) {
+          this.title = res.data.heading;
+          this.subtitle = res.data.subHeading;
+          // Pre-fill preview with existing image URL
+          this.imagePreview = environment.imageBaseUrl + res.data.contentUrl;
+        }
+      },
+      error: () => (this.errorMessage = "Fehler beim Laden der Daten")
+    });
+  }
+
+  /* ================= FILE HANDLING ================= */
 
   onFileChange(event: any) {
     const file = event.target.files[0];
-
     if (!file) return;
 
-    /* 🔒 validation */
     if (!file.type.startsWith("image/")) {
-      this.errorMessage = "Only image files allowed";
+      this.errorMessage = "Nur Bilder sind erlaubt";
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      this.errorMessage = "Image must be less than 2MB";
+      this.errorMessage = "Bild muss kleiner als 2MB sein";
       return;
     }
 
@@ -51,53 +86,53 @@ export class NavigationMenuCreateComponent {
     reader.readAsDataURL(file);
   }
 
-  /* ================= SUBMIT ================= */
+  /* ================= SUBMIT (Add & Edit) ================= */
 
   onSubmit() {
     const adminId = this.authService.getUserId();
 
-    if (!this.title || !this.imageFile) {
-      this.errorMessage = "Title and Image are required";
+    // Validation: Image is only mandatory for NEW menus
+    if (!this.title || (!this.imageFile && !this.isEditMode)) {
+      this.errorMessage = "Titel und Bild sind erforderlich";
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = "";
 
-    const payload = {
+    const payload: any = {
       adminId: adminId,
       heading: this.title,
       subHeading: this.subtitle || "",
       type: 1,
     };
 
+    // If editing, include the ID so the backend knows to update instead of create
+    if (this.isEditMode) {
+      payload.id = parseInt(this.menuId!);
+    }
+
     const formData = new FormData();
-    formData.append("file", this.imageFile);
+    // Only append file if a new one was selected
+    if (this.imageFile) {
+      formData.append("file", this.imageFile);
+    }
     formData.append("data", JSON.stringify(payload));
 
+    // Both use the same endpoint as per your requirement
     this.api.post("admin/add-menu", formData).subscribe({
       next: (res) => {
-        console.log(res);
-
         this.isLoading = false;
-
-        /* reset form */
-        this.title = "";
-        this.subtitle = "";
-        this.imageFile = null;
-        this.imagePreview = null;
-
-        alert("✅ Menu created successfully");
+        if (res?.res) {
+          alert(this.isEditMode ? "✅ Menü aktualisiert" : "✅ Menü erstellt");
+          this.router.navigate(["/menus/navigation"]);
+        } else {
+          this.errorMessage = res?.errorMessage || "Fehler beim Speichern";
+        }
       },
       error: (err) => {
-        console.log(err);
         this.isLoading = false;
-
-        if (err?.error?.res === false) {
-          this.errorMessage = err.error.errorMessage;
-        } else {
-          this.errorMessage = "Something went wrong";
-        }
+        this.errorMessage = "Etwas ist schiefgelaufen";
       },
     });
   }

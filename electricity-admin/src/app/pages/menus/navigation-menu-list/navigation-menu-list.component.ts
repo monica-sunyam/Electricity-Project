@@ -28,7 +28,7 @@ export class NavigationMenuListComponent implements OnInit {
   }
 
   fetchMenus() {
-    const adminId = this.authService.getUserId(); 
+    const adminId = this.authService.getUserId();
 
     this.isLoading = true;
     this.errorMessage = "";
@@ -53,5 +53,25 @@ export class NavigationMenuListComponent implements OnInit {
         this.errorMessage = "Something went wrong";
       },
     });
+  }
+
+  onDelete(id: string) {
+    if (confirm("Möchten Sie dieses Menü wirklich löschen?")) {
+      const payload = {
+        adminId: this.authService.getUserId(),
+        id: id,
+      };
+
+      this.api.post("admin/delete-menu", payload).subscribe({
+        next: (res) => {
+          if (res?.res) {
+            this.menus = this.menus.filter((m) => m.id !== id);
+          } else {
+            alert(res?.errorMessage || "Löschen fehlgeschlagen");
+          }
+        },
+        error: () => alert("Ein Fehler ist aufgetreten"),
+      });
+    }
   }
 }

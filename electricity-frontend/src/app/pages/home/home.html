@@ -1,41 +1,5 @@
 <div class="home-container">
   <div class="home-left">
-    <!--  ------------------------------------------ electricity div ------------------------------------------------  -->
-    <!-- <div class="electricity-container">
-      <div class="electricity">
-        <button class="icon-btn-electricity" [routerLink]="['/home/electricity']" routerLinkActive="active">
-          <span class="electricity-comparison">
-            <img src="assets/icons/Stromvergleich.png" class="icon-cable" alt="icon-cable">
-          </span>
-          <span class="btn-text">Strom | Hausstrom</span>
-        </button>
-        <button class="icon-btn-electricity" [routerLink]="['/home/gas']" routerLinkActive="active">
-          <span class="electricity-comparison">
-            <img src="assets/icons/Gasvergleich.png" class="icon" alt="icon-gas">
-          </span>
-          <span class="btn-text">Gas</span>
-        </button>
-        <button class="icon-btn-electricity" [routerLink]="['/home/heating-electricity']" routerLinkActive="active">
-          <span class="electricity-comparison">
-            <img src="assets/icons/Warmepumpe.png" class="icon-pump" alt="icon-pump">
-          </span>
-          <span class="btn-text">Heizstrom | Wärmepumpe</span>
-        </button>
-        <button class="icon-btn-electricity" [routerLink]="['/home/night-heaters']" routerLinkActive="active">
-          <span class="electricity-comparison">
-            <img src="assets/icons/Nachtspeicherofen.png" class="icon" alt="icon-heizstrom">
-          </span>
-          <span class="btn-text">Heizstrom | Nachtspeicher</span>
-        </button>
-        <button class="icon-btn-electricity" [routerLink]="['/home/car-electricity']" routerLinkActive="active">
-          <span class="electricity-comparison">
-            <img src="assets/icons/Ladestrom.png" class="icon" alt="icon-autostrom">
-          </span>
-          <span class="btn-text">Ladestrom | Autostrom</span>
-        </button>
-      </div>
-    </div> -->
-
     <div class="electricity-container">
       <div class="electricity">
         @if (isLoading) {
@@ -43,59 +7,15 @@
         } @else {
         <button *ngFor="let item of sidebarItems" class="icon-btn-electricity"
           [routerLink]="[getRouterLink(item.originalFileName)]" routerLinkActive="active">
-
           <span class="electricity-comparison">
             <img [src]="getImageUrl(item.contentUrl)" [class]="getIconClass(item.originalFileName)"
               [alt]="item.originalFileName">
           </span>
-
           <span class="btn-text">{{ getLabel(item.originalFileName) }}</span>
         </button>
         }
       </div>
     </div>
-
-    <!--  ---------------------------------------   Our service ----------------------------------------------------------  -->
-    <!-- <div class="service-container">
-      <div class="service-container">
-        <div class="our-services-header">
-          <span class="our-services"></span>
-          <span class="btn-header-text">Unser Kostenloser Service</span>
-        </div>
-        <div class="container-items">
-          <button class="icon-btn-service">
-            <span class="our-services">
-              <img src="assets/icons/Haken_Blau.png" class="icon-check" alt="check">
-            </span>
-            <span class="btn-text">Fester Ansprechpartner</span>
-          </button>
-          <button class="icon-btn-service">
-            <span class="our-services">
-              <img src="assets/icons/Haken_Blau.png" class="icon-check" alt="check">
-            </span>
-            <span class="btn-text">Wechselservice inklusive</span>
-          </button>
-          <button class="icon-btn-service">
-            <span class="our-services">
-              <img src="assets/icons/Haken_Blau.png" class="icon-check" alt="check">
-            </span>
-            <span class="btn-text">Tarifwecker inklusive</span>
-          </button>
-          <button class="icon-btn-service">
-            <span class="our-services">
-              <img src="assets/icons/Haken_Blau.png" class="icon-check" alt="check">
-            </span>
-            <span class="btn-text">Experten-Live-Chat</span>
-          </button>
-          <button class="icon-btn-service">
-            <span class="our-services">
-              <img src="assets/icons/Haken_Blau.png" class="icon-check" alt="check">
-            </span>
-            <span class="btn-text">Tarifwechsel-Erinnerung</span>
-          </button>
-        </div>
-      </div>
-    </div> -->
 
     <div class="service-container">
       <div class="service-container">
@@ -103,7 +23,6 @@
           <span class="our-services"></span>
           <span class="btn-header-text">Unser Kostenloser Service</span>
         </div>
-
         <div class="container-items">
           <button *ngFor="let service of freeServices" class="icon-btn-service">
             <span class="our-services">
@@ -111,7 +30,6 @@
             </span>
             <span class="btn-text">{{ service.heading }}</span>
           </button>
-
           <p *ngIf="!isLoading && freeServices.length === 0">Keine Services verfügbar.</p>
         </div>
       </div>
@@ -121,93 +39,59 @@
   <div class="home-center">
     <router-outlet></router-outlet>
   </div>
-  <!-- -------------------------------------------- home right ------------------------------------------------ -->
 </div>
 
-<!-- discount -->
 <app-discount></app-discount>
 
-
 <div class="container-services-by-company">
-  <!-- -------------------------------------------- about us ------------------------------------------------ -->
+
+  <!-- about us -->
   <div class="container-about">
     <div class="container-header">Das sind wir</div>
-    <div class="container-details">
-      <div class="image">
-        <img src="assets/images/Manuel_Markovic.png" alt="Familienbetrieb">
+    <ng-container *ngFor="let about of aboutItems">
+      <div class="container-details">
+        <div class="image">
+          <img [src]="getImageUrl(about.contentUrl)" [alt]="about.heading">
+        </div>
+        <div class="about-text">
+          <span class="about-header"><strong>{{ about.heading }}</strong></span><br>
+          <span class="details" *ngIf="about.subHeading">{{ about.subHeading }}</span>
+        </div>
       </div>
-      <div class="about-text">
-        <span class="about-header"><strong>Familienbetrieb</strong></span><br>
-        <span class="details">Wir setzen auf langfristige Partnerschaften statt auf das schnelle Geschäf. Bie uns
-          laden
-          Sie keinem Callcenter, sondern bei Menschen, die Ihre Namen Kennen. </span><br>
-        <span class="details">
-          <p class="details-para">Wir wollen Ihnen nicht einfach irgendeinen Vertrag verkaufen, sondern Sie
-            langfristig
-            betreuen. Wir setzen auf ehrliche Kommunikation,
-            direkte Ansprechpartner, persönlichen Kontakt, maßgeschneiderte lösungen und Handschlagqualität.
-          </p>
-        </span>
-      </div>
-    </div>
+    </ng-container>
+    <p *ngIf="!isLoading && aboutItems.length === 0">Keine Informationen verfügbar.</p>
   </div>
 
-  <!-- ------------------------------------------ other services -------------------------------------------------- -->
+  <!-- other services — dynamic only -->
   <div class="container-other-services">
     <div class="main-container-service">
       <div class="container-header">Weitere Services</div>
       <div class="container-all-services">
         <div class="container-services-left">
-          <button class="main-btn">
-            <span class="container-services">
-              <img src="assets/icons/Umzugsservice.png" class="icon-transport" alt="transport">
-            </span>
-            <span class="btn-text">Umzugservice</span>
-          </button>
-          <button class="main-btn">
-            <span class="container-services">
-              <img src="assets/icons/Kündigung.png" class="icon-transport" alt="transport">
-            </span>
-            <span class="btn-text">Kündigungsschreiben</span>
-          </button>
-          <button class="main-btn">
-            <span class="container-services">
-              <img src="assets/icons/Freunde.png" class="icon-transport" alt="transport">
-            </span>
-            <span class="btn-text">Freunde werben</span>
-          </button>
-          <button class="main-btn">
-            <span class="container-services">
-              <img src="assets/icons/MA_Vorteil.png" class="icon-transport" alt="transport">
-            </span>
-            <span class="btn-text">Mitarbeitervorteile</span>
-          </button>
+          <ng-container *ngFor="let service of otherServices; let i = index">
+            <button class="main-btn" *ngIf="i % 2 === 0">
+              <span class="container-services">
+                <img [src]="getImageUrl(service.contentUrl)" class="icon-transport" [alt]="service.heading">
+              </span>
+              <span class="btn-text">{{ service.heading }}</span>
+            </button>
+          </ng-container>
         </div>
         <div class="container-services-right">
-          <button class="main-btn">
-            <span class="container-services">
-              <img src="assets/icons/Partnerprogramm.png" class="icon-transport" alt="transport">
-            </span>
-            <span class="btn-text">Partnerprogramm</span>
-          </button>
-          <button class="main-btn">
-            <span class="container-services">
-              <img src="assets/icons/Businesspartner.png" class="icon-transport" alt="transport">
-            </span>
-            <span class="btn-text">Vertriebspartner werden</span>
-          </button>
-          <button class="main-btn">
-            <span class="container-services">
-              <img src="assets/icons/Tippgeber.png" class="icon-transport" alt="transport">
-            </span>
-            <span class="btn-text">Tippgeber werden</span>
-          </button>
+          <ng-container *ngFor="let service of otherServices; let i = index">
+            <button class="main-btn" *ngIf="i % 2 !== 0">
+              <span class="container-services">
+                <img [src]="getImageUrl(service.contentUrl)" class="icon-transport" [alt]="service.heading">
+              </span>
+              <span class="btn-text">{{ service.heading }}</span>
+            </button>
+          </ng-container>
         </div>
       </div>
+      <p *ngIf="!isLoading && otherServices.length === 0">Keine weiteren Services verfügbar.</p>
     </div>
   </div>
 
-  <!-- ---------------------------------------------    need support -----------------------------------------------------  -->
   <app-need-support></app-need-support>
 
 </div>

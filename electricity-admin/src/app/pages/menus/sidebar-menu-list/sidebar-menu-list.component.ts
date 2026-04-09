@@ -57,4 +57,26 @@ export class SidebarMenuListComponent implements OnInit {
       },
     });
   }
+
+  onDelete(id: number): void {
+    if (confirm("Möchten Sie dieses Sidebar-Menü wirklich löschen?")) {
+      const payload = {
+        adminId: this.authService.getUserId(),
+        id: id,
+      };
+
+      // Using the common delete endpoint
+      this.api.post("admin/delete-menu", payload).subscribe({
+        next: (res: any) => {
+          if (res?.res) {
+            // Remove from local array to update UI immediately
+            this.menus = this.menus.filter((m) => m.id !== id);
+          } else {
+            alert(res?.errorMessage || "Fehler beim Löschen");
+          }
+        },
+        error: () => alert("Ein Fehler ist aufgetreten"),
+      });
+    }
+  }
 }

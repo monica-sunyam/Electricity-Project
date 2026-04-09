@@ -1,15 +1,17 @@
 <div class="card" style="border: 1px solid #003366;">
   <div class="container-contact-us">
     <div class="main-container-service">
-      <div class="card-header" style="background-color:#003366 ;">Benötigen Sie Unterstützung?</div>
+      <div class="card-header" style="background-color:#003366;">Benötigen Sie Unterstützung?</div>
       <div class="container-contact">
         <div class="contact-us">
+
           <button class="main-btn">
             <span class="container-services">
               <img src="assets/icons/Telefonhörer_Weiss.png" class="icon-telephone" alt="telephone">
             </span>
-            <span class="btn-text">08157 / 999 42-0</span>
+            <span class="btn-text">{{ contactNumber || '...' }}</span>
           </button>
+
           <button class="main-btn">
             <span class="container-services">
               <img src="assets/icons/Lice-Chat_weiss.png" class="icon-wechat" alt="wechat">
@@ -34,6 +36,7 @@
             </span>
             <span class="btn-text">Kontaktformular</span>
           </button>
+
         </div>
       </div>
     </div>
