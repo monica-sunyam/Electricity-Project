@@ -17,6 +17,20 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 20MB
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: system@bavariaphone.de
+    password: L&615182308835ap
+    properties:
+      mail: 
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 15000
+          timeout: 15000
+          writetimeout: 15000
 api:
   energy:
     url: https://gateway.eg-on.com
@@ -32,3 +46,6 @@ server:
 file:
   upload-dir:
     super-admin: "../../assets/super-admin"
+
+email:
+  name: system@bavariaphone.de

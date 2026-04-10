@@ -71,7 +71,7 @@ public class AdminAssetService {
 
 			String oldContentUrl = adminAsset.getContentUrl();
 
-			if (fileUrl != null) {
+			if (fileUrl != null && oldContentUrl != null) {
 				adminAsset.setContentUrl(fileUrl);
 			}
 
@@ -93,6 +93,39 @@ public class AdminAssetService {
 				fileUtil.deleteFile(oldContentUrl);
 
 			return Map.of("res", true, "Data", updateAsset);
+		} else if (type == 4 && assetDto.getAdminId() != null) {
+			try {
+				AdminAsset adminAsset = adminUser.getAdminAssets().stream().filter(menu -> menu.getType().equals(type))
+						.findFirst().orElseThrow(
+								() -> new InternalServerException("Menu of type 4 not found", HttpStatus.BAD_REQUEST));
+				String oldContentUrl = adminAsset.getContentUrl();
+
+				if (fileUrl != null) {
+					adminAsset.setContentUrl(fileUrl);
+				}
+
+				adminAsset.setUpdatedOn(BigInteger.valueOf(Instant.now().getEpochSecond()));
+				adminAsset.setType(type);
+				adminAsset.setHeading(assetDto.getHeading());
+				adminAsset.setSubHeading(assetDto.getSubHeading());
+				if (assetDto.getOrder() != null && assetDto.getOrder() > 0)
+					adminAsset.setOrder(assetDto.getOrder());
+				if (file != null)
+					adminAsset.setOriginalFileName(file.getOriginalFilename());
+				adminAsset.setSaving(assetDto.getSaving());
+				adminAsset.setSavingPriceDetail(assetDto.getSavingDetail());
+				adminAsset.setContactNumber(assetDto.getContact());
+
+				AdminAsset updateAsset = adminAssetRepo.save(adminAsset);
+
+				if (fileUrl != null && oldContentUrl != null)
+					fileUtil.deleteFile(oldContentUrl);
+
+				return Map.of("res", true, "Data", updateAsset);
+
+			} catch (InternalServerException e) {
+				System.err.println(e.toString());
+			}
 		}
 
 		int order = adminUser.getAdminAssets().stream().filter(content -> content.getType() == assetDto.getType())
@@ -100,9 +133,7 @@ public class AdminAssetService {
 
 		AdminAsset asset = AdminAsset.builder().adminId(adminUser).heading(assetDto.getHeading())
 				.subHeading(assetDto.getSubHeading()).type(type).contentUrl(fileUrl).saving(assetDto.getSaving())
-				.savingPriceDetail(assetDto.getSavingDetail())
-				.contactNumber(assetDto.getContact())
-				.order(order)
+				.savingPriceDetail(assetDto.getSavingDetail()).contactNumber(assetDto.getContact()).order(order)
 				.originalFileName(file != null ? file.getOriginalFilename() : null).build();
 
 		adminUser.addAdminAsset(asset);
@@ -110,6 +141,21 @@ public class AdminAssetService {
 		adminUser = adminUserRepo.save(adminUser);
 
 		return Map.of("res", true, "Data", adminUser.getAdminAssets().getLast());
+	}
+
+	public Map<String, Object> getSingleMenu(Integer id, Integer adminId) {
+		if (id == null || id <= 0)
+			throw new InternalServerException("Incorrect menu id", HttpStatus.BAD_REQUEST);
+
+		if (adminId == 0 || adminId <= 0)
+			throw new InternalServerException("Admin not found", HttpStatus.BAD_REQUEST);
+
+		AdminUser admin = adminUserRepo.findById(adminId)
+				.orElseThrow(() -> new InternalServerException("Admin not found", HttpStatus.BAD_REQUEST));
+
+		AdminAsset asset = admin.getAdminAssets().stream().filter(menu -> menu.getId().equals(id)).findFirst()
+				.orElseThrow(() -> new InternalServerException("Menu not found", HttpStatus.BAD_REQUEST));
+		return Map.of("res", true, "data", asset);
 	}
 
 	public Map<String, Object> getAllAssets(Integer id, Integer type) {

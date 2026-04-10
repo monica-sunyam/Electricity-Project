@@ -148,6 +148,7 @@ export class SelectProvider implements OnInit {
     this.router.navigate(['/home/electricity']);
   }
 
+
   private fetchRates(): void {
     if (!this.hasAddress) {
       console.warn('Missing address, skipping API call');

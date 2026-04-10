@@ -17,6 +17,7 @@ import { CheckoutPage } from './nav-electricity-comparision/checkout-page/checko
 import { Account } from './nav-electricity-comparision/account/account';
 import { LoginPage } from './nav-electricity-comparision/login-page/login-page';
 import { Sidebar } from './layout/sidebar/sidebar';
+import { Register } from './nav-electricity-comparision/register/register';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -38,8 +39,8 @@ export const routes: Routes = [
       {path: 'connection-data', component: ConnectionData},
       {path: 'payment-method', component: PaymentMethod},
       {path: 'account', component: Account},
-      {path: 'checkout', component: CheckoutPage}
-
+      {path: 'checkout', component: CheckoutPage},
+      {path: 'register', component: Register}
     ]
    },
   { path: 'gas-comparision', component: GasComparision },

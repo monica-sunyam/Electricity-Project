@@ -1,0 +1,441 @@
+<div class="page-layout">
+
+    <!-- ══════════ SIDEBAR ══════════ -->
+    <div class="sidebar">
+        <app-contact-person></app-contact-person>
+        <app-need-support></app-need-support>
+    </div><!-- /sidebar -->
+
+    <!-- ══════════ MAIN CONTENT ══════════ -->
+    <div class="main-content">
+
+        <!-- Progress stepper -->
+        <div class="progress-card">
+            <div class="progress-header">Nur noch wenige Klicks zu Ihrem neuen Tarif</div>
+            <div class="progress-steps">
+                <div class="step" [class.active]="currentStep >= 1">
+                    <div class="step-circle">
+                        <div class="inner-circle">1</div>
+                    </div>
+                    <div class="step-label">Account</div>
+                </div>
+                <div class="step" [class.active]="currentStep >= 2">
+                    <div class="step-circle">
+                        <div class="inner-circle">2</div>
+                    </div>
+                    <div class="step-label">Lieferadresse</div>
+                </div>
+                <div class="step" [class.active]="currentStep >= 3">
+                    <div class="step-circle">
+                        <div class="inner-circle">3</div>
+                    </div>
+                    <div class="step-label">Anschlussdaten</div>
+                </div>
+                <div class="step" [class.active]="currentStep >= 4">
+                    <div class="step-circle">
+                        <div class="inner-circle">4</div>
+                    </div>
+                    <div class="step-label">Zahlungsart</div>
+                </div>
+                <div class="step" [class.active]="currentStep >= 5">
+                    <div class="step-circle">
+                        <div class="inner-circle">5</div>
+                    </div>
+                    <div class="step-label">Abschluss</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account question panel -->
+        <div class="section-panel">
+            <div class="section-header">Haben Sie schon einen Account bei uns?</div>
+        </div>
+
+        <div class="section-login">
+            <div class="login-row">
+                <div class="form-group">
+                    <div class="login-header">Wenn ja, loggen sie sich bitte ein, damit der Auftrag in Ihrem Account
+                        gespeichert wird.</div>
+                    <div class="login-text">Falls Sie noch keinen Account haben, registrieren Sie sich bitte jetzt.
+                    </div>
+                </div>
+
+                <div class="container-checkbox">
+                    <div class="field-wrap-checkbox" [class.active]="authMode === 'register'"
+                        (click)="setAuthMode('register')">
+                        <label class="cb-row">
+                            <input type="radio" name="authMode" [checked]="authMode === 'register'"
+                                (change)="setAuthMode('register')">
+                        </label>
+                        Weiter zur Registrierung
+                    </div>
+                    <div class="field-wrap-checkbox" [class.active]="authMode === 'login'"
+                        (click)="setAuthMode('login')">
+                        <label class="cb-row">
+                            <input type="radio" name="authMode" [checked]="authMode === 'login'"
+                                (change)="setAuthMode('login')">
+                        </label>
+                        Weiter zum Login-Bereich
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ══════════ LOGIN FORM ══════════ -->
+            <div class="container-login" *ngIf="authMode === 'login'">
+                <div class="login-berich">Anmelden</div>
+
+                <div class="login-row">
+                    <div class="form-group">
+                        <label class="login-text">E-Mail-Adresse</label>
+                        <div class="input-field">
+                            <span class="material-symbols-outlined">mail</span>
+                            <input #loginEmailField type="email" placeholder="E-Mail-Adresse eingeben">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="login-text">Passwort</label>
+                        <div class="input-field">
+                            <span class="material-symbols-outlined">lock</span>
+                            <input #loginPwField [type]="showLoginPw ? 'text' : 'password'" placeholder="Passwort">
+                            <span class="material-symbols-outlined pw-toggle" (click)="showLoginPw = !showLoginPw">{{
+                                showLoginPw ? 'visibility' : 'visibility_off' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="error-msg" *ngIf="loginError">{{ loginError }}</div>
+
+                    <div style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px;">
+                        <button class="btn-primary" [disabled]="isLoading"
+                            (click)="doLogin(loginEmailField.value, loginPwField.value)">
+                            <span *ngIf="isLoading" class="spinner"></span>
+                            {{ isLoading ? 'Bitte warten...' : 'Anmelden' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ══════════ STEP 1: REGISTRATION FORM ══════════ -->
+            <div class="container-login" *ngIf="authMode === 'register' && currentStep === 1">
+                <div class="login-berich">Registrierung Schritt 1 von 3</div>
+
+                <div class="login-row">
+
+                    <!-- Why is registration necessary? -->
+                    <div class="form-group">
+                        <div class="login-header">Warum ist eine Registrierung notwendig?</div>
+                        <div class="login-text">
+                            In Ihrem persönlichen Kundenbereich finden Sie alle Ihre Aufträge und Tarifwechsel.
+                            Sie können den aktuellen Bearbeitungsstatus jederzeit zentral einsehen, Ihre Verträge
+                            bequem verwalten und behalten stets den vollen Überblick über Ihre Strom- und Gastarife.
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="login-text">E-Mail-Adresse</label>
+                        <div class="input-field" [class.field-error]="fieldErrors['email']">
+                            <span class="material-symbols-outlined">mail</span>
+                            <input #emailField type="email" placeholder="E-Mail-Adresse eingeben"
+                                [value]="formData.email"
+                                (input)="formData.email = $any($event.target).value; validatePassword(pwField.value, $any($event.target).value, repField.value)">
+                        </div>
+                        <div class="field-error-msg" *ngIf="fieldErrors['email']">{{ fieldErrors['email'] }}</div>
+                    </div>
+
+                    <!-- Password + Repeat Password -->
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="login-text">Passwort</label>
+                            <div class="input-field" [class.field-error]="fieldErrors['password']">
+                                <span class="material-symbols-outlined">lock</span>
+                                <input #pwField name="password" [type]="showPw ? 'text' : 'password'"
+                                    placeholder="Passwort" [value]="formData.password"
+                                    (input)="formData.password = $any($event.target).value; validatePassword($any($event.target).value, emailField.value, repField.value)">
+                                <span class="material-symbols-outlined pw-toggle" (click)="showPw = !showPw">{{ showPw ?
+                                    'visibility' : 'visibility_off' }}</span>
+                            </div>
+                            <div class="field-error-msg" *ngIf="fieldErrors['password']">{{ fieldErrors['password'] }}
+                            </div>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="login-text">Passwort wiederholen</label>
+                            <div class="input-field" [class.field-error]="passwordMismatch">
+                                <span class="material-symbols-outlined">lock</span>
+                                <input #repField name="passwordRepeat" [type]="showRepPw ? 'text' : 'password'"
+                                    placeholder="Passwort wiederholen"
+                                    (input)="validatePassword(pwField.value, emailField.value, $any($event.target).value)">
+                                <span class="material-symbols-outlined pw-toggle" (click)="showRepPw = !showRepPw">{{
+                                    showRepPw ? 'visibility' : 'visibility_off' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password mismatch error -->
+                    <div class="login-text" style="color: #cc0000;" *ngIf="passwordMismatch">
+                        Die Passwörter stimmen nicht überein
+                    </div>
+
+                    <!-- Password guidelines -->
+                    <div class="password-guidelines">
+                        <div class="login-text" style="font-weight: 600; margin-bottom: 6px;">
+                            Grundlagen sicherer Passwörter / Passwortrichtlinien
+                        </div>
+                        <div class="guideline-row" [class.valid]="pw_length" [class.invalid]="!pw_length">
+                            <span class="material-symbols-outlined guideline-icon">{{ pw_length ? 'check_circle' :
+                                'cancel' }}</span>
+                            <span class="login-text">Ihr Passwort besteht aus mindestens 8 und maximal 50 Zeichen</span>
+                        </div>
+                        <div class="guideline-row" [class.valid]="pw_case" [class.invalid]="!pw_case">
+                            <span class="material-symbols-outlined guideline-icon">{{ pw_case ? 'check_circle' :
+                                'cancel' }}</span>
+                            <span class="login-text">Ihr Passwort enthält mindestens einen Groß- und einen
+                                Kleinbuchstaben</span>
+                        </div>
+                        <div class="guideline-row" [class.valid]="pw_special" [class.invalid]="!pw_special">
+                            <span class="material-symbols-outlined guideline-icon">{{ pw_special ? 'check_circle' :
+                                'cancel' }}</span>
+                            <span class="login-text">Ihr Passwort enthält mindestens ein Sonderzeichen (!, @, $, %, ^,
+                                &amp;, *, +, #)</span>
+                        </div>
+                        <div class="guideline-row" [class.valid]="pw_number" [class.invalid]="!pw_number">
+                            <span class="material-symbols-outlined guideline-icon">{{ pw_number ? 'check_circle' :
+                                'cancel' }}</span>
+                            <span class="login-text">Ihr Passwort enthält mindestens eine Zahl</span>
+                        </div>
+                        <div class="guideline-row" [class.valid]="pw_noEmail" [class.invalid]="!pw_noEmail">
+                            <span class="material-symbols-outlined guideline-icon">{{ pw_noEmail ? 'check_circle' :
+                                'cancel' }}</span>
+                            <span class="login-text">Ihr Passwort darf Ihrer E-Mail-Adresse nicht ähneln</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer type toggle -->
+                    <div class="container-checkbox">
+                        <div class="field-wrap-checkbox" [class.active]="customerType === 'private'"
+                            (click)="setCustomerType('private')">
+                            <input type="radio" name="custType" [checked]="customerType === 'private'"> Privatkunde
+                        </div>
+                        <div class="field-wrap-checkbox" [class.active]="customerType === 'business'"
+                            (click)="setCustomerType('business')">
+                            <input type="radio" name="custType" [checked]="customerType === 'business'"> Geschäftskunde
+                        </div>
+                    </div>
+
+                    <!-- Company field (business only) -->
+                    <div class="form-group" *ngIf="customerType === 'business'">
+                        <label class="login-text">Unternehmen</label>
+                        <div class="input-field" [class.field-error]="fieldErrors['companyName']">
+                            <span class="material-symbols-outlined">business</span>
+                            <input type="text" placeholder="Unternehmensname" [value]="formData.companyName"
+                                (input)="formData.companyName = $any($event.target).value">
+                        </div>
+                        <div class="field-error-msg" *ngIf="fieldErrors['companyName']">{{ fieldErrors['companyName'] }}
+                        </div>
+                    </div>
+
+                    <!-- Salutation / Title -->
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="login-text">Anrede</label>
+                            <div class="input-field select-wrap" [class.field-error]="fieldErrors['salutation']">
+                                <span class="material-symbols-outlined select-icon">person</span>
+                                <select class="styled-select" [value]="formData.salutation"
+                                    (change)="formData.salutation = $any($event.target).value">
+                                    <option value="">Bitte wählen...</option>
+                                    <option value="Herr">Herr</option>
+                                    <option value="Frau">Frau</option>
+                                    <option value="Divers">Divers</option>
+                                    <option value="Divers">Keine Angabe</option>
+                                </select>
+                                <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                            </div>
+                            <div class="field-error-msg" *ngIf="fieldErrors['salutation']">{{ fieldErrors['salutation']
+                                }}</div>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="login-text">Titel</label>
+                            <div class="input-field select-wrap">
+                                <span class="material-symbols-outlined select-icon">school</span>
+                                <select class="styled-select" [value]="formData.title"
+                                    (change)="formData.title = $any($event.target).value">
+                                    <option value="">Kein Titel</option>
+                                    <option value="Dr.">Dr.</option>
+                                    <option value="Prof.">Prof.</option>
+                                    <option value="Prof. Dr.">Prof. Dr.</option>
+                                </select>
+                                <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- First name / Last name -->
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="login-text">Vorname</label>
+                            <div class="input-field" [class.field-error]="fieldErrors['firstName']">
+                                <span class="material-symbols-outlined">badge</span>
+                                <input type="text" placeholder="Vorname" [value]="formData.firstName"
+                                    (input)="formData.firstName = $any($event.target).value">
+                            </div>
+                            <div class="field-error-msg" *ngIf="fieldErrors['firstName']">{{ fieldErrors['firstName'] }}
+                            </div>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="login-text">Nachname</label>
+                            <div class="input-field" [class.field-error]="fieldErrors['lastName']">
+                                <span class="material-symbols-outlined">badge</span>
+                                <input type="text" placeholder="Nachname" [value]="formData.lastName"
+                                    (input)="formData.lastName = $any($event.target).value">
+                            </div>
+                            <div class="field-error-msg" *ngIf="fieldErrors['lastName']">{{ fieldErrors['lastName'] }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Protect account section -->
+                    <div class="login-berich" style="margin: 0 -18px;">Account schützen</div>
+
+                    <div class="login-text">
+                        Fügen Sie Ihre Handynummer hinzu, um Ihren Account noch besser zu schützen und die
+                        Wiederherstellung zu erleichtern.
+                    </div>
+
+                    <!-- Phone number -->
+                    <div class="email-field">
+                        <div class="input-field prefix-input">
+                            <input type="text" value="+49" readonly>
+                        </div>
+                        <div class="input-field" style="flex: 1;" [class.field-error]="fieldErrors['mobileNumber']">
+                            <span class="material-symbols-outlined">smartphone</span>
+                            <input type="text" placeholder="z.B. 175 654897" [value]="formData.mobileNumberLocal"
+                                (input)="formData.mobileNumberLocal = $any($event.target).value">
+                        </div>
+                    </div>
+                    <div class="field-error-msg" *ngIf="fieldErrors['mobileNumber']">{{ fieldErrors['mobileNumber'] }}
+                    </div>
+
+                    <!-- API error -->
+                    <div class="error-msg" *ngIf="apiError">{{ apiError }}</div>
+
+                    <!-- Back / Next -->
+                    <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+                        <button class="btn-back">
+                            &lt; Zurück
+                        </button>
+                        <div class="form-actions">
+                            <button class="btn-primary" [disabled]="isLoading"
+                                (click)="submitRegistration(repField.value)">
+                                <span *ngIf="isLoading" class="spinner"></span>
+                                {{ isLoading ? 'Bitte warten...' : 'Weiter' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Already have account -->
+                    <div class="login-text" style="text-align: center;">
+                        Haben Sie bereits einen Account?
+                        <a (click)="setAuthMode('login')"
+                            style="color: #0085e0; text-decoration: none; cursor: pointer;">Jetzt anmelden</a>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- ══════════ STEP 2: ENTER CODE ══════════ -->
+            <div class="container-login" *ngIf="authMode === 'register' && currentStep === 2">
+                <div class="login-berich">Code eingeben – Schritt 2 von 3</div>
+
+                <div class="login-row">
+
+                    <div class="login-text">Ihre E-Mail-Adresse:</div>
+                    <div class="email-field">
+                        <div class="input-field" style="flex: 1;">
+                            <span class="material-symbols-outlined">account_circle</span>
+                            <input name="email" type="email" [value]="formData.email" style="background-color: #f0f0f0;"
+                                readonly>
+                        </div>
+                        <span style="display:flex; align-items:center; padding-left: 20px;">
+                            <span class="material-symbols-outlined" style="color: #0085e0;">lock</span>
+                        </span>
+                    </div>
+
+                    <div class="login-text">
+                        Bitte geben Sie den Code ein, den wir an <strong>{{ formData.email }}</strong> gesendet haben.
+                    </div>
+
+                    <div class="login-text">Code aus E-Mail eingeben</div>
+                    <div class="code-inputs" [class.code-error]="otpError">
+                        <input *ngFor="let i of [0,1,2,3,4,5]" type="text" maxlength="1" [id]="'otp-' + i"
+                            (input)="onOtpInput($event, i)" (keydown)="onOtpKeydown($event, i)"
+                            (paste)="onOtpPaste($event)">
+                    </div>
+
+                    <div class="error-msg" *ngIf="otpError">{{ otpError }}</div>
+
+                    <div class="login-text">
+                        Keinen Code erhalten? Bitte prüfen Sie auch Ihren Spam-Ordner.
+                        <span style="color: #0085e0; cursor: pointer;" (click)="resendOtp()">Code erneut senden</span>
+                        <span *ngIf="resendSuccess" style="color: green; margin-left: 8px;">✓ Code gesendet</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+                        <button class="btn-back" (click)="goToStep(1)">
+                            &lt; Zurück
+                        </button>
+                        <div class="form-actions">
+                            <button class="btn-primary" [disabled]="isLoading || otpValue.length < 6"
+                                (click)="verifyOtp()">
+                                <span *ngIf="isLoading" class="spinner"></span>
+                                {{ isLoading ? 'Prüfen...' : 'Code prüfen' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ══════════ STEP 3: CONFIRMATION ══════════ -->
+            <div class="container-login" *ngIf="authMode === 'register' && currentStep === 3">
+                <div class="login-berich">Registrierung – Schritt 3 von 3</div>
+
+                <div class="login-row">
+                    <div class="login-header">Anmeldebestätigung | 360° Beratungsservice</div>
+
+                    <div class="login-text">Wir haben Ihnen soeben eine Bestätigungs-E-Mail gesendet.</div>
+                    <div class="login-text">
+                        Bitte klicken Sie dort auf den Button „Bestätigen", um uns Ihr Einverständnis zur Beratung zu
+                        erteilen.
+                    </div>
+                    <div class="login-text">
+                        Damit bestätigen Sie, dass wir Sie im Zusammenhang mit Ihren Aufträgen oder Verträgen
+                        kontaktieren dürfen.
+                    </div>
+
+                    <div class="login-text" style="font-weight: 600;">
+                        Registrierungs-E-Mail bestätigt? Dann haben Sie es geschafft!
+                    </div>
+
+                    <div class="error-msg" *ngIf="apiError">{{ apiError }}</div>
+
+                    <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+                        <button class="btn-back" (click)="goToStep(2)">
+                            &lt; Zurück
+                        </button>
+                        <div class="form-actions">
+                            <button class="btn-primary" [disabled]="isLoading" (click)="completRegistration()">
+                                <span *ngIf="isLoading" class="spinner"></span>
+                                {{ isLoading ? 'Bitte warten...' : 'Registrierung abschließen & weiter zum Wechsel' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div><!-- /section-login -->
+    </div><!-- /main-content -->
+</div><!-- /page-layout -->

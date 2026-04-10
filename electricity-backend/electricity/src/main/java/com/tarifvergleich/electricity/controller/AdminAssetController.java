@@ -57,6 +57,13 @@ public class AdminAssetController {
 		return ResponseEntity.ok(response);
 	}
 	
+	@PostMapping("/fetch-menu")
+	public ResponseEntity<?> fetchSingleMenu(@RequestBody Map<String, Object> payload){
+		Integer menuId = (int) payload.get("id");
+		Integer adminId = (int) payload.get("adminId");
+		return ResponseEntity.ok(adminAssetService.getSingleMenu(menuId, adminId));
+	}
+	
 	@PostMapping("/add-service-menu")
 	public ResponseEntity<?> addServiceMenu(@RequestParam("data") String serviceMenuDto, @RequestPart(name = "file", required = false) MultipartFile file){
 		AdminServiceMenuDto menuDto = new ObjectMapper().readValue(serviceMenuDto, AdminServiceMenuDto.class);

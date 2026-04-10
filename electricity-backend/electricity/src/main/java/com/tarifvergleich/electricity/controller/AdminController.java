@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tarifvergleich.electricity.model.AdminUser;
 import com.tarifvergleich.electricity.service.AdminService;
+import com.tarifvergleich.electricity.service.MailService;
+import com.tarifvergleich.electricity.util.EmailTemplate;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +26,8 @@ public class AdminController {
 	
 	private final AdminService adminService;
 	private final Helper util;
+	private final MailService mailService;
+	private final EmailTemplate template;
 
 	@PostMapping("/admin-register")
 	public ResponseEntity<?> adminRegistration(@RequestBody AdminUser adminUser, HttpServletRequest request){
