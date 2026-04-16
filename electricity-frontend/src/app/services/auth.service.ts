@@ -1,6 +1,7 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 
 /* Interface for User */
 export interface AuthUser {
@@ -39,7 +40,10 @@ export class AuthService {
   /* Internal BehaviorSubject to track auth state */
   private authState$: BehaviorSubject<AuthUser | null> = new BehaviorSubject<AuthUser | null>(null);
 
-  constructor() {
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
     this.loadUserFromStorage();
     this.loadFromStorage();
   }
@@ -148,6 +152,9 @@ export class AuthService {
     try {
       this.authState$.next(null);
       this.clearStorage();
+      this.clearAddress();
+      this.clearSelectedProvider();
+      this.router.navigate(['/'], { relativeTo: this.route });
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -194,7 +201,7 @@ export class AuthService {
     return user?.user_id || null;
   }
 
-   getUserEmailId(): string | null {
+  getUserEmailId(): string | null {
     const user = this.getCurrentUser();
     return user?.email || null;
   }

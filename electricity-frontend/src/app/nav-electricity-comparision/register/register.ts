@@ -7,6 +7,8 @@ import { NeedSupport } from '../../layout/need-support/need-support';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 const API_BASE = 'http://192.168.0.155:8080';
+import { interval, Subscription } from 'rxjs';
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-register',
@@ -97,11 +99,12 @@ export class Register {
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private router: Router,
+    private zone: NgZone,
   ) {}
 
   /* ══════════════════════════════════════════════════════════════════
-AUTH MODE
-══════════════════════════════════════════════════════════════════ */
+  AUTH MODE
+  ══════════════════════════════════════════════════════════════════ */
   isLoggedIn: boolean = false;
 
   setAuthMode(mode: 'register' | 'login') {
@@ -123,6 +126,7 @@ AUTH MODE
     this.loginError = '';
     this.currentStep = 1;
   }
+
   selectedOption: 'same' | 'different' | null = null;
   backCheck() {
     if (this.isLoggedIn && this.authMode == 'login') {
@@ -131,6 +135,7 @@ AUTH MODE
       this.currentStep = 1;
     }
   }
+
   handleContinue() {
     if (this.selectedOption === 'same') {
       this.router.navigate([this.mainStepRoutes[2]]);
@@ -149,6 +154,7 @@ AUTH MODE
       // user logged in
       const customerId = this.authService.getUserId();
       this.existingEmail = this.authService.getUserEmailId() ?? '';
+      this.email = this.existingEmail;
       console.log('Logged in user:', customerId);
     } else {
       // guest / temp user
@@ -208,7 +214,7 @@ AUTH MODE
 
   /** Maps outer progress-bar step numbers to their routes.
    *  Adjust the route paths to match your actual Angular routing config. */
- private readonly mainStepRoutes: Record<number, string> = {
+  private readonly mainStepRoutes: Record<number, string> = {
     1: '/electricity-comparision/register', // Account (adjust if different)
     2: '/electricity-comparision/delivery-address',
     3: '/electricity-comparision/connection-data', // replace with actual path
@@ -234,7 +240,11 @@ AUTH MODE
     this.currentStep = step;
     this.apiError = '';
     this.otpError = '';
-    this.isLoading = false; // always re-enable submit when navigating back
+    this.isLoading = false;
+
+    // if (step === 7) {
+    //   this.startResendTimer();
+    // }
   }
 
   /* ══════════════════════════════════════════════════════════════════
@@ -638,18 +648,18 @@ AUTH MODE
             // Redirect
             this.router.navigate([this.mainStepRoutes[2]]);
           } else {
-            this.loginError = res.message || 'Anmeldung fehlgeschlagen.';
+            this.loginError = res.message || 'E-Mail oder Passwort ist falsch.';
           }
           this.cdr.detectChanges();
         },
         error: (err) => {
           this.isLoading = false;
           this.loginError =
-            err?.error?.message || 'Anmeldung fehlgeschlagen. Bitte erneut versuchen.';
+            err?.error?.message || 'E-Mail oder Passwort ist falsch. Bitte erneut versuchen.';
         },
       });
   }
-
+  newOtp = false;
   sendForgotPasswordOtp() {
     this.apiError = '';
 
@@ -660,35 +670,40 @@ AUTH MODE
 
     this.isLoadingForgot = true;
     this.cdr.detectChanges();
-
+    console.log('loading value', this.isLoadingForgot);
+    // this.goToStep(7);
     this.http
       .post<{
         res: boolean;
         message: string;
+        newOtp?: boolean;
         data?: { id: number };
       }>(`${API_BASE}/auth/forget-password`, { email: this.email })
       .subscribe({
         next: (res) => {
-          this.isLoadingForgot = false;
-
+          // this.isLoadingForgot = false;
+          console.log('loading value1', this.isLoadingForgot);
           if (res.res) {
             //  store temp user id for OTP verification
             if (res.data?.id) {
               this.authService.setTempUid(res.data.id.toString());
             }
 
+            this.newOtp = !!res.newOtp;
             //  move to OTP screen
             this.goToStep(7);
             this.cdr.detectChanges();
+            console.log('loading value2', this.isLoadingForgot);
           } else {
-            this.apiError = res.message || 'Fehler beim Senden des Codes.';
+            this.apiError = res.message || 'Diese E-Mail-Adresse ist nicht registriert.';
           }
           this.cdr.detectChanges();
         },
         error: (err) => {
           this.isLoadingForgot = false;
           this.apiError =
-            err?.error?.message || 'Fehler beim Senden des Codes. Bitte erneut versuchen.';
+            err?.error?.message ||
+            'Diese E-Mail-Adresse ist nicht registriert. Bitte erneut versuchen.';
         },
       });
   }
@@ -696,9 +711,36 @@ AUTH MODE
   /* ══════════════════════════════════════════════════════════════════
   RESEND OTP Forgot
   ══════════════════════════════════════════════════════════════════ */
+  resendTimer: number = 60;
+  isResendDisabled: boolean = true;
+  private timerSub!: Subscription;
+
+  startResendTimer() {
+    if (this.timerSub) {
+      this.timerSub.unsubscribe();
+    }
+
+    this.resendTimer = 60;
+    this.isResendDisabled = true;
+
+    this.zone.runOutsideAngular(() => {
+      this.timerSub = interval(1000).subscribe(() => {
+        this.zone.run(() => {
+          if (this.resendTimer > 0) {
+            this.resendTimer--;
+          } else {
+            this.isResendDisabled = false;
+            this.timerSub.unsubscribe();
+          }
+        });
+      });
+    });
+  }
 
   resendOtpForgot() {
     if (!this.authService.getTempUid()) return;
+    // if (this.isResendDisabled) return;
+
     this.resendSuccess = false;
     this.otpError = '';
 
@@ -717,6 +759,7 @@ AUTH MODE
           }
           this.otpValue = '';
           setTimeout(() => (this.resendSuccess = false), 4000);
+          this.startResendTimer();
         },
         error: () => {
           this.otpError = 'Code konnte nicht gesendet werden. Bitte erneut versuchen.';
@@ -724,9 +767,20 @@ AUTH MODE
       });
   }
 
+  formatTime(seconds: number): string {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+
+    return `${this.pad(min)}:${this.pad(sec)}`;
+  }
+
+  pad(value: number): string {
+    return value < 10 ? '0' + value : value.toString();
+  }
   /* ══════════════════════════════════════════════════════════════════
   VERIFY OTP Forgot
   ══════════════════════════════════════════════════════════════════ */
+
   verifyOtpForgot() {
     this.collectOtp();
     if (this.otpValue.length < 6) {
@@ -760,7 +814,7 @@ AUTH MODE
           } else {
             this.otpError = 'Der eingegebene Code ist ungültig.';
             this.otpInvalid = true;
-            this.goToStep(8);
+            // this.goToStep(8);
             this.cdr.detectChanges();
           }
         },

@@ -16,18 +16,151 @@
           </p>
         </ng-container> -->
         <strong>Ihre Adresse:</strong>
-        <ng-container *ngIf="hasAddress; else noAddress">
+        <ng-container *ngIf="hasAddress && !isEditMode; else editMode">
           <p>{{ street }} {{ houseNumber }}<br />{{ zip }} {{ city }}</p>
           <p class="verbrauch">
             <strong>Verbrauch / Jahr:</strong> {{ consum | number: '1.0-0' }} kWh
           </p>
         </ng-container>
-        <ng-template #noAddress>
+        <!-- <ng-template #noAddress>
           <p class="no-address-msg">
             Bitte wählen Sie zuerst eine Adresse aus, um den Vergleich zu starten.
           </p>
+        </ng-template> -->
+        <button class="btn-suche" *ngIf="hasAddress && !isEditMode" (click)="searchMode()">
+          Suche ändern
+        </button>
+
+        <!-- EDIT MODE -->
+        <ng-template #editMode>
+          <form [formGroup]="addressForm">
+            <div class="edit-column">
+              <input type="text" placeholder="Your postal code" formControlName="postalCode" />
+
+              <!-- <select formControlName="city" class="box large">
+                <option [ngValue]="null" disabled>Ihre Ort</option>
+
+                <option *ngFor="let c of cityOptions" [ngValue]="c.city_id">
+                  {{ c.city }}
+                </option>
+              </select> -->
+
+              <!-- <input
+                type="text"
+                placeholder="Straße suchen..."
+                (input)="filterStreets($event)"
+                class="box large"
+              /> -->
+              <!-- <select
+                [attr.data-key]="streetDropdownKey"
+                formControlName="street"
+                class="box large"
+              >
+                <option [ngValue]="null" disabled>Ihre Straße</option>
+
+                <option *ngIf="isStreetLoading" disabled>Laden...</option>
+
+                <option
+                  *ngFor="let s of streetOptions; trackBy: trackByStreet"
+                  [ngValue]="s.street"
+                >
+                  {{ s.street }}
+                </option>
+              </select> -->
+
+              <div class="dropdown-wrapper box large" #cityDropdown>
+                <input
+                  type="text"
+                  class="box large"
+                  placeholder="Ihre Ort"
+                  [value]="citySearch"
+                  (input)="onCityInput($event)"
+                  (focus)="closeAllDropdowns(); showCityDropdown = true"
+                  (click)="$event.stopPropagation()"
+                />
+
+                <div class="dropdown" *ngIf="showCityDropdown">
+                  <div *ngIf="cityOptions.length === 0" class="dropdown-item disabled">
+                    Keine Orte gefunden
+                  </div>
+
+                  <div
+                    *ngFor="let c of filteredCityOptions"
+                    (click)="selectCity(c)"
+                    class="dropdown-item"
+                    spellcheck="false"
+                    translate="no"
+                  >
+                    {{ c.city }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-wrapper box large" #streetDropdown>
+                <input
+                  type="text"
+                  class="box large"
+                  placeholder="Ihre Straße"
+                  [value]="streetSearch"
+                  (input)="onStreetInput($event)"
+                  (focus)="closeAllDropdowns(); showDropdown = true"
+                  (click)="$event.stopPropagation()"
+                />
+
+                <div class="dropdown" *ngIf="showDropdown">
+                  <div *ngIf="isStreetLoading" class="dropdown-item">Laden...</div>
+
+                  <div
+                    *ngIf="!isStreetLoading && filteredStreetOptions.length === 0"
+                    class="dropdown-item disabled"
+                  >
+                    Keine Straße gefunden
+                  </div>
+
+                  <div
+                    *ngFor="let s of filteredStreetOptions"
+                    (click)="selectStreet(s)"
+                    class="dropdown-item"
+                    spellcheck="false"
+                    translate="no"
+                  >
+                    {{ s.street }}
+                  </div>
+                </div>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Hausnummer"
+                class="box small"
+                formControlName="houseNumber"
+                maxlength="6"
+              />
+
+              <div class="total-consumption">
+                <label class="consumption-label">Personen im Haushalt</label>
+                <input
+                  #personsInput
+                  type="number"
+                  min="1"
+                  class="consumption-area"
+                  placeholder="z. B. 6"
+                  [value]="selectedPersons"
+                  (input)="onCustomPersonsChange(personsInput.value)"
+                />
+                <!-- <span>Personen im Haushalt</span> -->
+              </div>
+
+              <div class="consum-row">
+                <input type="hidden" formControlName="consum" />
+                <span id="consumptionValue" class="consumption-number"> {{ consum | number }}</span>
+                <span class="watt-per-year">kWh / Jahr</span>
+              </div>
+
+              <button class="btn-suche" (click)="searchApply()">Apply Address</button>
+            </div>
+          </form>
         </ng-template>
-        <button class="btn-suche" (click)="goBack()">Suche ändern</button>
       </div>
     </div>
 

@@ -27,7 +27,7 @@
               <option *ngFor="let c of cityOptions" [value]="c.city"></option>
             </datalist> -->
             <select formControlName="city" class="box large">
-              <option [ngValue]="null" disabled selected>Ihre Ort</option>
+              <option [ngValue]="null" disabled>Ihre Ort</option>
 
               <option *ngFor="let c of cityOptions" [ngValue]="c.city_id">
                 {{ c.city }}
@@ -48,7 +48,7 @@
           </datalist> -->
           <select [attr.data-key]="streetDropdownKey" formControlName="street" class="box large">
             <option [ngValue]="null" disabled>
-              {{ isStreetLoading ? 'Lade Straßen...' : 'Ihre Straße' }}
+             Ihre Straße
             </option>
 
             <option *ngIf="isStreetLoading" disabled>Laden...</option>
@@ -143,11 +143,15 @@
                 class="consumption-area"
                 placeholder="z. B. 6"
                 (input)="onCustomPersonsChange(personsInput.value)"
+                [value]="selectedPersons"
               />
               <span>Personen im Haushalt</span>
             </div>
             <div class="total-consumption">
-              <span id="consumptionValue" class="consumption-number"> {{ consumption | number }}</span>
+              
+              <span id="consumptionValue" class="consumption-number">
+                {{ consumption | number }}</span
+              >
               <span class="watt-per-year">kWh / Jahr</span>
             </div>
           </div>

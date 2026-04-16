@@ -2,7 +2,7 @@
   <div class="header-content">
     <!-- Logo -->
     <div class="logo">
-      <img src="assets/icons/Logo.png" alt="Logo" class="logo-img">
+      <img src="assets/icons/Logo.png" alt="Logo" class="logo-img" />
     </div>
 
     <!-- Search -->
@@ -11,11 +11,8 @@
         <input type="text" placeholder="Was möchten Sie vergleichen?" />
         <span class="dropdown-arrow"></span>
       </div>
-      <button class="search-btn" aria-label="Search">
-        🔍
-      </button>
+      <button class="search-btn" aria-label="Search">🔍</button>
     </div>
-
 
     <div class="container-advice">
       <div class="expert-container">
@@ -23,31 +20,33 @@
           <span class="text">Sie wünschen eine Beratung durch Experten?</span>
         </div>
         <div class="icon phone">
-          <img src="assets/icons/Telefonhörer_Weiss.png" class="phone-icon" alt="telephone-icon">
+          <img src="assets/icons/Telefonhörer_Weiss.png" class="phone-icon" alt="telephone-icon" />
         </div>
-        <div><span class="expert phone">
+        <div>
+          <span class="expert phone">
             <span class="text">08157 / 999 42 - 0</span>
-          </span></div>
+          </span>
+        </div>
       </div>
 
       <div class="contact">
         <button class="contact-button">
           <span class="icon-wrapper">
-            <img src="assets/icons/Lice-Chat_weiss.png" class="chat-icon" alt="chat-icon">
+            <img src="assets/icons/Lice-Chat_weiss.png" class="chat-icon" alt="chat-icon" />
           </span>
           <span class="text">Live-Chat</span>
         </button>
 
         <button class="contact-button">
           <span class="icon-wrapper">
-            <img src="assets/icons/WhatsApp_weiss.png" class="chat-icon" alt="whats-app">
+            <img src="assets/icons/WhatsApp_weiss.png" class="chat-icon" alt="whats-app" />
           </span>
           <span class="text">WhatsApp</span>
         </button>
 
         <button class="contact-button">
           <span class="icon-wrapper">
-            <img src="assets/icons/Mail.png" class="email-icon" alt="mail">
+            <img src="assets/icons/Mail.png" class="email-icon" alt="mail" />
           </span>
           <span class="text">E-Mail</span>
         </button>
@@ -55,23 +54,21 @@
         <!-- Chat -->
         <button class="contact-button">
           <span class="icon-wrapper">
-            <img src="assets/icons/Kontaktformular.png" class="chat-icon" alt="contact-form">
+            <img src="assets/icons/Kontaktformular.png" class="chat-icon" alt="contact-form" />
           </span>
           <span class="text">Kontaktformular</span>
         </button>
       </div>
-
     </div>
 
     <!-- Profile -->
     <div class="container-profile">
-      <button class="profile">
+      <button class="profile" (click)="logout()">
         <span class="login">
-          <img src="assets/icons/Login.png" class="login-icon" alt="login">
+          <img src="assets/icons/Login.png" class="login-icon" alt="login" />
         </span>
-        <h3 class="text login-link">Login</h3>
+        <h3 class="text login-link"> {{ isLoggedIn ? 'Profil' : 'Login' }}</h3>
       </button>
     </div>
-
   </div>
 </header>
