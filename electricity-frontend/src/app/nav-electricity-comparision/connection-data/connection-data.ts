@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { Sidebar } from '../../layout/sidebar/sidebar';
 import { ContactPerson } from '../../layout/contact-person/contact-person';
 import { NeedSupport } from '../../layout/need-support/need-support';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 const API_BASE = 'http://192.168.0.155:8080';
 
@@ -60,7 +62,7 @@ interface FetchFormResponse {
   templateUrl: './connection-data.html',
   styleUrl: './connection-data.css',
 })
-export class ConnectionData implements OnInit {
+export class ConnectionData implements OnInit, OnDestroy {
   // ── Move-in toggle ───────────────────────────────────────────────────────
   selection: string = 'no';
 
@@ -87,6 +89,8 @@ export class ConnectionData implements OnInit {
 
   /** Per-field validation error messages shown inline under each input */
   validationErrors: Record<string, string> = {};
+  private routerSub?: Subscription;
+  maxAccessibleStep = 1;
 
   // ── Main progress-bar step routes ────────────────────────────────────────
   private readonly mainStepRoutes: Record<number, string> = {
@@ -102,13 +106,44 @@ export class ConnectionData implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    const userId = this.authService.getUserId();
-    const deliveryId = this.getDeliveryId();
-    console.log('ConnectionData init — userId:', userId, '| deliveryId:', deliveryId);
+    this.initForm();
+
+    this.routerSub = this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((e: any) => {
+        if (e.urlAfterRedirects === this.mainStepRoutes[3]) {
+          this.initForm();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.routerSub?.unsubscribe();
+  }
+
+  private initForm(): void {
+    this.resetFields();
     this.fetchFormData();
+  }
+
+  private resetFields(): void {
+    this.selection = 'no';
+    this.moveInDate = null;
+    this.submitLaterChecked = false;
+    this.meterNumber = '';
+    this.marketLocationId = '';
+    this.currentProvider = '';
+    this.autoCancellation = true;
+    this.alreadyCancelled = false;
+    this.selfCancellation = false;
+    this.deliveryOption = 'schnellstmoeglich';
+    this.desiredDeliveryDate = null;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.validationErrors = {};
   }
 
   // ── Toggle helpers ───────────────────────────────────────────────────────
@@ -273,6 +308,7 @@ export class ConnectionData implements OnInit {
         }
 
         this.prefillForm(res?.data ?? null);
+        this.maxAccessibleStep = this.getMaxAccessibleStep(res?.data ?? null);
       },
       error: (err) => {
         this.isLoading = false;
@@ -353,6 +389,70 @@ export class ConnectionData implements OnInit {
       this.route.snapshot.queryParamMap.get('deliveryid') ||
       this.route.snapshot.paramMap.get('deliveryId') ||
       this.route.snapshot.paramMap.get('deliveryid')
+    );
+  }
+
+  navigateToMainStep(step: number): void {
+    if (step > this.maxAccessibleStep) {
+      return;
+    }
+
+    const route = this.mainStepRoutes[step];
+    if (route) {
+      this.router.navigate([route]);
+    }
+  }
+
+  private getMaxAccessibleStep(data: CustomerFormData | null): number {
+    if (!data) {
+      return 1;
+    }
+
+    let maxStep = this.isAccountAndDeliveryComplete(data) ? 3 : 2;
+    if (!this.isAccountAndDeliveryComplete(data)) {
+      return 2;
+    }
+
+    if (this.isConnectionComplete(data.customerConnection || data.connectionData || data)) {
+      maxStep = 4;
+    }
+
+    return maxStep;
+  }
+
+  private isAccountAndDeliveryComplete(data: CustomerFormData): boolean {
+    const source: any = data as any;
+    const address = source.address || source.deliveryAddress || source.customerAddress || source;
+    return !!(
+      source.email &&
+      source.firstName &&
+      source.lastName &&
+      address?.zip &&
+      address?.city &&
+      address?.street &&
+      address?.houseNumber &&
+      source.mobile &&
+      source.deliveryDate
+    );
+  }
+
+  private isConnectionComplete(connection: CustomerConnection): boolean {
+    const hasMeter = !!connection.submitLater || !!connection.meterNumber;
+    if (!hasMeter) {
+      return false;
+    }
+
+    if (connection.isMovingIn) {
+      return !!connection.moveInDate;
+    }
+
+    if (!connection.currentProvider) {
+      return false;
+    }
+
+    return (
+      (connection.delivery !== null && connection.delivery !== undefined) ||
+      (connection.desiredDelivery !== null && connection.desiredDelivery !== undefined)
     );
   }
 }

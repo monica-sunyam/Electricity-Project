@@ -1,43 +1,41 @@
 <div class="page-layout">
-
   <div class="sidebar">
     <app-contact-person></app-contact-person>
     <app-need-support></app-need-support>
   </div>
 
   <div class="main-content">
-
     <!-- Progress stepper -->
     <div class="progress-card">
       <div class="progress-header">Nur noch wenige Klicks zu Ihrem neuen Tarif</div>
       <div class="progress-steps">
         <div class="step">
-          <div class="step-circle">
+          <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(1)">
             <div class="inner-circle">1</div>
           </div>
           <div class="step-label">Account</div>
         </div>
         <div class="step">
-          <div class="step-circle">
+          <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(2)">
             <div class="inner-circle">2</div>
           </div>
           <div class="step-label">Lieferadresse</div>
         </div>
         <div class="step">
-          <div class="step-circle">
+          <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(3)">
             <div class="inner-circle">3</div>
           </div>
           <div class="step-label">Anschlussdaten</div>
         </div>
         <div class="step">
-          <div class="step-circle">
+          <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(4)">
             <div class="inner-circle">4</div>
           </div>
           <div class="step-label">Zahlungsart</div>
         </div>
 
         <div class="step active">
-          <div class="step-circle">
+          <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(5)">
             <div class="inner-circle">5</div>
           </div>
           <div class="step-label">Abschluss</div>
@@ -46,25 +44,48 @@
     </div>
 
     <ng-container *ngIf="!showConfirmation">
-      <div class="summary-state" *ngIf="isLoading">
-        Ihre gespeicherten Angaben werden geladen.
-      </div>
+      <div class="summary-state" *ngIf="isLoading">Ihre gespeicherten Angaben werden geladen.</div>
 
       <div class="api-message api-error" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>
 
-      <ng-container *ngIf="formData as data">
+      <ng-container>
+        <div class="section-panel">
+          <div class="section-header">Ausgewählter Tarif</div>
+          <div class="section-body container-data">
+            <div class="toggle-column left">
+              <span>Anbieter</span>
+              <span>Tarifname</span>
+              <span>Jahresverbrauch</span>
+              <span>Adresse</span>
+            </div>
+            <div class="toggle-column right">
+              <span>{{ valueOrFallback(selectedProvider?.providerName) }}</span>
+              <span>{{ valueOrFallback(selectedProvider?.rateName) }}</span>
+              <span>{{ valueOrFallback(selectedAddress?.consumption) }} kWh</span>
+              <span>
+                {{ valueOrFallback(selectedAddress?.street) }}
+                {{ valueOrFallback(selectedAddress?.houseNumber) }},
+                {{ valueOrFallback(selectedAddress?.zip) }}
+                {{ valueOrFallback(selectedAddress?.city) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <!-- Lieferadresse section -->
         <div class="section-panel">
           <div class="section-header">
             Lieferadresse
             <span class="image-tick">
-              <img src="assets/icons/Haken.png" class="icon-tick" alt="">
+              <img src="assets/icons/Haken.png" class="icon-tick" alt="" />
             </span>
             <button type="button" class="anpassen" (click)="navigateToMainStep(2)">
               ändern
-              <span><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""></span>
+              <span
+                ><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""
+              /></span>
             </button>
           </div>
 
@@ -73,7 +94,7 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">E-Mail-Adresse</span>
-                  <input type="email" [value]="email" readonly>
+                  <input type="email" [value]="email" readonly />
                 </div>
               </div>
             </div>
@@ -82,28 +103,38 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Name</span>
-                  <input type="text" [value]="fullName" readonly>
+                  <input type="text" [value]="fullName" readonly />
                 </div>
               </div>
             </div>
 
             <div class="container-readonly">
               <div class="form-row">
-                <div class="form-group" style="flex:0 0 160px;">
+                <div class="form-group" style="flex: 0 0 160px">
                   <div class="field-wrap readonly">
                     <span class="field-label">Ihre PLZ</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(deliveryAddress?.zip)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(deliveryAddress?.zip)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="field-wrap readonly">
                     <span class="field-label">Ort</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(deliveryAddress?.city)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(deliveryAddress?.city)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
@@ -113,18 +144,28 @@
                 <div class="form-group">
                   <div class="field-wrap readonly">
                     <span class="field-label">Ihre Straße</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(deliveryAddress?.street)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(deliveryAddress?.street)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
-                <div class="form-group" style="flex:0 0 160px;">
+                <div class="form-group" style="flex: 0 0 160px">
                   <div class="field-wrap readonly">
                     <span class="field-label">Hausnummer</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(deliveryAddress?.houseNumber)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(deliveryAddress?.houseNumber)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
@@ -135,13 +176,13 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Handynummer</span>
-                  <input type="tel" [value]="valueOrFallback(data.mobile)" readonly>
+                  <input type="tel" [value]="deliveryMobile" readonly />
                 </div>
               </div>
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Telefonnummer</span>
-                  <input type="tel" [value]="valueOrFallback(data.telephone)" readonly>
+                  <input type="tel" [value]="deliveryTelephone" readonly />
                 </div>
               </div>
             </div>
@@ -150,7 +191,7 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Gewünschter Liefertermin</span>
-                  <input type="text" [value]="formatTimestamp(data.deliveryDate)" readonly>
+                  <input type="text" [value]="deliveryDateLabel" readonly />
                 </div>
               </div>
             </div>
@@ -162,11 +203,13 @@
           <div class="section-header">
             {{ billingAddressTitle }}
             <span class="image-tick">
-              <img src="assets/icons/Haken.png" class="icon-tick" alt="">
+              <img src="assets/icons/Haken.png" class="icon-tick" alt="" />
             </span>
             <button type="button" class="anpassen" (click)="navigateToMainStep(2)">
               ändern
-              <span><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""></span>
+              <span
+                ><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""
+              /></span>
             </button>
           </div>
 
@@ -178,21 +221,31 @@
 
             <div class="container-readonly">
               <div class="form-row">
-                <div class="form-group" style="flex:0 0 160px;">
+                <div class="form-group" style="flex: 0 0 160px">
                   <div class="field-wrap readonly">
                     <span class="field-label">Ihre PLZ</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(billingDisplayAddress?.zip)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(billingDisplayAddress?.zip)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="field-wrap readonly">
                     <span class="field-label">Ort</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(billingDisplayAddress?.city)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(billingDisplayAddress?.city)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
@@ -202,18 +255,28 @@
                 <div class="form-group">
                   <div class="field-wrap readonly">
                     <span class="field-label">Ihre Straße</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(billingDisplayAddress?.street)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(billingDisplayAddress?.street)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
-                <div class="form-group" style="flex:0 0 160px;">
+                <div class="form-group" style="flex: 0 0 160px">
                   <div class="field-wrap readonly">
                     <span class="field-label">Hausnummer</span>
-                    <input type="text" class="text-field" [value]="valueOrFallback(billingDisplayAddress?.houseNumber)" readonly>
+                    <input
+                      type="text"
+                      class="text-field"
+                      [value]="valueOrFallback(billingDisplayAddress?.houseNumber)"
+                      readonly
+                    />
                     <span class="field-icon">
-                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="">
+                      <img src="assets/icons/Schloss.png" class="icon-schloss" alt="" />
                     </span>
                   </div>
                 </div>
@@ -227,11 +290,13 @@
           <div class="section-header">
             Anschlussdaten
             <span class="image-tick">
-              <img src="assets/icons/Haken.png" class="icon-tick" alt="">
+              <img src="assets/icons/Haken.png" class="icon-tick" alt="" />
             </span>
             <button type="button" class="anpassen" (click)="navigateToMainStep(3)">
               ändern
-              <span><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""></span>
+              <span
+                ><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""
+              /></span>
             </button>
           </div>
 
@@ -260,11 +325,13 @@
           <div class="section-header">
             Zahlungsart
             <span class="image-tick">
-              <img src="assets/icons/Haken.png" class="icon-tick" alt="">
+              <img src="assets/icons/Haken.png" class="icon-tick" alt="" />
             </span>
             <button type="button" class="anpassen" (click)="navigateToMainStep(4)">
               ändern
-              <span><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""></span>
+              <span
+                ><img src="assets/icons/Bearbeiten_schwarz.png" class="icon-check" alt=""
+              /></span>
             </button>
           </div>
 
@@ -286,123 +353,178 @@
       </ng-container>
 
       <div class="section-panel">
-        <div class="section-header">
-          Bestätigung
-        </div>
+        <div class="section-header">Bestätigung</div>
 
         <div class="section-body">
-          <div class="toggle-row text">
-            Mit Klick auf „Kauf abschließen“
-          </div>
+          <div class="toggle-row text">Mit Klick auf „Kauf abschließen“</div>
 
           <div class="toggle-row text">
             <div class="check-list">
-              <span><img src="assets/icons/Kreis_Haken_schwarz.png" class="icon-check" alt="check"></span>
-              <span>erteile ich dem Anbieter eine <a href="" class="open-link">Versorgervollmacht,</a></span>
+              <span
+                ><img src="assets/icons/Kreis_Haken_schwarz.png" class="icon-check" alt="check"
+              /></span>
+              <span
+                >erteile ich dem Anbieter eine
+                <a href="" class="open-link">Versorgervollmacht,</a></span
+              >
             </div>
             <div class="check-list">
-              <span><img src="assets/icons/Kreis_Haken_schwarz.png" class="icon-check" alt="check"></span>
+              <span
+                ><img src="assets/icons/Kreis_Haken_schwarz.png" class="icon-check" alt="check"
+              /></span>
               <span>akzeptiere ich die <a href="" class="open-link">AGB</a> des Anbieters und</span>
             </div>
             <div class="check-list">
-              <span><img src="assets/icons/Kreis_Haken_schwarz.png" class="icon-check" alt="check"></span>
-              <span>akzeptiere ich die <a href="" class="open-link">AGB</a> der
-                Tarifvergleich.Bayern powered by
-                Energiehandel.Bayern</span>
+              <span
+                ><img src="assets/icons/Kreis_Haken_schwarz.png" class="icon-check" alt="check"
+              /></span>
+              <span
+                >akzeptiere ich die <a href="" class="open-link">AGB</a> der Tarifvergleich.Bayern
+                powered by Energiehandel.Bayern</span
+              >
             </div>
           </div>
 
           <div class="toggle-row">
-            <span style="line-height: 1.5;">Es gelten die <a href="" class="open-link">Widerrufsbelehrung</a> und die <a
-                href="" class="open-link">Datenschutzinformationen</a> des
-              Anbieters. Zudem gilt die
-              Datenschutzerklärung der Tarifvergleich.Bayern. <br>
-              Ich bevollmächtige Tarifvergleich.Bayern zur Übermittlung meines aktuellen Angebots in meinem Namen an den
-              Anbieter zur weiteren Bearbeitung.</span>
+            <span style="line-height: 1.5"
+              >Es gelten die <a href="" class="open-link">Widerrufsbelehrung</a> und die
+              <a href="" class="open-link">Datenschutzinformationen</a> des Anbieters. Zudem gilt
+              die Datenschutzerklärung der Tarifvergleich.Bayern. <br />
+              Ich bevollmächtige Tarifvergleich.Bayern zur Übermittlung meines aktuellen Angebots in
+              meinem Namen an den Anbieter zur weiteren Bearbeitung.</span
+            >
           </div>
 
           <div class="toggle-row">
-            <span>Ich kann <a href="" class="open-link">hier</a> mein Angebot herunterladen, das eine Zusammenfassung der
-              wichtigsten Vertragsbedingungen
-              enthält.</span>
+            <span
+              >Ich kann <a href="" class="open-link">hier</a> mein Angebot herunterladen, das eine
+              Zusammenfassung der wichtigsten Vertragsbedingungen enthält.</span
+            >
           </div>
 
           <div class="toggle-row date">
             <div class="check-list">
-              <span><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"></span>
+              <span
+                ><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"
+              /></span>
               <span>Sie können innerhalb von 14 Tagen kostenlos widerrufen.</span>
             </div>
             <div class="check-list">
-              <span><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"></span>
+              <span
+                ><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"
+              /></span>
               <span>Alle Tarifvergleich.Bayern Leistungen sind kostenlos.</span>
             </div>
           </div>
 
           <div class="form-actions">
-            <button class="btn-primary" (click)="openPage()">Kauf abschließen</button>
+            <button class="btn-primary" (click)="openPage()" [disabled]="isLoading || !formData">
+              Kauf abschließen
+            </button>
           </div>
         </div>
       </div>
     </ng-container>
 
     <div class="section-panel" *ngIf="showConfirmation">
-      <div class="section-header">
-        Vielen Dank für Ihren Auftrag!
-      </div>
+      <div class="section-header">Vielen Dank für Ihren Auftrag!</div>
 
       <div class="section-body">
         <div class="toggle-row text">
-          Ihr persönlicher Ansprechpartner, Herr Markovic, hat den Auftrag nun zur Bearbeitung und Kontrolle vorliegen
-          und wird sich abschließend zur
-          Qualitätssicherung nochmal bei Ihnen melden.
-        </div>
-
-        <div class="toggle-row text">Da wir auf persönlichen Kontakt sehr viel Wert legen, versuchen wir die
-          Kontaktaufnahme telefonisch vorzunehmen, Ihr Ansprechpartner meldet
-          sich also sehr wahrscheinlich per Telefon bei Ihnen.</div>
-
-        <div class="toggle-row text">
-          Wollen Sie Ihrem Ansprechpartner noch mitteilen, wann Sie am Besten telefonisch erreichbar sind?
-        </div>
-
-        <div class="toggle-row">
-          <div class="container-days">
-            <div class="field-wrap-days active">Montag</div>
-            <div class="field-wrap-days">Dienstag</div>
-            <div class="field-wrap-days">Mittwoch</div>
-          </div>
-          <div class="container-days">
-            <div class="field-wrap-days">Donnerstag </div>
-            <div class="field-wrap-days">Freitag </div>
-            <div class="field-wrap-days">Samstag</div>
-          </div>
-          <div class="container-time">
-            <div class="field-wrap-time">Vormittags von 08:00 - 11:00 Uhr </div>
-            <div class="field-wrap-time"> Mittags von 11:00 - 14:00 Uhr</div>
-          </div>
-          <div class="container-time">
-            <div class="field-wrap-time active">Nachmittags von 14:00 - 17:00 Uhr </div>
-            <div class="field-wrap-time"> Abends von 17:00 - 20:00 Uhr</div>
-          </div>
+          Ihr persönlicher Ansprechpartner, Herr Markovic, hat den Auftrag nun zur Bearbeitung und
+          Kontrolle vorliegen und wird sich abschließend zur Qualitätssicherung nochmal bei Ihnen
+          melden.
         </div>
 
         <div class="toggle-row text">
-          Möchten Sie Ihrem Ansprechpartner noch etwas mitteilen, z.B. zur Uhrzeit, wann Sie am Besten zu erreichen
+          Da wir auf persönlichen Kontakt sehr viel Wert legen, versuchen wir die Kontaktaufnahme
+          telefonisch vorzunehmen, Ihr Ansprechpartner meldet sich also sehr wahrscheinlich per
+          Telefon bei Ihnen.
+        </div>
+
+        <div class="toggle-row text">
+          Wollen Sie Ihrem Ansprechpartner noch mitteilen, wann Sie am Besten telefonisch erreichbar
           sind?
         </div>
 
         <div class="toggle-row">
-          <div class="container-textarea">
-            <textarea name="form" rows="6" class="row-text" placeholder="Platz für Infos und Hinweise"></textarea>
+          <div class="container-days">
+            <div
+              *ngFor="let day of daysOfWeek.slice(0, 3)"
+              [ngClass]="['field-wrap-days', selectedDay === day.value ? 'active' : '']"
+              style="cursor: pointer"
+              (click)="selectDay(day.value)"
+            >
+              {{ day.label }}
+            </div>
           </div>
+          <div class="container-days">
+            <div
+              *ngFor="let day of daysOfWeek.slice(3)"
+              [ngClass]="['field-wrap-days', selectedDay === day.value ? 'active' : '']"
+              style="cursor: pointer"
+              (click)="selectDay(day.value)"
+            >
+              {{ day.label }}
+            </div>
+          </div>
+          <div class="container-time">
+            <div
+              *ngFor="let slot of timeSlots.slice(0, 2)"
+              [ngClass]="['field-wrap-time', selectedTimeSlot === slot.value ? 'active' : '']"
+              style="cursor: pointer"
+              (click)="selectTimeSlot(slot.value)"
+            >
+              {{ slot.label }}
+            </div>
+          </div>
+          <div class="container-time">
+            <div
+              *ngFor="let slot of timeSlots.slice(2)"
+              [ngClass]="['field-wrap-time', selectedTimeSlot === slot.value ? 'active' : '']"
+              style="cursor: pointer"
+              (click)="selectTimeSlot(slot.value)"
+            >
+              {{ slot.label }}
+            </div>
+          </div>
+        </div>
 
+        <div class="toggle-row text">
+          Möchten Sie Ihrem Ansprechpartner noch etwas mitteilen, z.B. zur Uhrzeit, wann Sie am
+          Besten zu erreichen sind?
+        </div>
+
+        <div class="toggle-row">
+          <div class="container-textarea">
+            <textarea
+              name="form"
+              rows="6"
+              class="row-text"
+              placeholder="Platz für Infos und Hinweise"
+              [(ngModel)]="scheduleDescription"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="api-message api-error" *ngIf="scheduleErrorMessage">
+          {{ scheduleErrorMessage }}
+        </div>
+
+        <div class="api-message api-success" *ngIf="scheduleSuccessMessage">
+          {{ scheduleSuccessMessage }}
         </div>
 
         <div class="form-actions">
-          <button class="btn-primary">Rückrufzeit & Infos übermitteln</button>
+          <button
+            class="btn-primary"
+            (click)="submitSchedule()"
+            [disabled]="isScheduleLoading || !selectedDay || !selectedTimeSlot"
+          >
+            {{ isScheduleLoading ? 'Wird übermittelt...' : 'Rückrufzeit & Infos übermitteln' }}
+          </button>
         </div>
       </div>
-
     </div>
   </div>
 </div>

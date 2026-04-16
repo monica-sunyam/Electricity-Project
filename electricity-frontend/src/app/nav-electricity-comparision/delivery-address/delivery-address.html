@@ -1,5 +1,4 @@
 <div class="page-layout">
-
   <div class="sidebar">
     <app-sidebar></app-sidebar>
     <app-contact-person></app-contact-person>
@@ -7,38 +6,27 @@
   </div>
 
   <div class="main-content">
-
     <div class="progress-card">
       <div class="progress-header">Nur noch wenige Klicks zu Ihrem neuen Tarif</div>
       <div class="progress-steps">
         <div class="step" (click)="navigateToMainStep(1)">
-          <div class="step-circle">
-            <div class="inner-circle">1</div>
-          </div>
+          <div class="step-circle"><div class="inner-circle">1</div></div>
           <div class="step-label">Account</div>
         </div>
         <div class="step active">
-          <div class="step-circle">
-            <div class="inner-circle">2</div>
-          </div>
+          <div class="step-circle"><div class="inner-circle">2</div></div>
           <div class="step-label">Lieferadresse</div>
         </div>
         <div class="step" (click)="navigateToMainStep(3)">
-          <div class="step-circle">
-            <div class="inner-circle">3</div>
-          </div>
+          <div class="step-circle"><div class="inner-circle">3</div></div>
           <div class="step-label">Anschlussdaten</div>
         </div>
         <div class="step" (click)="navigateToMainStep(4)">
-          <div class="step-circle">
-            <div class="inner-circle">4</div>
-          </div>
+          <div class="step-circle"><div class="inner-circle">4</div></div>
           <div class="step-label">Zahlungsart</div>
         </div>
         <div class="step" (click)="navigateToMainStep(5)">
-          <div class="step-circle">
-            <div class="inner-circle">5</div>
-          </div>
+          <div class="step-circle"><div class="inner-circle">5</div></div>
           <div class="step-label">Abschluss</div>
         </div>
       </div>
@@ -47,66 +35,111 @@
     <div class="section-panel">
       <div class="section-header">
         Lieferadresse
-        <div class="container-icon" style="align-items: center;">
+        <div class="container-icon" style="align-items: center">
           <span class="info-base info-green">i</span>
         </div>
       </div>
       <div class="section-body">
-
-        <div class="form-row" style="align-items:center;">
+        <!-- E-Mail -->
+        <div class="form-row" style="align-items: center">
           <div class="form-group">
             <div class="field-wrap" [class.field-error]="validationErrors['deliveryEmail']">
               <span class="field-label">E-Mail-Adresse *</span>
-              <input name="deliveryEmail" autocomplete="email" type="email" [(ngModel)]="deliveryEmail">
-              <span *ngIf="validationErrors['deliveryEmail']" class="error-hint">{{ validationErrors['deliveryEmail']
-                }}</span>
+              <input
+                name="deliveryEmail"
+                autocomplete="email"
+                type="email"
+                [(ngModel)]="deliveryEmail"
+              />
+              <span *ngIf="validationErrors['deliveryEmail']" class="error-hint">
+                {{ validationErrors['deliveryEmail'] }}
+              </span>
             </div>
           </div>
-          <span class="info-base info-icon" style="flex-shrink:0;">i</span>
+          <span class="info-base info-icon" style="flex-shrink: 0">i</span>
         </div>
 
+        <!-- Titel -->
         <div class="form-row container-salutation">
-          <button type="button" class="title-btn" [class.active]="deliveryTitle === 'Dr.'"
-            (click)="selectTitle('Dr.')">Dr.</button>
-          <button type="button" class="title-btn" [class.active]="deliveryTitle === 'Prof.'"
-            (click)="selectTitle('Prof.')">Prof.</button>
-          <button type="button" class="title-btn" [class.active]="deliveryTitle === 'Prof. Dr.'"
-            (click)="selectTitle('Prof. Dr.')">Prof. Dr.</button>
+          <button
+            type="button"
+            class="title-btn"
+            [class.active]="deliveryTitle === 'Dr.'"
+            (click)="selectTitle('Dr.')"
+          >
+            Dr.
+          </button>
+          <button
+            type="button"
+            class="title-btn"
+            [class.active]="deliveryTitle === 'Prof.'"
+            (click)="selectTitle('Prof.')"
+          >
+            Prof.
+          </button>
+          <button
+            type="button"
+            class="title-btn"
+            [class.active]="deliveryTitle === 'Prof. Dr.'"
+            (click)="selectTitle('Prof. Dr.')"
+          >
+            Prof. Dr.
+          </button>
         </div>
 
-        <div class="form-row" style="align-items:center;">
+        <!-- Vorname / Nachname — FIX: added missing error-hint spans -->
+        <div class="form-row" style="align-items: center">
           <div class="form-group">
             <div class="field-wrap" [class.field-error]="validationErrors['deliveryFirstName']">
               <span class="field-label">Vorname *</span>
-              <input name="deliveryFirstName" type="text" [(ngModel)]="deliveryFirstName">
+              <input name="deliveryFirstName" type="text" [(ngModel)]="deliveryFirstName" />
+              <span *ngIf="validationErrors['deliveryFirstName']" class="error-hint">
+                {{ validationErrors['deliveryFirstName'] }}
+              </span>
             </div>
           </div>
           <div class="form-group">
             <div class="field-wrap" [class.field-error]="validationErrors['deliveryLastName']">
               <span class="field-label">Nachname *</span>
-              <input name="deliveryLastName" type="text" [(ngModel)]="deliveryLastName">
+              <input name="deliveryLastName" type="text" [(ngModel)]="deliveryLastName" />
+              <span *ngIf="validationErrors['deliveryLastName']" class="error-hint">
+                {{ validationErrors['deliveryLastName'] }}
+              </span>
             </div>
           </div>
-          <span class="info-base info-icon" style="flex-shrink:0;">i</span>
+          <span class="info-base info-icon" style="flex-shrink: 0">i</span>
         </div>
 
+        <!-- Readonly address fields -->
         <div class="container-readonly">
           <div class="form-row">
-            <div class="form-group" style="flex:0 0 160px;">
+            <div class="form-group" style="flex: 0 0 160px">
               <div class="field-wrap readonly">
                 <span class="field-label">Ihre PLZ</span>
-                <input name="deliveryPLZ" type="text" class="text-field" [value]="deliveryPLZ" readonly>
+                <input
+                  name="deliveryPLZ"
+                  type="text"
+                  class="text-field"
+                  [value]="deliveryPLZ"
+                  readonly
+                />
                 <span class="field-icon">
-                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                 </span>
               </div>
             </div>
             <div class="form-group">
               <div class="field-wrap readonly">
                 <span class="field-label">Ort</span>
-                <input name="deliveryOrt" type="text" class="text-field" [value]="deliveryOrt" readonly>
+                <input
+                  name="deliveryOrt"
+                  type="text"
+                  class="text-field"
+                  [value]="deliveryOrt"
+                  readonly
+                />
                 <span class="field-icon">
-                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                 </span>
               </div>
             </div>
@@ -116,40 +149,66 @@
             <div class="form-group">
               <div class="field-wrap readonly">
                 <span class="field-label">Ihre Straße</span>
-                <input name="deliveryStreet" type="text" class="text-field" [value]="deliveryStreet" readonly>
+                <input
+                  name="deliveryStreet"
+                  type="text"
+                  class="text-field"
+                  [value]="deliveryStreet"
+                  readonly
+                />
                 <span class="field-icon">
-                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                 </span>
               </div>
             </div>
-            <div class="form-group" style="flex:0 0 160px;">
+            <div class="form-group" style="flex: 0 0 160px">
               <div class="field-wrap readonly">
                 <span class="field-label">Hausnummer</span>
-                <input name="deliveryHouseNumber" type="text" class="text-field" [value]="deliveryHouseNumber" readonly>
+                <input
+                  name="deliveryHouseNumber"
+                  type="text"
+                  class="text-field"
+                  [value]="deliveryHouseNumber"
+                  readonly
+                />
                 <span class="field-icon">
-                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="form-row" style="align-items:center;">
+        <!-- Handynummer / Liefertermin — FIX: added error-hint for deliveryDate -->
+        <div class="form-row" style="align-items: center">
           <div class="form-group">
             <div class="field-wrap" [class.field-error]="validationErrors['deliveryMobile']">
               <span class="field-label">Handynummer *</span>
-              <input name="deliveryMobile" type="tel" [(ngModel)]="deliveryMobile">
+              <input name="deliveryMobile" type="tel" [(ngModel)]="deliveryMobile" />
+              <span *ngIf="validationErrors['deliveryMobile']" class="error-hint">
+                {{ validationErrors['deliveryMobile'] }}
+              </span>
             </div>
           </div>
           <div class="form-group">
-            <div class="field-wrap date">
+            <div class="field-wrap date" [class.field-error]="validationErrors['deliveryDate']">
               <span class="field-label">Gewünschter Liefertermin *</span>
-              <input matInput [matDatepicker]="picker" [(ngModel)]="deliveryDate" (click)="picker.open()"
-                placeholder="TT.MM.JJJJ">
+              <input
+                matInput
+                [matDatepicker]="picker"
+                [(ngModel)]="deliveryDate"
+                (focus)="picker.open()"
+                placeholder="TT.MM.JJJJ"
+                readonly
+              />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
+              <span *ngIf="validationErrors['deliveryDate']" class="error-hint">
+                {{ validationErrors['deliveryDate'] }}
+              </span>
             </div>
           </div>
-          <span class="info-base info-circ" style="flex-shrink:0;">i</span>
+          <span class="info-base info-circ" style="flex-shrink: 0">i</span>
         </div>
       </div>
     </div>
@@ -161,39 +220,88 @@
       </div>
       <div class="section-body">
         <div class="toggle-row">
-          <div class="toggle-box" style="width: 98.5%;">
-            <div class="toggle-opt" [class.selected]="hasDifferentBilling === true" (click)="setBillingToggle(true)">
-              <label class="cb-row"><input type="radio" name="billingToggle" [value]="true"
-                  [(ngModel)]="hasDifferentBilling" /></label> Ja
+          <div class="toggle-box" style="width: 98.5%">
+            <div
+              class="toggle-opt"
+              [class.selected]="hasDifferentBilling === true"
+              (click)="setBillingToggle(true)"
+            >
+              <label class="cb-row">
+                <input
+                  type="radio"
+                  name="billingToggle"
+                  [value]="true"
+                  [(ngModel)]="hasDifferentBilling"
+                />
+              </label>
+              Ja
             </div>
-            <div class="toggle-opt" [class.selected]="hasDifferentBilling === false" (click)="setBillingToggle(false)">
-              <label class="cb-row"><input type="radio" name="billingToggle" [value]="false"
-                  [(ngModel)]="hasDifferentBilling" /></label> Nein
+            <div
+              class="toggle-opt"
+              [class.selected]="hasDifferentBilling === false"
+              (click)="setBillingToggle(false)"
+            >
+              <label class="cb-row">
+                <input
+                  type="radio"
+                  name="billingToggle"
+                  [value]="false"
+                  [(ngModel)]="hasDifferentBilling"
+                />
+              </label>
+              Nein
             </div>
           </div>
-          <div style="display: flex; margin-bottom: 20px;"><span class="info-base info-icon">i</span></div>
+          <div style="display: flex; margin-bottom: 20px">
+            <span class="info-base info-icon">i</span>
+          </div>
         </div>
 
         <div *ngIf="hasDifferentBilling">
           <div class="form-row">
-            <div class="form-group" style="flex:0 0 160px;">
-              <div class="field-wrap"><span class="field-label">Ihre PLZ *</span><input [(ngModel)]="billingPLZ"></div>
+            <div class="form-group" style="flex: 0 0 160px">
+              <div class="field-wrap" [class.field-error]="validationErrors['billingPLZ']">
+                <span class="field-label">Ihre PLZ *</span>
+                <input [(ngModel)]="billingPLZ" />
+                <span *ngIf="validationErrors['billingPLZ']" class="error-hint">{{
+                  validationErrors['billingPLZ']
+                }}</span>
+              </div>
             </div>
             <div class="form-group">
-              <div class="field-wrap"><span class="field-label">Ort *</span><input [(ngModel)]="billingOrt"></div>
+              <div class="field-wrap" [class.field-error]="validationErrors['billingOrt']">
+                <span class="field-label">Ort *</span>
+                <input [(ngModel)]="billingOrt" />
+                <span *ngIf="validationErrors['billingOrt']" class="error-hint">{{
+                  validationErrors['billingOrt']
+                }}</span>
+              </div>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <div class="field-wrap"><span class="field-label">Ihre Straße *</span><input [(ngModel)]="billingStreet">
+              <div class="field-wrap" [class.field-error]="validationErrors['billingStreet']">
+                <span class="field-label">Ihre Straße *</span>
+                <input [(ngModel)]="billingStreet" />
+                <span *ngIf="validationErrors['billingStreet']" class="error-hint">{{
+                  validationErrors['billingStreet']
+                }}</span>
               </div>
             </div>
-            <div class="form-group" style="flex:0 0 160px;">
-              <div class="field-wrap"><span class="field-label">Hausnummer *</span><input
-                  [(ngModel)]="billingHouseNumber"></div>
+            <div class="form-group" style="flex: 0 0 160px">
+              <div class="field-wrap" [class.field-error]="validationErrors['billingHouseNumber']">
+                <span class="field-label">Hausnummer *</span>
+                <input [(ngModel)]="billingHouseNumber" />
+                <span *ngIf="validationErrors['billingHouseNumber']" class="error-hint">{{
+                  validationErrors['billingHouseNumber']
+                }}</span>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- FIX: errorMessage display added -->
+        <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
 
         <button class="btn-primary" [disabled]="isLoading" (click)="openPage()">
           <span *ngIf="isLoading" class="btn-spinner"></span>
@@ -201,6 +309,5 @@
         </button>
       </div>
     </div>
-
   </div>
 </div>

@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ContactPerson } from '../../layout/contact-person/contact-person';
 import { NeedSupport } from '../../layout/need-support/need-support';
 import { Sidebar } from '../../layout/sidebar/sidebar';
 import { AuthService } from '../../services/auth.service';
+
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 const API_BASE = 'http://192.168.0.155:8080';
 
@@ -50,7 +53,7 @@ interface FetchFormResponse {
   templateUrl: './payment-method.html',
   styleUrl: './payment-method.css',
 })
-export class PaymentMethod implements OnInit {
+export class PaymentMethod implements OnInit, OnDestroy {
   // ── Payment method toggle ────────────────────────────────────────────────
   paymentMethod: string = 'ueberweisung'; // 'lastschrift' | 'ueberweisung'
 
@@ -67,6 +70,8 @@ export class PaymentMethod implements OnInit {
 
   /** Per-field validation error messages shown inline under each input */
   validationErrors: Record<string, string> = {};
+  private routerSub?: Subscription;
+  maxAccessibleStep = 1;
 
   // ── Main progress-bar step routes ────────────────────────────────────────
   private readonly mainStepRoutes: Record<number, string> = {
@@ -82,13 +87,38 @@ export class PaymentMethod implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    const userId = this.authService.getUserId();
-    const deliveryId = this.getDeliveryId();
-    console.log('PaymentMethod init — userId:', userId, '| deliveryId:', deliveryId);
+    this.initForm();
+
+    this.routerSub = this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((e: any) => {
+        if (e.urlAfterRedirects === this.mainStepRoutes[4]) {
+          this.initForm();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.routerSub?.unsubscribe();
+  }
+
+  private initForm(): void {
+    this.resetFields();
     this.fetchFormData();
+  }
+
+  private resetFields(): void {
+    this.paymentMethod = 'ueberweisung';
+    this.iban = '';
+    this.firstName = '';
+    this.lastName = '';
+    this.sepaConsent = false;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.validationErrors = {};
   }
 
   // ── Toggle helpers ───────────────────────────────────────────────────────
@@ -153,7 +183,7 @@ export class PaymentMethod implements OnInit {
     }
 
     const userId = this.authService.getUserId();
-    const deliveryId = this.getDeliveryId();
+    const deliveryId = this.authService.getDeliveryId();
 
     this.successMessage = '';
     this.errorMessage = '';
@@ -194,7 +224,7 @@ export class PaymentMethod implements OnInit {
 
   private fetchFormData(): void {
     const userId = this.authService.getUserId();
-    const deliveryId = this.getDeliveryId();
+    const deliveryId = this.authService.getDeliveryId();
 
     if (!deliveryId) {
       return;
@@ -219,6 +249,7 @@ export class PaymentMethod implements OnInit {
         }
 
         this.prefillForm(res?.data ?? null);
+        this.maxAccessibleStep = this.getMaxAccessibleStep(res?.data ?? null);
       },
       error: (err) => {
         this.isLoading = false;
@@ -257,13 +288,81 @@ export class PaymentMethod implements OnInit {
     return this.paymentMethod;
   }
 
-  private getDeliveryId(): string | null {
-    return (
-      this.authService.getDeliveryId() ||
-      this.route.snapshot.queryParamMap.get('deliveryId') ||
-      this.route.snapshot.queryParamMap.get('deliveryid') ||
-      this.route.snapshot.paramMap.get('deliveryId') ||
-      this.route.snapshot.paramMap.get('deliveryid')
+  navigateToMainStep(step: number): void {
+    if (step > this.maxAccessibleStep) {
+      return;
+    }
+
+    const route = this.mainStepRoutes[step];
+    if (route) {
+      this.router.navigate([route]);
+    }
+  }
+
+  private getMaxAccessibleStep(data: CustomerFormData | null): number {
+    if (!data) {
+      return 1;
+    }
+
+    let maxStep = this.isAccountDeliveryConnectionComplete(data) ? 4 : 3;
+    if (!this.isAccountDeliveryConnectionComplete(data)) {
+      return 3;
+    }
+
+    const payment = data.customerPayment || data.paymentData || data;
+    if (this.isPaymentComplete(payment)) {
+      maxStep = 5;
+    }
+
+    return maxStep;
+  }
+
+  private isAccountDeliveryConnectionComplete(data: any): boolean {
+    const address = data?.address || data?.deliveryAddress || data;
+    const connection = data?.customerConnection || data?.connectionData;
+    const hasDelivery = !!(
+      data?.email &&
+      data?.firstName &&
+      data?.lastName &&
+      address?.zip &&
+      address?.city &&
+      address?.street &&
+      address?.houseNumber &&
+      data?.mobile &&
+      data?.deliveryDate
     );
+    if (!hasDelivery) {
+      return false;
+    }
+
+    if (!connection) {
+      return false;
+    }
+
+    const hasMeter = !!connection.submitLater || !!connection.meterNumber;
+    if (!hasMeter) {
+      return false;
+    }
+
+    if (connection.isMovingIn) {
+      return !!connection.moveInDate;
+    }
+
+    return !!connection.currentProvider;
+  }
+
+  private isPaymentComplete(payment: CustomerPayment | null | undefined): boolean {
+    if (!payment?.paymentMethod) {
+      return false;
+    }
+
+    const method = payment.paymentMethod.toLowerCase();
+    if (method.includes('lastschrift')) {
+      const first = payment.accountHolderFirstName || payment.accountHolder?.firstName;
+      const last = payment.accountHolderLastName || payment.accountHolder?.lastName;
+      return !!(payment.iban && first && last && payment.sepaConsent);
+    }
+
+    return true;
   }
 }
