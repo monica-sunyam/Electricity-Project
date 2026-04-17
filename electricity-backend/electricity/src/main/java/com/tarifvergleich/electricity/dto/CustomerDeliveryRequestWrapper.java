@@ -15,4 +15,5 @@ public class CustomerDeliveryRequestWrapper {
 	private Integer deliveryId;
     private CustomerDeliveryDto deliveryAddress;
     private CustomerBillingRequestDto billingAddress;
+    private EnergyRateDto provider;
 }

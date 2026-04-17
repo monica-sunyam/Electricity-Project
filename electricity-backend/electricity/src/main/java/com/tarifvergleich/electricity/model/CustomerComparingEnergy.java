@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.persistence.Column;
@@ -22,6 +23,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+
 
 @Entity
 @NoArgsConstructor
@@ -66,14 +69,16 @@ public class CustomerComparingEnergy {
 	@Column(name = "request_device_detail")
 	private String requestDeviceDetails;
 	
-////	@JdbcTypeCode(SqlTypes.JSON)
-//	@Column(name = "base_provider_response", columnDefinition = "jsonb")
-//	private Object baseProviderResponse; 
-//	
-////	@JdbcTypeCode(SqlTypes.JSON)
-//	@Column(name = "rate_response", columnDefinition = "jsonb")
-//	private Object energyRateResponse;
-//	
+
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "base_provider_response", columnDefinition = "jsonb")
+	private JsonNode baseProviderResponse; 
+
+
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "rate_response", columnDefinition = "jsonb")
+	private JsonNode energyRateResponse;
+	
 	@PrePersist
 	protected void onCreate() {
 		comparedOn = Helper.getCurrentTimeBerlin();

@@ -49,3 +49,11 @@ file:
 
 email:
   name: system@bavariaphone.de
+
+otp:
+  verification-timer: 1
+
+app:
+  cleanup:
+    retention-days: 30
+    cron-expression: "0 0 1 1 * ?"

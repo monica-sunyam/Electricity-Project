@@ -34,7 +34,7 @@ public class CustomerController {
 	@PostMapping("/add-delivery")
 	public ResponseEntity<?> addDelivery(@RequestBody CustomerDeliveryRequestWrapper deliveryWrapper) {
 		return ResponseEntity.ok(customerService.saveDelivery(deliveryWrapper.getCustomerId(), deliveryWrapper.getDeliveryId(),
-				deliveryWrapper.getDeliveryAddress(), deliveryWrapper.getBillingAddress()));
+				deliveryWrapper.getDeliveryAddress(), deliveryWrapper.getBillingAddress(), deliveryWrapper.getProvider()));
 	}
 
 	@PostMapping("/add-connection")

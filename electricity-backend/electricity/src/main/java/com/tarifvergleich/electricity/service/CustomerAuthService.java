@@ -1,7 +1,9 @@
 package com.tarifvergleich.electricity.service;
 
+import java.math.BigInteger;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -25,38 +27,40 @@ public class CustomerAuthService {
 	private final Helper helper;
 	private final MailService mailService;
 	private final EmailTemplate emailTemplate;
+	@Value("${otp.verification-timer}")
+	private int expiryMinutes;
 
 	@Transactional
 	public Map<String, Object> customerSignUp(CustomerDto customerDto) {
 
 		if (customerDto.getEmail() == null || customerDto.getEmail().isEmpty())
-			throw new InternalServerException("Email not found", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Email not found", HttpStatus.OK);
 		if (customerDto.getPassword() == null || customerDto.getPassword().isEmpty())
-			throw new InternalServerException("Password not found", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Password not found", HttpStatus.OK);
 		if (customerDto.getUserType() == null || customerDto.getUserType().isEmpty())
-			throw new InternalServerException("User type missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("User type missing", HttpStatus.OK);
 		if (customerDto.getFirstName() == null || customerDto.getFirstName().isEmpty()
 				|| customerDto.getLastName() == null || customerDto.getLastName().isEmpty())
-			throw new InternalServerException("First name or last name missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("First name or last name missing", HttpStatus.OK);
 		if (customerDto.getTitle() == null || customerDto.getTitle().isEmpty())
-			throw new InternalServerException("Title not found", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Title not found", HttpStatus.OK);
 		if (customerDto.getSalutation() == null || customerDto.getSalutation().isEmpty())
-			throw new InternalServerException("Salutation missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Salutation missing", HttpStatus.OK);
 		if (customerDto.getMobileNumber() == null || customerDto.getMobileNumber().isEmpty())
-			throw new InternalServerException("Mobile number missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Mobile number missing", HttpStatus.OK);
 		if (customerDto.getUserType().toLowerCase().equals("business")) {
 			if (customerDto.getCompanyName() == null || customerDto.getCompanyName().isEmpty())
-				throw new InternalServerException("Company name missing", HttpStatus.BAD_REQUEST);
+				throw new InternalServerException("Company name missing", HttpStatus.OK);
 		}
 		
 		if(!(helper.isPasswordSecure(customerDto.getPassword(), customerDto.getEmail()))) {
-			throw new InternalServerException("Password not safe", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Password not safe", HttpStatus.OK);
 		}
 
 		if (customerRepo.existsByEmail(customerDto.getEmail())) {
 
 			Customer customer = customerRepo.findByEmail(customerDto.getEmail())
-					.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.BAD_REQUEST));
+					.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
 
 			if (customer.getIsVerified())
 				return Map.of("res", true, "data", Map.of("id", customer.getCustomerId(), "firstName",
@@ -76,6 +80,7 @@ public class CustomerAuthService {
 				
 				String otp = helper.generateOtp();
 				customer.setOtp(otp);
+				customer.setOtpGeneratedOn(Helper.getCurrentTimeBerlin());
 				String subject = "Verify Your Account - Tarifvergleich Electricity";
 				String body = emailTemplate.createOtpEmailBody(customer.getFirstName(), otp);
 				
@@ -91,7 +96,7 @@ public class CustomerAuthService {
 		String otp = helper.generateOtp();
 
 		Customer newCustomer = Customer.builder().email(customerDto.getEmail()).password(customerDto.getPassword())
-				.otp(otp).userType(customerDto.getUserType().toUpperCase()).firstName(customerDto.getFirstName())
+				.otp(otp).otpGeneratedOn(Helper.getCurrentTimeBerlin()).userType(customerDto.getUserType().toUpperCase()).firstName(customerDto.getFirstName())
 				.lastName(customerDto.getLastName()).title(customerDto.getTitle())
 				.salutation(customerDto.getSalutation()).mobileNumber(customerDto.getMobileNumber())
 				.companyName(customerDto.getUserType().toUpperCase().equals("BUSINESS") ? customerDto.getCompanyName() : null).build();
@@ -114,18 +119,35 @@ public class CustomerAuthService {
 	public Map<String, Object> verifyOtp(Integer id, String otp) {
 
 		if (otp == null || otp.isEmpty())
-			throw new InternalServerException("OTP missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("OTP missing", HttpStatus.OK);
 
 		if (id == null || id <= 0)
-			throw new InternalServerException("Customer id missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
 
 		Customer customer = customerRepo.findById(id)
-				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
+		
+		BigInteger expiryMillis = BigInteger.valueOf(expiryMinutes)
+                .multiply(BigInteger.valueOf(60))
+                .multiply(BigInteger.valueOf(1000));
+		
+		boolean isExpired = Helper.getCurrentTimeBerlin().subtract(customer.getOtpGeneratedOn()).compareTo(expiryMillis) > 0;
 
 		if (customer.getOtp().equals(otp) || otp.equals("123456")) {
 			customer.setIsVerified(true);
 			customerRepo.save(customer);
 			return Map.of("res", true, "message", "Valid otp");
+		} else if (isExpired) {
+			String newOtp = helper.generateOtp();
+			customer.setOtp(newOtp);
+			customer.setOtpGeneratedOn(Helper.getCurrentTimeBerlin());
+			String subject = "Verify Your Account - Tarifvergleich Electricity";
+			String body = emailTemplate.createOtpEmailBody(customer.getFirstName(), newOtp);
+			
+			mailService.sendMail(customer.getEmail(), subject, body);
+
+			customerRepo.save(customer);
+			return Map.of("res", true, "newOtp", true, "message", "New otp generated");
 		}
 
 		return Map.of("res", false, "message", "Invalid otp");
@@ -134,10 +156,10 @@ public class CustomerAuthService {
 	@Transactional
 	public Map<String, Object> markAcknowledgement(Integer customerId, HttpServletRequest request) {
 		if (customerId == null || customerId <= 0)
-			throw new InternalServerException("Customer id missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
 
 		Customer customer = customerRepo.findById(customerId)
-				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
 
 		customer.setIsAcknowledged(true);
 		String loginIp = helper.getIp(request);
@@ -151,14 +173,15 @@ public class CustomerAuthService {
 	@Transactional
 	public Map<String, Object> resendOtp(Integer id, boolean isForget) {
 		if (id == null || id <= 0)
-			throw new InternalServerException("Customer id missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
 
 		Customer customer = customerRepo.findById(id)
-				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
 
 		String otp = helper.generateOtp();
 
 		customer.setOtp(otp);
+		customer.setOtpGeneratedOn(Helper.getCurrentTimeBerlin());
 
 		customerRepo.save(customer);
 
@@ -182,10 +205,10 @@ public class CustomerAuthService {
 	public Map<String, Object> login(String email, String password, HttpServletRequest request) {
 
 		if (email == null || email.isEmpty())
-			throw new InternalServerException("Email not found", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Email not found", HttpStatus.OK);
 
 		Customer customer = customerRepo.findByEmail(email).orElseThrow(
-				() -> new InternalServerException("Customer not found with this credential", HttpStatus.BAD_REQUEST));
+				() -> new InternalServerException("Customer not found with this credential", HttpStatus.OK));
 
 		if (customer.getPassword() != null && customer.getPassword().equals(password) && customer.getIsVerified() && customer.getIsAcknowledged()
 				&& customer.getStatus()) {
@@ -198,8 +221,8 @@ public class CustomerAuthService {
 			return Map.of("res", true, "message", "Login successful", "data", Map.of("id", customer.getCustomerId(), "firstName",
 					customer.getFirstName(), "lastName", customer.getLastName(), "email", customer.getEmail()));
 		}
-		else if(customer.getPassword() == null)
-			return Map.of("res", false, "message", "New password is not set");
+		else if(!customer.getIsVerified())
+			return Map.of("res", false, "message", "New password is not verified");
 		else if (customer.getPassword().equals(password))
 			return Map.of("res", false, "message", "Incomplete profile");
 		else
@@ -209,9 +232,9 @@ public class CustomerAuthService {
 	public Map<String, Object> loginAfterRegistration(Integer customerId, HttpServletRequest request){
 		
 		if(customerId == null || customerId <= 0)
-			throw new InternalServerException("Invalid customer id", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Invalid customer id", HttpStatus.OK);
 		
-		Customer customer = customerRepo.findById(customerId).orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.BAD_REQUEST));
+		Customer customer = customerRepo.findById(customerId).orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
 		
 		String loginIp = helper.getIp(request);
 
@@ -226,14 +249,15 @@ public class CustomerAuthService {
 	public Map<String, Object> forgetPassword(String email) {
 
 		if (email == null || email.isEmpty())
-			throw new InternalServerException("Email not found", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Email not found", HttpStatus.OK);
 
 		Customer customer = customerRepo.findByEmail(email)
-				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
 
 		String otp = helper.generateOtp();
 		customer.setOtp(otp);
-//		customer.setPassword(null);
+		customer.setOtpGeneratedOn(Helper.getCurrentTimeBerlin());
+//		customer.setIsVerified(false);
 
 		String to = customer.getEmail();
 		String subject = "Forget Password - Tarifvergleich Electricity";
@@ -250,19 +274,28 @@ public class CustomerAuthService {
 	@Transactional
 	public Map<String, Object> resetPassword(Integer id, String newPassword) {
 		if (id == null || id <= 0)
-			throw new InternalServerException("Customer id missing", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
 
 		Customer customer = customerRepo.findById(id)
-				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
 		
 		if(!(helper.isPasswordSecure(newPassword, customer.getEmail()))) {
-			throw new InternalServerException("Password not safe", HttpStatus.BAD_REQUEST);
+			throw new InternalServerException("Password not safe", HttpStatus.OK);
 		}
 		
-//		if(customer.getPassword() != null)
-//			return Map.of("res", false, "message", "Forget password to set new password");
+		
+//		String otp = helper.generateOtp();
+//		customer.setOtp(otp);
+//		customer.setOtpGeneratedOn(Helper.getCurrentTimeBerlin());
+//
+//		String to = customer.getEmail();
+//		String subject = "Reset Password - Tarifvergleich Electricity";
+//		String body = emailTemplate.createForgotPasswordEmailBody(to, otp);
+//
+//		mailService.sendMail(to, subject, body);
 
 		customer.setPassword(newPassword);
+//		customer.setIsVerified(false);
 
 		customerRepo.save(customer);
 

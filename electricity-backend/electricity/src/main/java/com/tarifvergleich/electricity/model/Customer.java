@@ -75,6 +75,9 @@ public class Customer {
 	@Column(name = "is_acknowledged")
 	private Boolean isAcknowledged;
 	
+	@Column(name = "otp_generated_on")
+	private BigInteger otpGeneratedOn;
+	
 	// This field is used for blocking and unblocking
 	private Boolean status;
 	

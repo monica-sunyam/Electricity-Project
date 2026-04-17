@@ -27,7 +27,7 @@ public class EmailTemplate {
 	           "<div style='background: #f4f4f4; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #d32f2f; border-radius: 5px;'>" +
 	           otp +
 	           "</div>" +
-	           "<p><strong>Note:</strong> This code is valid for 10 minutes. If you did not request a password reset, you can safely ignore this email; your account remains secure.</p>" +
+//	           "<p><strong>Note:</strong> This code is valid for 10 minutes. If you did not request a password reset, you can safely ignore this email; your account remains secure.</p>" +
 	           "<br>" +
 	           "<p>Best Regards,<br><strong>Tarifvergleich Security Team</strong></p>" +
 	           "</div>";

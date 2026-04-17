@@ -78,6 +78,10 @@ public class CustomerDelivery {
 	@JoinColumn(name = "customer_schedule_id")
 	private CustomerContactSchedule customerSchedule;
 	
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+	@JoinColumn(name = "customer_selected_provider_id")
+	private CustomerSelectedProvider customerProvider;
+	
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
 	@JsonIgnore

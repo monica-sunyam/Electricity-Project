@@ -92,9 +92,9 @@ public class Helper {
 		Client client = uaParser.parse(userAgentString);
 		
 		return Map.of(
-		        "os", client.os.family,        // e.g., "Windows", "Android", "Linux"
-		        "device", client.device.family, // e.g., "iPhone", "Samsung SM-G950F"
-		        "browser", client.userAgent.family // e.g., "Chrome", "Firefox"
+		        "os", client.os.family,        
+		        "device", client.device.family, 
+		        "browser", client.userAgent.family 
 		    );
 	}
 	
