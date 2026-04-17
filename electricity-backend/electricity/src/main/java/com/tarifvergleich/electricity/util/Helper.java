@@ -98,4 +98,9 @@ public class Helper {
 		    );
 	}
 	
+	public static final String getUniqueIdForCustomerId() {
+		String currentMilli = String.valueOf(System.currentTimeMillis());
+        return "9" + currentMilli.substring(currentMilli.length() - 10).substring(1);
+	}
+	
 }

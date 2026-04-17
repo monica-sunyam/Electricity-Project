@@ -70,6 +70,14 @@ public class AdminUser {
 	@JsonIgnoreProperties("adminId")
 	private List<AdminServiceMenu> adminServiceMenu;
 	
+	@OneToMany(mappedBy = "admin", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
+	@JsonIgnoreProperties("admin")
+	private List<Customer> customer;
+	
+	@OneToMany(mappedBy = "admin", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
+	@JsonIgnoreProperties("admin")
+	private List<CustomerDelivery> customerDeliveries;
+	
 	@PrePersist
 	protected void onCreate() {
 	    this.createdOn = Helper.getCurrentTimeBerlin();
@@ -97,5 +105,19 @@ public class AdminUser {
 			this.adminServiceMenu = new LinkedList<AdminServiceMenu>();
 		
 		this.adminServiceMenu.add(menu);
+	}
+	
+	public void addCustomer(Customer customer) {
+		if(this.customer == null)
+			this.customer = new LinkedList<Customer>();
+		
+		this.customer.add(customer);
+	}
+	
+	public void addDelivery(CustomerDelivery delivery) {
+		if(this.customerDeliveries == null)
+			this.customerDeliveries = new LinkedList<CustomerDelivery>();
+		
+		this.customerDeliveries.add(delivery);
 	}
 }

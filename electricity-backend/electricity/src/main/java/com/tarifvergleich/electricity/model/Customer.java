@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tarifvergleich.electricity.util.Helper;
 
@@ -13,6 +14,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -78,6 +81,9 @@ public class Customer {
 	@Column(name = "otp_generated_on")
 	private BigInteger otpGeneratedOn;
 	
+	@Column(name = "customer_unique_id")
+	private String customerUniqueId;
+	
 	// This field is used for blocking and unblocking
 	private Boolean status;
 	
@@ -97,12 +103,18 @@ public class Customer {
 	@JsonIgnoreProperties("customer")
 	private List<CustomerComparingEnergy> energycomparison;
 	
+	@ManyToOne
+	@JoinColumn(name = "admin_id")
+	@JsonIgnore
+	private AdminUser admin;
+	
 	@PrePersist
 	protected void prePersist() {
 		joinedOn = Helper.getCurrentTimeBerlin();
 		isVerified = false;
 		isAcknowledged = false; 
 		status = true;
+		customerUniqueId = Helper.getUniqueIdForCustomerId();
 	}
 	
 	public void addLoginHistory(CustomerLoginHistory record) {
@@ -132,6 +144,11 @@ public class Customer {
 			energycomparison = new LinkedList<CustomerComparingEnergy>();
 		record.setCustomer(this);
 		energycomparison.add(record);
+	}
+	
+	public void setUserAdmin(AdminUser admin) {
+		this.admin = admin;
+		admin.addCustomer(this);
 	}
 	
 }

@@ -2,6 +2,9 @@ package com.tarifvergleich.electricity.model;
 
 import java.math.BigInteger;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tarifvergleich.electricity.util.Helper;
 
@@ -42,9 +45,10 @@ public class CustomerAddress {
 	@Column(name = "house_number")
 	private String houseNumber;
 	
-	@ManyToOne
+	@ManyToOne(optional = true)
 	@JoinColumn(name = "customer_id")
 	@JsonIgnore
+	@NotFound(action = NotFoundAction.IGNORE)
 	private Customer customerId;
 		
 	private BigInteger createdOn;

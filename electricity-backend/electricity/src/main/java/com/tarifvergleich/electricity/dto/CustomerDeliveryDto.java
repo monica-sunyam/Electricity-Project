@@ -36,4 +36,6 @@ public class CustomerDeliveryDto {
 	private CustomerBillingAddress billingAddress;
 	private CustomerConnect customerConnection;
 	private CustomerPayment customerPayment;
+	
+	private Integer adminId;
 }

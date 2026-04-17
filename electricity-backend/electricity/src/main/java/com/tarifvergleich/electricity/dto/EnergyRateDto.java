@@ -2,12 +2,17 @@ package com.tarifvergleich.electricity.dto;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import com.tarifvergleich.electricity.model.CustomerSelectedProvider;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Component
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EnergyRateDto {
 	private Long rateId;
     private String rateName;
@@ -46,4 +51,18 @@ public class EnergyRateDto {
     // Meta Data
     private String branch;
     private String type;
+    
+    public static EnergyRateDto getProviderResponse(CustomerSelectedProvider provider) {
+    	return EnergyRateDto.builder()
+    			.branch(provider.getBranch())
+    			.netzProviderId(provider.getNetzProviderId())
+    			.providerId(provider.getProviderId())
+    			.providerSVG(provider.getProviderSVGPath())
+    			.providerName(provider.getProviderName())
+    			.rateId(provider.getRateId())
+    			.rateName(provider.getRateName())
+    			.totalPrice(provider.getTotalPrice())
+    			.totalPriceMonth(provider.getTotalPriceMonth())
+    			.build();
+    }
 }

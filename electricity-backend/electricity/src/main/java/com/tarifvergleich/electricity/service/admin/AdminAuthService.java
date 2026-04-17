@@ -1,4 +1,4 @@
-package com.tarifvergleich.electricity.service;
+package com.tarifvergleich.electricity.service.admin;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class AdminAuthService {
 
 	private final AdminUserRepository adminUserRepo;
 	private final AdminLoginHistoryRepository adminLoginRepo;

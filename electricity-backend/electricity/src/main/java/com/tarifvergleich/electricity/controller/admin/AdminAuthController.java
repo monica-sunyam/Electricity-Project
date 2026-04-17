@@ -1,4 +1,4 @@
-package com.tarifvergleich.electricity.controller;
+package com.tarifvergleich.electricity.controller.admin;
 
 import java.util.Map;
 
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tarifvergleich.electricity.model.AdminUser;
-import com.tarifvergleich.electricity.service.AdminService;
 import com.tarifvergleich.electricity.service.MailService;
+import com.tarifvergleich.electricity.service.admin.AdminAuthService;
 import com.tarifvergleich.electricity.util.EmailTemplate;
 import com.tarifvergleich.electricity.util.Helper;
 
@@ -22,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminAuthController {
 	
-	private final AdminService adminService;
+	private final AdminAuthService adminService;
 	private final Helper util;
 	private final MailService mailService;
 	private final EmailTemplate template;

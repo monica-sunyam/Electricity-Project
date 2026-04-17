@@ -58,6 +58,9 @@ public class CustomerDelivery {
 	@Column(name = "order_placed")
 	private Boolean orderPlaced;
 	
+	@Column(name = "unique_delivery_id")
+	private String uniqueDeliveryId;
+	
 	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "customer_billing_id")
 	private CustomerBillingAddress billingAddress;
@@ -83,6 +86,11 @@ public class CustomerDelivery {
 	private CustomerSelectedProvider customerProvider;
 	
 	@ManyToOne
+	@JoinColumn(name = "admin_id")
+	@JsonIgnore
+	private AdminUser admin;
+	
+	@ManyToOne
 	@JoinColumn(name = "customer_id")
 	@JsonIgnore
 	private Customer customerId;
@@ -91,6 +99,12 @@ public class CustomerDelivery {
 	protected void onCreate() {
 		orderPlacedOn = Helper.getCurrentTimeBerlin();
 		orderPlaced = false;
+		uniqueDeliveryId = "D" + Helper.getUniqueIdForCustomerId();
+	}
+	
+	public void setUserAdmin(AdminUser admin) {
+		this.admin = admin;
+		admin.addDelivery(this);
 	}
 	
 }

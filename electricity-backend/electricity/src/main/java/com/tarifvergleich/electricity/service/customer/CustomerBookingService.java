@@ -1,4 +1,4 @@
-package com.tarifvergleich.electricity.service;
+package com.tarifvergleich.electricity.service.customer;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerService {
+public class CustomerBookingService {
 
 	private final CustomerRepository customerRepo;
 	private final CustomerAddressRepository customerAddressRepo;
@@ -164,6 +164,8 @@ public class CustomerService {
 					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone())
 					.customerProvider(selectedProvider)
 					.deliveryDate(helper.toGermamUnixTimestamp(deliveryDto.getDeliveryDate())).build();
+			
+			delivery.setUserAdmin(customer.getAdmin());
 
 			customer.addCustomerDelivery(delivery);
 			customerRepo.save(customer);
@@ -386,6 +388,7 @@ public class CustomerService {
 			throw new InternalServerException("Customer and delivery mis-match", HttpStatus.OK);
 
 		delivery.setOrderPlaced(true);
+		delivery.setOrderPlacedOn(Helper.getCurrentTimeBerlin());
 		
 		customerDeliveryRepo.save(delivery);
 

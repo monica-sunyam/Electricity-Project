@@ -1,4 +1,4 @@
-package com.tarifvergleich.electricity.controller;
+package com.tarifvergleich.electricity.controller.admin;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tarifvergleich.electricity.dto.AdminAssetDto;
 import com.tarifvergleich.electricity.dto.AdminServiceMenuDto;
-import com.tarifvergleich.electricity.service.AdminAssetService;
 import com.tarifvergleich.electricity.service.ViewService;
+import com.tarifvergleich.electricity.service.admin.AdminAssetService;
 import com.tarifvergleich.electricity.util.FileServiceSuperAdmin;
 
 import lombok.RequiredArgsConstructor;

@@ -14,7 +14,8 @@ import com.tarifvergleich.electricity.dto.CustomerContactScheduleRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryRequestWrapper;
 import com.tarifvergleich.electricity.dto.CustomerDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto;
-import com.tarifvergleich.electricity.service.CustomerService;
+import com.tarifvergleich.electricity.service.customer.CustomerBookingService;
+import com.tarifvergleich.electricity.service.customer.CustomerDetailService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,28 +25,29 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/customer")
 public class CustomerController {
 
-	private final CustomerService customerService;
+	private final CustomerBookingService customerBookingService;
+	private final CustomerDetailService customerDetailService;
 
-	@PostMapping("/fetch-customer")
+	@PostMapping("/fetch-customer-detail")
 	public ResponseEntity<?> fetchCustomer(@RequestBody CustomerDto customerDto) {
-		return ResponseEntity.ok(customerService.fetchCustomer(customerDto.getId()));
+		return ResponseEntity.ok(customerDetailService.getCustomerDetails(customerDto.getId()));
 	}
 
 	@PostMapping("/add-delivery")
 	public ResponseEntity<?> addDelivery(@RequestBody CustomerDeliveryRequestWrapper deliveryWrapper) {
-		return ResponseEntity.ok(customerService.saveDelivery(deliveryWrapper.getCustomerId(), deliveryWrapper.getDeliveryId(),
+		return ResponseEntity.ok(customerBookingService.saveDelivery(deliveryWrapper.getCustomerId(), deliveryWrapper.getDeliveryId(),
 				deliveryWrapper.getDeliveryAddress(), deliveryWrapper.getBillingAddress(), deliveryWrapper.getProvider()));
 	}
 
 	@PostMapping("/add-connection")
 	public ResponseEntity<?> addConnection(@RequestBody CustomerConnectWrapper payload) {
-		return ResponseEntity.ok(customerService.saveConnection(payload.getCustomerId(), payload.getDeliveryId(),
+		return ResponseEntity.ok(customerBookingService.saveConnection(payload.getCustomerId(), payload.getDeliveryId(),
 				payload.getConnectionData()));
 	}
 
 	@PostMapping("/add-payment")
 	public ResponseEntity<?> addPayment(@RequestBody CustomerPaymentRequestDto paymentDto) {
-		return ResponseEntity.ok(customerService.savePayment(paymentDto));
+		return ResponseEntity.ok(customerBookingService.savePayment(paymentDto));
 	}
 
 	@PostMapping("/fetch-form")
@@ -55,7 +57,7 @@ public class CustomerController {
 		Integer deliveryId = payload.get("deliveryId") != null ? (Integer) payload.get("deliveryId") : 0;
 		Integer step = payload.get("step") != null ? (Integer) payload.get("step") : 0;
 
-		return ResponseEntity.ok(customerService.fetchByStep(customerId, deliveryId, step));
+		return ResponseEntity.ok(customerBookingService.fetchByStep(customerId, deliveryId, step));
 	}
 	
 	@PostMapping("/submit-declaration")
@@ -63,11 +65,12 @@ public class CustomerController {
 		Integer customerId = payload.get("customerId") != null ? (Integer) payload.get("customerId") : 0;
 		Integer deliveryId = payload.get("deliveryId") != null ? (Integer) payload.get("deliveryId") : 0;
 		
-		return ResponseEntity.ok(customerService.submit(customerId, deliveryId));
+		return ResponseEntity.ok(customerBookingService.submit(customerId, deliveryId));
 	}
 	
 	@PostMapping("/add-schedule")
 	public ResponseEntity<?> addCustomerSchedule(@RequestBody CustomerContactScheduleRequestDto schedule){
-		return ResponseEntity.ok(customerService.submitCustomerSchedule(schedule));
+		return ResponseEntity.ok(customerBookingService.submitCustomerSchedule(schedule));
 	}
+	
 }
