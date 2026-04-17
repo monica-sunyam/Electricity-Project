@@ -307,6 +307,24 @@ export class AuthService {
     return user?.delivery_id || null;
   }
 
+  /* Clear delivery ID after checkout completion */
+  clearDeliveryId(): void {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) return;
+
+      const updatedUser: AuthUser = {
+        ...currentUser,
+      };
+
+      delete updatedUser.delivery_id;
+      this.authState$.next(updatedUser);
+      this.saveUserToStorage(updatedUser);
+    } catch (error) {
+      console.error('Error clearing deliveryId:', error);
+    }
+  }
+
   /// Address save local ///
 
   /* Load from localStorage */
@@ -382,5 +400,11 @@ export class AuthService {
     } catch (error) {
       console.error('Error clearing provider:', error);
     }
+  }
+
+  /* Clear multi-step form progress, keep address data */
+  clearCheckoutFlowData(): void {
+    this.clearDeliveryId();
+    this.clearSelectedProvider();
   }
 }

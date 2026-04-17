@@ -43,11 +43,16 @@
       </div>
     </div>
 
+    <!-- ===== MAIN CHECKOUT SUMMARY (before submit) ===== -->
     <ng-container *ngIf="!showConfirmation">
       <div class="summary-state" *ngIf="isLoading">Ihre gespeicherten Angaben werden geladen.</div>
 
       <div class="api-message api-error" *ngIf="errorMessage">
         {{ errorMessage }}
+      </div>
+
+      <div class="api-message api-success" *ngIf="successMessage">
+        {{ successMessage }}
       </div>
 
       <ng-container>
@@ -356,7 +361,7 @@
         <div class="section-header">Bestätigung</div>
 
         <div class="section-body">
-          <div class="toggle-row text">Mit Klick auf „Kauf abschließen“</div>
+          <div class="toggle-row text">Mit Klick auf „Kauf abschließen"</div>
 
           <div class="toggle-row text">
             <div class="check-list">
@@ -418,15 +423,16 @@
           </div>
 
           <div class="form-actions">
-            <button class="btn-primary" (click)="openPage()" [disabled]="isLoading || !formData">
-              Kauf abschließen
+            <button class="btn-primary" (click)="openPage()" [disabled]="isLoading">
+              {{ isLoading ? 'Wird übermittelt...' : 'Kauf abschließen' }}
             </button>
           </div>
         </div>
       </div>
     </ng-container>
 
-    <div class="section-panel" *ngIf="showConfirmation">
+    <!-- ===== CONFIRMATION PANEL (after submit, before schedule sent) ===== -->
+    <div class="section-panel" *ngIf="showConfirmation && !successMessage">
       <div class="section-header">Vielen Dank für Ihren Auftrag!</div>
 
       <div class="section-body">
@@ -511,18 +517,44 @@
           {{ scheduleErrorMessage }}
         </div>
 
-        <div class="api-message api-success" *ngIf="scheduleSuccessMessage">
-          {{ scheduleSuccessMessage }}
-        </div>
-
-        <div class="form-actions">
+        <div class="form-actions" style="display: flex; flex-direction: row; gap: 16px; width: 100%;">
           <button
             class="btn-primary"
+            type="button"
+            style="flex: 1; margin: 0;"
+            (click)="skipSchedule()"
+            [disabled]="isScheduleLoading"
+          >
+            Zeitslot überspringen
+          </button>
+          <button
+            class="btn-primary"
+            style="flex: 1; margin: 0;"
             (click)="submitSchedule()"
             [disabled]="isScheduleLoading || !selectedDay || !selectedTimeSlot"
           >
             {{ isScheduleLoading ? 'Wird übermittelt...' : 'Rückrufzeit & Infos übermitteln' }}
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SUCCESS PANEL (shown after schedule submit or skip) ===== -->
+    <div class="section-panel" *ngIf="showConfirmation && successMessage">
+      <div class="section-header">Vielen Dank!</div>
+
+      <div class="section-body">
+        <div class="toggle-row text">
+          Ihre Anfrage wurde erfolgreich übermittelt. Wir freuen uns darauf, Sie bald zu
+          kontaktieren.
+        </div>
+
+        <div class="api-message api-success" *ngIf="scheduleSuccessMessage">
+          {{ scheduleSuccessMessage }}
+        </div>
+
+        <div class="api-message api-success">
+          {{ successMessage }}
         </div>
       </div>
     </div>

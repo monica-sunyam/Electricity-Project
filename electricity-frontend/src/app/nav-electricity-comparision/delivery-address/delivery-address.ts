@@ -44,7 +44,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   deliveryMobile: string = '';
   deliveryPhone: string = '';
   deliveryDate: Date | null = null;
-
+  providerDetails: any = null;
   hasDifferentBilling: boolean = false;
 
   billingPLZ: string = '';
@@ -59,6 +59,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
 
   private routerSub?: Subscription;
   maxAccessibleStep = 1;
+  private readonly currentStep = 2;
 
   private readonly mainStepRoutes: Record<number, string> = {
     1: '/electricity-comparision/register',
@@ -102,24 +103,15 @@ export class DeliveryAddress implements OnInit, OnDestroy {
    * Called on init AND on every back-navigation to this route.
    */
   private initForm(): void {
-    // Hard-reset all fields first so stale rendered values never survive a
-    // re-visit. Without this, fields prefilled on the first visit stay visible
-    // while the new HTTP response is in-flight, and if the response arrives
-    // before Angular's change detection the assignment is silently discarded
-    // because the value hasn't "changed".
+
     this.resetFields();
-
-    // Apply locked address fields from localStorage (sync, always wins)
     this.applyLocalStorageAddress();
+    this.providerDetails = this.authService.getSelectedProvider();
 
-    // Use take(1) so the auth observable only fires once per initForm() call.
-    // A BehaviorSubject replays its last value synchronously — without take(1)
-    // every future auth change would re-trigger fetchFormData.
     this.authService
       .getAuthState()
       .pipe(take(1))
       .subscribe((user) => {
-        // Seed email from auth as a baseline (may be overwritten by API below)
         if (user?.email) {
           this.deliveryEmail = user.email;
         }
@@ -226,6 +218,11 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       this.billingOrt = bill?.city || '';
       this.billingStreet = bill?.street || '';
       this.billingHouseNumber = bill?.houseNumber || '';
+    } else {
+      this.billingPLZ = '';
+      this.billingOrt = '';
+      this.billingStreet = '';
+      this.billingHouseNumber = '';
     }
 
     this.cdr.detectChanges();
@@ -240,6 +237,10 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   }
 
   navigateToMainStep(step: number): void {
+    if (step > this.currentStep) {
+      return;
+    }
+
     if (step > this.maxAccessibleStep) {
       return;
     }
@@ -294,6 +295,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     const payload = {
       customerId: userId,
       ...(deliveryId && { deliveryId }),
+      provider: this.providerDetails,
       deliveryAddress: {
         email: this.deliveryEmail,
         title: this.deliveryTitle,
@@ -321,13 +323,21 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     this.http
       .post<{ res: boolean; deliveryId: number }>(`${API_BASE}/customer/add-delivery`, payload)
       .subscribe({
-        next: (res) => {
-          if (res?.deliveryId) {
-            this.authService.setDeliveryId(res.deliveryId.toString());
+        next: (response) => {
+          // Verify the 'res' key is explicitly true before treating it as a success
+          if (response && response.res === true) {
+            if (response.deliveryId) {
+              this.authService.setDeliveryId(response.deliveryId.toString());
+            }
+            this.isLoading = false;
+            this.successMessage = 'Daten erfolgreich gespeichert.';
+            this.router.navigate([this.mainStepRoutes[3]]);
+          } else {
+            // Handle the case where the API returns a 200 OK, but res is false
+            this.isLoading = false;
+            this.errorMessage = 'Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.';
+            console.error('Submit error: API response returned false', response);
           }
-          this.isLoading = false;
-          this.successMessage = 'Daten erfolgreich gespeichert.';
-          this.router.navigate([this.mainStepRoutes[3]]);
         },
         error: (err) => {
           this.isLoading = false;

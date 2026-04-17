@@ -81,11 +81,15 @@ interface FetchFormResponse {
 export class CheckoutPage implements OnInit {
   private API_BASE: string;
   private readonly LOCAL_API_BASE = 'http://192.168.0.155:8080';
+  private redirectTimeoutId: ReturnType<typeof setTimeout> | null = null;
   showConfirmation = false;
   isLoading = false;
   errorMessage = '';
+  successMessage = '';
   formData: CustomerFormData | null = null;
   maxAccessibleStep = 1;
+  private readonly currentStep = 5;
+  private isJourneyCompleted = false;
 
   // Schedule / callback time-slot state
   selectedDay: string = '';
@@ -127,7 +131,6 @@ export class CheckoutPage implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {
     this.API_BASE = env.apiBaseUrl;
-
   }
 
   ngOnInit(): void {
@@ -135,19 +138,21 @@ export class CheckoutPage implements OnInit {
   }
 
   openPage(): void {
-
     console.log('Clicking');
-    const data = this.formData;
-    if (!data) {
-      this.errorMessage = 'Ihre gespeicherten Angaben werden geladen. Bitte warten Sie einen Moment.';
-      return;
-    }
+    this.successMessage = '';
+    this.errorMessage = '';
 
     const userId = this.authService.getUserId();
     const deliveryId = this.authService.getDeliveryId();
 
+    console.log('[DEBUG] openPage: userId=', userId, 'deliveryId=', deliveryId);
+
     if (!userId || !deliveryId) {
+      console.warn('[DEBUG] openPage: missing userId or deliveryId – showing error');
+      this.isLoading = false;   // ← guard never reset this; button stayed disabled forever
       this.errorMessage = 'Bitte füllen Sie alle vorherigen Schritte vollständig aus.';
+      this.cdr.detectChanges();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -167,25 +172,35 @@ export class CheckoutPage implements OnInit {
     submit(this.API_BASE).subscribe({
       next: () => {
         this.isLoading = false;
-        // Show time-slot / confirmation step without reloading checkout.
+        this.handleDeclarationSuccess();
         this.showConfirmation = true;
+        this.scheduleErrorMessage = '';
+        this.scheduleSuccessMessage = '';
+        this.successMessage = '';
         this.cdr.detectChanges();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (err) => {
-        // Fallback to local backend if configured env API is unreachable.
         submit(this.LOCAL_API_BASE).subscribe({
           next: () => {
             this.isLoading = false;
+            this.handleDeclarationSuccess();
             this.showConfirmation = true;
+            this.scheduleErrorMessage = '';
+            this.scheduleSuccessMessage = '';
+            this.successMessage = '';
             this.cdr.detectChanges();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           },
           error: (err2) => {
+            console.error('[DEBUG] Both submit APIs failed. Primary err:', err, 'Fallback err:', err2);
             this.isLoading = false;
             this.errorMessage =
-              err2?.error?.message || err?.error?.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
-            console.error('Checkout submit API error:', err, err2);
+              err2?.error?.message ||
+              err?.error?.message ||
+              'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+            this.cdr.detectChanges();   // ← was missing: error message and re-enabled button never rendered
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           },
         });
       },
@@ -218,6 +233,7 @@ export class CheckoutPage implements OnInit {
 
     this.scheduleErrorMessage = '';
     this.scheduleSuccessMessage = '';
+    this.successMessage = '';
     this.isScheduleLoading = true;
 
     const payload = {
@@ -237,19 +253,24 @@ export class CheckoutPage implements OnInit {
       next: () => {
         this.isScheduleLoading = false;
         this.scheduleSuccessMessage = 'Ihre Rückrufzeit wurde erfolgreich übermittelt. Vielen Dank!';
+        this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
         this.cdr.detectChanges();
       },
       error: (err) => {
         submit(this.LOCAL_API_BASE).subscribe({
           next: () => {
             this.isScheduleLoading = false;
-            this.scheduleSuccessMessage = 'Ihre Rückrufzeit wurde erfolgreich übermittelt. Vielen Dank!';
+            this.scheduleSuccessMessage =
+              'Ihre Rückrufzeit wurde erfolgreich übermittelt. Vielen Dank!';
+            this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
             this.cdr.detectChanges();
           },
           error: (err2) => {
             this.isScheduleLoading = false;
             this.scheduleErrorMessage =
-              err2?.error?.message || err?.error?.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+              err2?.error?.message ||
+              err?.error?.message ||
+              'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
             console.error('Add-schedule API error:', err, err2);
           },
         });
@@ -257,7 +278,22 @@ export class CheckoutPage implements OnInit {
     });
   }
 
+  skipSchedule(): void {
+    this.scheduleErrorMessage = '';
+    this.scheduleSuccessMessage = '';
+    this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
+    this.cdr.detectChanges();
+  }
+
   navigateToMainStep(step: number): void {
+    if (this.isJourneyCompleted) {
+      return;
+    }
+
+    if (step > this.currentStep) {
+      return;
+    }
+
     if (step > this.maxAccessibleStep) {
       return;
     }
@@ -290,7 +326,6 @@ export class CheckoutPage implements OnInit {
       return addr;
     }
 
-    // Fallback to localStorage address if fetch-form data is not available yet.
     const stored = this.authService.getAddressData();
     if (stored?.zip && stored?.city && stored?.street && stored?.houseNumber) {
       return {
@@ -489,23 +524,7 @@ export class CheckoutPage implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // const payload = {
-    //   customerId: userId,
-    //   deliveryId: deliveryId ?? 0, // or 0 depending on backend expectation
-    //   step: 0,
-    // };
-
-    // this.http.post<FetchFormResponse>(`${API_BASE}/customer/fetch-form`, payload).subscribe({
-    //   next: (res) => this.handleFetchSuccess(res),
-    //   error: (err) => {
-    //     if ([400, 404, 405].includes(err?.status)) {
     this.fetchFormDataWithPost(userId, deliveryId);
-    //       return;
-    //     }
-
-    //     this.handleFetchError(err);
-    //   },
-    // });
   }
 
   private fetchFormDataWithPost(userId: string | null, deliveryId: string | null): void {
@@ -522,7 +541,6 @@ export class CheckoutPage implements OnInit {
     fetch(this.API_BASE).subscribe({
       next: (res) => this.handleFetchSuccess(res),
       error: (err) => {
-        // Fallback to local backend if configured env API is unreachable.
         fetch(this.LOCAL_API_BASE).subscribe({
           next: (res) => this.handleFetchSuccess(res),
           error: (err2) => this.handleFetchError(err2 ?? err),
@@ -532,23 +550,29 @@ export class CheckoutPage implements OnInit {
   }
 
   private handleFetchSuccess(res: FetchFormResponse): void {
+    console.log('[DEBUG] handleFetchSuccess called, res.res=', res?.res, 'data=', res?.data);
     this.isLoading = false;
-
-    console.log('Fetch form response:', JSON.stringify(res, null, 2));
 
     if (res?.res === false) {
       this.errorMessage = res?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
+      console.warn('[DEBUG] fetch-form returned res=false, errorMessage set:', this.errorMessage);
+      this.cdr.detectChanges();   // ← was missing: UI never saw isLoading=false
       return;
     }
 
     this.formData = res?.data ?? null;
+    this.isJourneyCompleted = !!this.formData?.orderPlaced;
     this.maxAccessibleStep = this.getMaxAccessibleStep(this.formData);
+    console.log('[DEBUG] formData set, maxAccessibleStep=', this.maxAccessibleStep);
+    this.cdr.detectChanges();     // ← ensure button re-enables even with OnPush
   }
 
   private handleFetchError(err: any): void {
+    console.error('[DEBUG] handleFetchError called:', err);
     this.isLoading = false;
     this.errorMessage =
       err?.error?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
+    this.cdr.detectChanges();   // ← was missing: UI never saw isLoading=false after fetch failure
   }
 
   private formatFlexibleDate(value: boolean | string | number): string {
@@ -565,6 +589,28 @@ export class CheckoutPage implements OnInit {
     }
 
     return this.formatTimestamp(value);
+  }
+
+  // FIX: timeout changed from 2500 → 5000 ms so the success message is readable
+  private startSuccessRedirect(message: string): void {
+    this.successMessage = `${message} Sie werden zur Startseite weitergeleitet...`;
+    if (this.redirectTimeoutId) {
+      clearTimeout(this.redirectTimeoutId);
+    }
+
+    this.redirectTimeoutId = setTimeout(() => {
+      this.router.navigate(['/home']);
+    }, 5000);
+  }
+
+  private handleDeclarationSuccess(): void {
+    this.formData = {
+      ...(this.formData ?? {}),
+      orderPlaced: true,
+    };
+    this.isJourneyCompleted = true;
+    this.maxAccessibleStep = 0;
+    this.authService.clearCheckoutFlowData();
   }
 
   private getMaxAccessibleStep(data: CustomerFormData | null): number {
@@ -608,7 +654,8 @@ export class CheckoutPage implements OnInit {
   private isDeliveryComplete(data: CustomerFormData, address: CustomerAddress | null): boolean {
     const d: any = data;
     const mobile = d?.mobile ?? d?.deliveryAddress?.mobile ?? d?.address?.mobile;
-    const deliveryDate = d?.deliveryDate ?? d?.deliveryAddress?.deliveryDate ?? d?.address?.deliveryDate;
+    const deliveryDate =
+      d?.deliveryDate ?? d?.deliveryAddress?.deliveryDate ?? d?.address?.deliveryDate;
     return !!(
       address?.zip &&
       address?.city &&

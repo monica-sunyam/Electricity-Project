@@ -72,6 +72,7 @@ export class PaymentMethod implements OnInit, OnDestroy {
   validationErrors: Record<string, string> = {};
   private routerSub?: Subscription;
   maxAccessibleStep = 1;
+  private readonly currentStep = 4;
 
   // ── Main progress-bar step routes ────────────────────────────────────────
   private readonly mainStepRoutes: Record<number, string> = {
@@ -236,7 +237,7 @@ export class PaymentMethod implements OnInit, OnDestroy {
     const payload = {
       customerId: parseInt(userId ?? '0', 10),
       deliveryId: parseInt(deliveryId, 10),
-      step: 4,
+      step: 0,
     };
 
     this.http.post<FetchFormResponse>(`${API_BASE}/customer/fetch-form`, payload).subscribe({
@@ -267,11 +268,15 @@ export class PaymentMethod implements OnInit, OnDestroy {
       return;
     }
 
-    this.paymentMethod = this.normalizePaymentMethod(payment.paymentMethod);
-    this.iban = payment.iban || '';
-    this.firstName = payment.accountHolderFirstName || payment.accountHolder?.firstName || '';
-    this.lastName = payment.accountHolderLastName || payment.accountHolder?.lastName || '';
-    this.sepaConsent = !!payment.sepaConsent;
+    const normalizedMethod = this.normalizePaymentMethod(payment.paymentMethod);
+    this.selectPaymentMethod(normalizedMethod);
+
+    if (normalizedMethod === 'lastschrift') {
+      this.iban = payment.iban || '';
+      this.firstName = payment.accountHolderFirstName || payment.accountHolder?.firstName || '';
+      this.lastName = payment.accountHolderLastName || payment.accountHolder?.lastName || '';
+      this.sepaConsent = !!payment.sepaConsent;
+    }
   }
 
   private normalizePaymentMethod(paymentMethod?: string | null): string {
@@ -289,6 +294,10 @@ export class PaymentMethod implements OnInit, OnDestroy {
   }
 
   navigateToMainStep(step: number): void {
+    if (step > this.currentStep) {
+      return;
+    }
+
     if (step > this.maxAccessibleStep) {
       return;
     }

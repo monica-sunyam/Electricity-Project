@@ -22,6 +22,11 @@ interface CustomerConnection {
   submitLater?: boolean | null;
   meterNumber?: string | null;
   currentProvider?: string | null;
+  cancellation?: {
+    autoCancellation?: boolean | string | number | null;
+    alreadyCancelled?: boolean | string | number | null;
+    selfCancellation?: boolean | string | number | null;
+  } | null;
   autoCancellation?: boolean | null;
   alreadyCancelled?: boolean | null;
   selfCancellation?: boolean | null;
@@ -91,6 +96,7 @@ export class ConnectionData implements OnInit, OnDestroy {
   validationErrors: Record<string, string> = {};
   private routerSub?: Subscription;
   maxAccessibleStep = 1;
+  private readonly currentStep = 3;
 
   // ── Main progress-bar step routes ────────────────────────────────────────
   private readonly mainStepRoutes: Record<number, string> = {
@@ -295,7 +301,7 @@ export class ConnectionData implements OnInit, OnDestroy {
     const payload = {
       customerId: parseInt(userId ?? '0', 10),
       deliveryId: parseInt(deliveryId, 10),
-      step: 3,
+      step: 0,
     };
 
     this.http.post<FetchFormResponse>(`${API_BASE}/customer/fetch-form`, payload).subscribe({
@@ -326,18 +332,36 @@ export class ConnectionData implements OnInit, OnDestroy {
       return;
     }
 
-    if (connection.isMovingIn !== null && connection.isMovingIn !== undefined) {
-      this.selection = connection.isMovingIn ? 'yes' : 'no';
-    }
+    const isMovingIn = this.toBoolean(connection.isMovingIn);
+    this.selectOption(isMovingIn ? 'yes' : 'no');
 
     this.moveInDate = this.parseStoredDate(connection.moveInDate);
-    this.submitLaterChecked = !!connection.submitLater;
+    this.submitLaterChecked = this.toBoolean(connection.submitLater);
     this.meterNumber = connection.meterNumber || '';
     this.marketLocationId = connection.marketLocationId || '';
-    this.currentProvider = connection.currentProvider || '';
-    this.autoCancellation = connection.autoCancellation ?? true;
-    this.alreadyCancelled = !!connection.alreadyCancelled;
-    this.selfCancellation = !!connection.selfCancellation;
+
+    if (this.selection === 'no') {
+      this.currentProvider = connection.currentProvider || '';
+
+      const cancellation = connection.cancellation as
+        | { autoCancellation?: boolean | string | number | null; alreadyCancelled?: boolean | string | number | null; selfCancellation?: boolean | string | number | null }
+        | undefined;
+
+      const autoCancellation = this.toBoolean(
+        cancellation?.autoCancellation ?? connection.autoCancellation,
+        true
+      );
+      const alreadyCancelled = this.toBoolean(
+        cancellation?.alreadyCancelled ?? connection.alreadyCancelled
+      );
+      const selfCancellation = this.toBoolean(
+        cancellation?.selfCancellation ?? connection.selfCancellation
+      );
+
+      this.autoCancellation = autoCancellation;
+      this.alreadyCancelled = alreadyCancelled;
+      this.selfCancellation = selfCancellation;
+    }
 
     const desiredDate =
       this.parseStoredDate(connection.desiredDelivery) ||
@@ -345,12 +369,39 @@ export class ConnectionData implements OnInit, OnDestroy {
       this.parseStoredDate(connection.delivery);
 
     if (desiredDate || connection.deliveryDate?.hasDesiredDate) {
-      this.deliveryOption = 'wunschtermin';
+      this.selectDeliveryOption('wunschtermin');
       this.desiredDeliveryDate = desiredDate;
     } else {
-      this.deliveryOption = 'schnellstmoeglich';
-      this.desiredDeliveryDate = null;
+      this.selectDeliveryOption('schnellstmoeglich');
     }
+  }
+
+  private toBoolean(
+    value: boolean | string | number | null | undefined,
+    fallback = false
+  ): boolean {
+    if (value === null || value === undefined) {
+      return fallback;
+    }
+
+    if (typeof value === 'boolean') {
+      return value;
+    }
+
+    if (typeof value === 'number') {
+      return value === 1;
+    }
+
+    const normalized = value.toString().trim().toLowerCase();
+    if (['1', 'true', 'yes', 'ja'].includes(normalized)) {
+      return true;
+    }
+
+    if (['0', 'false', 'no', 'nein'].includes(normalized)) {
+      return false;
+    }
+
+    return fallback;
   }
 
   private parseStoredDate(value?: boolean | number | string | null): Date | null {
@@ -393,6 +444,10 @@ export class ConnectionData implements OnInit, OnDestroy {
   }
 
   navigateToMainStep(step: number): void {
+    if (step > this.currentStep) {
+      return;
+    }
+
     if (step > this.maxAccessibleStep) {
       return;
     }

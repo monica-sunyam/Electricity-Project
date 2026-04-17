@@ -92,6 +92,21 @@ export interface RatesResponse {
   res: boolean;
 }
 
+interface SelectProviderState {
+  priceDisplayMonthly: boolean;
+  kundenPrivat: boolean;
+  alleTarife: boolean;
+  maxTermEgal: boolean;
+  maxTerm24: boolean;
+  maxTerm12: boolean;
+  minGuaranteeEgal: boolean;
+  minGuarantee24: boolean;
+  minGuarantee12: boolean;
+  minGuarantee6: boolean;
+  selectedOption: string;
+  isOpen: boolean;
+}
+
 @Component({
   selector: 'app-select-provider',
   standalone: true,
@@ -114,6 +129,7 @@ export interface RatesResponse {
   styleUrl: './select-provider.css',
 })
 export class SelectProvider implements OnInit {
+  private readonly providerStateStorageKey = 'select_provider_state';
   zip = '01067';
   city = 'Dresden';
   street = 'Adlergasse';
@@ -189,6 +205,7 @@ export class SelectProvider implements OnInit {
   hasAddress = false;
   // ngOnInit(): void {}
   ngOnInit(): void {
+    this.restoreViewState();
     const data = this.authService.getAddressData();
 
     console.log('Received:', data);
@@ -565,7 +582,7 @@ export class SelectProvider implements OnInit {
       consum: this.consum,
       type: this.type,
       branch: this.branch,
-      customerId: Number(customerId),
+      customerId: Number(customerId) ,
     };
 
     this.http.post<RatesResponse>('http://192.168.0.155:8080/api/get-rates', body).subscribe({
@@ -602,6 +619,7 @@ export class SelectProvider implements OnInit {
         this.hasLoadedRates = true;
         this.isLoading = false;
 
+        this.persistViewState();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -647,6 +665,7 @@ export class SelectProvider implements OnInit {
     }
 
     this.filteredRates = rates;
+    this.persistViewState();
   }
 
   private expandVisibleRates(): void {
@@ -660,6 +679,7 @@ export class SelectProvider implements OnInit {
       this.fetchRates();
     }
     this.isOpen = !this.isOpen;
+    this.persistViewState();
   }
 
   openPage(selectedRate: Rate): void {
@@ -676,9 +696,11 @@ export class SelectProvider implements OnInit {
     this.isDropdownOpen = false;
     this.applyFiltersAndSort();
     this.expandVisibleRates();
+    this.persistViewState();
   }
 
   onFilterChange(): void {
+    this.persistViewState();
     if (this.allRates.length) {
       this.applyFiltersAndSort();
       this.expandVisibleRates();
@@ -805,5 +827,54 @@ export class SelectProvider implements OnInit {
   handleEscape(): void {
     this.isInfoOpen = false;
     this.isDropdownOpen = false;
+  }
+
+  private persistViewState(): void {
+    const state: SelectProviderState = {
+      priceDisplayMonthly: this.priceDisplayMonthly,
+      kundenPrivat: this.kundenPrivat,
+      alleTarife: this.alleTarife,
+      maxTermEgal: this.maxTermEgal,
+      maxTerm24: this.maxTerm24,
+      maxTerm12: this.maxTerm12,
+      minGuaranteeEgal: this.minGuaranteeEgal,
+      minGuarantee24: this.minGuarantee24,
+      minGuarantee12: this.minGuarantee12,
+      minGuarantee6: this.minGuarantee6,
+      selectedOption: this.selectedOption,
+      isOpen: this.isOpen,
+    };
+
+    try {
+      localStorage.setItem(this.providerStateStorageKey, JSON.stringify(state));
+    } catch (error) {
+      console.error('Error saving select-provider state:', error);
+    }
+  }
+
+  private restoreViewState(): void {
+    try {
+      const raw = localStorage.getItem(this.providerStateStorageKey);
+      if (!raw) {
+        return;
+      }
+
+      const state = JSON.parse(raw) as Partial<SelectProviderState>;
+      this.priceDisplayMonthly = state.priceDisplayMonthly ?? this.priceDisplayMonthly;
+      this.kundenPrivat = state.kundenPrivat ?? this.kundenPrivat;
+      this.type = this.kundenPrivat ? 'private' : 'business';
+      this.alleTarife = state.alleTarife ?? this.alleTarife;
+      this.maxTermEgal = state.maxTermEgal ?? this.maxTermEgal;
+      this.maxTerm24 = state.maxTerm24 ?? this.maxTerm24;
+      this.maxTerm12 = state.maxTerm12 ?? this.maxTerm12;
+      this.minGuaranteeEgal = state.minGuaranteeEgal ?? this.minGuaranteeEgal;
+      this.minGuarantee24 = state.minGuarantee24 ?? this.minGuarantee24;
+      this.minGuarantee12 = state.minGuarantee12 ?? this.minGuarantee12;
+      this.minGuarantee6 = state.minGuarantee6 ?? this.minGuarantee6;
+      this.selectedOption = state.selectedOption || this.selectedOption;
+      this.isOpen = !!state.isOpen;
+    } catch (error) {
+      console.error('Error restoring select-provider state:', error);
+    }
   }
 }
