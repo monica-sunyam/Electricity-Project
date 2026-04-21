@@ -1,3 +1,4 @@
+/*----------------------------- Power of attorney section --------------------------------------*/
 .btn-text {
   display: flex;
   align-items: center;
@@ -453,7 +454,7 @@
   transform: translateY(-50%);
   cursor: pointer;
 }
-
+/*-------------------------------- Reset Password Section -------------------------------*/
 /* ══════════════════════════════════════════════
    PASSWORD GUIDELINES
 ══════════════════════════════════════════════ */
@@ -597,6 +598,7 @@
   border-right: none;
 }
 
+/*----------------------- Service section -------------- */
 .service-tabs-container {
   display: flex;
   gap: 12px;
@@ -641,3 +643,404 @@
   font-size: 14px;
 }
 
+.textarea:focus {
+  outline: none;
+  border-color: black;
+}
+
+/* Service section card start*/
+.scroll-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.service-card-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 20px;
+}
+
+.service-card-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Common Card */
+.service-card {
+  width: 300px;
+  height: 200px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid #fc770aee;
+  padding: 14px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Orange Card */
+.add-service-card {
+  background: #fc770aee;
+  color: #fff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  padding: 16px;
+}
+
+/* ICON FIX */
+.add-service-card .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.add-service-card .logo {
+  height: 130px;
+  width: 130px;
+  object-fit: contain;
+  display: block;
+}
+
+/* TEXT FIX */
+.add-service-card .text {
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 200px;
+}
+
+/* Contract Card */
+.contract-service-card .header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.contract-service-card .logo {
+  height: 50px;
+  object-fit: contain;
+}
+
+.contract-service-card .title {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.contract-service-card .info {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.5;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Navigation buttons */
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.nav.service-left {
+  left: 0px;
+}
+
+.nav.right {
+  right: 0px;
+}
+
+/* Card base */
+.contract-service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Row 1: Logo */
+.logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* left align */
+
+  height: 28px; /* fixed row height */
+  padding-left: 2px; /* small inner spacing */
+}
+
+/* logo container behavior */
+.logo {
+  height: 100%; /* fill row height */
+  max-width: 120px; /* prevent too wide logos */
+  object-fit: contain; /* 👈 keeps aspect ratio */
+  display: block;
+}
+
+/* Row 2: Title + date */
+.title-row {
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.date {
+  color: #666;
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+/* Info section */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+/* 3-column layout: icon | label | value */
+.info-item {
+  display: grid;
+  grid-template-columns: 16px 110px 1fr;
+  align-items: start;
+  column-gap: 6px;
+}
+
+/* icon */
+.icon {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* label (left aligned, fixed width) */
+.label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* value (right column, wraps nicely) */
+.value {
+  color: #555;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  color: #555;
+  min-width: 0;
+}
+
+/* ══════════ Open requests  Section ══════════ */
+.request-list {
+  /* width: 100%; */
+  margin-top: 16px;
+  /* border-radius: 4px; */
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* Header */
+.list-header {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 2fr 2.5fr 1fr;
+  background: #fc770aee;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+
+/* Row */
+.list-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 2fr 2.5fr 1fr;
+  /* background: #f5f5f5; */
+  padding: 5px 12px;
+  align-items: center;
+}
+.list-row:nth-child(odd) {
+  background: #afadad;
+}
+
+.list-row:nth-child(even) {
+  background: #ffffff;
+}
+/* Status */
+.status {
+  color: black;
+}
+
+/* Details column */
+.details {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+/* Link style */
+.link {
+  color: #1e88e5;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Edit icon */
+.material-symbols-outlined {
+  font-size: 18px;
+  cursor: pointer;
+  color: black;
+}
+.no-padding-child {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.chat-history {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+/* Top orange bar */
+.chat-header {
+  background: #fc770aee;
+  color: #fff;
+  padding: 6px 12px;
+  font-weight: 600;
+}
+
+/* Meta info */
+.chat-meta {
+  padding: 10px 12px;
+  line-height: 1.6;
+}
+
+/* Message card */
+.message-card {
+  position: relative;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 12px;
+  background: #fff;
+  max-width: 75%;
+  width: auto;
+}
+
+/* Left vs Right alignment */
+.message-card.left {
+  margin-left: 12px;
+  align-items: start;
+}
+
+.message-card.right {
+  margin-left: auto;
+  margin-right: 12px;
+}
+
+/* Orange label inside card */
+.message-title {
+  /* position: absolute; */
+  left: 12px;
+  background: #fc770aee;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  width: 50%;
+}
+
+/* Message body */
+.message-body {
+  margin-top: 8px;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Button */
+.chat-action {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 12px;
+}
+
+.history-confirmation {
+  margin-bottom: 5px;
+}
+
+.new-message-section {
+  margin-top: 20px;
+  padding: 12px;
+  background: #fff;
+}
+
+/* Heading outside */
+.new-message-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Big textarea */
+.new-message-input {
+  width: 100%;
+  height: 200px;
+  border: 1px solid black;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 13px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+/* focus style */
+.new-message-input:focus {
+  outline: none;
+  border-color: black;
+}
+
+.icon svg {
+  width: 16px;
+  height: 16px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+/* Service section card end */
