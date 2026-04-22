@@ -87,7 +87,7 @@
   <!-- /sidebar -->
 
   <!-- ══════════ MAIN CONTENT ══════════ -->
-  <div class="main-content">
+  <div class="main-content" *ngIf="customerData">
     <div class="progress-card">
       <div class="progress-header">Mein Konto</div>
 
@@ -97,9 +97,11 @@
           <img src="assets/icons/Login.png" alt="Profile" />
         </div>
 
-        <div class="profile-name">Marie Mustermann</div>
+        <div class="profile-name">{{ customerData.name }}</div>
 
-        <div class="profile-email">eingeloggt als <strong>marie@mustermann.de</strong></div>
+        <div class="profile-email">
+          eingeloggt als <strong>{{ customerData.email }}</strong>
+        </div>
 
         <div class="profile-logout" (click)="openLogoutModal()">Logout</div>
       </div>
@@ -188,10 +190,23 @@
 
               <div class="service-card-container" #scrollContainer>
                 <!-- Orange Card -->
-                <div class="service-card add-service-card">
+                <div
+                  class="service-card add-service-card"
+                  [class.inactive]="selectedIndex !== -1"
+                  (click)="selectOrangeCard()"
+                >
                   <div class="icon">
-                    <img src="/assets/icons/icon_white_clean.png" class="logo" alt="logo" />
+                    <img
+                      [src]="
+                        selectedIndex === -1
+                          ? '/assets/icons/service_white.png'
+                          : '/assets/icons/service_orange.png'
+                      "
+                      class="logo"
+                      alt="logo"
+                    />
                   </div>
+
                   <div class="text">
                     Allgemeine Anfrage ohne<br />
                     Vertragszuordnung erstellen
@@ -199,7 +214,12 @@
                 </div>
 
                 <!-- Cards -->
-                <div class="service-card contract-service-card" *ngFor="let card of cards">
+                <div
+                  class="service-card contract-service-card"
+                  *ngFor="let card of cards; let i = index"
+                  (click)="selectCard(i)"
+                  [class.active]="selectedIndex === i"
+                >
                   <!-- Logo -->
                   <div class="logo-row">
                     <img [src]="card.logo" class="logo" />
@@ -267,15 +287,34 @@
               </div>
 
               <div class="form-group" style="width: 50%">
-                <div class="field-wrap" style="padding: 4px 12px 4px 12px">
-                  <!-- <span class="field-label">Kategorie</span> -->
-                  <input matInput placeholder="Bitte wählen..." />
+                <div class="field-wrap dropdown-wrap" (click)="toggleDropdown($event)">
+                  <!-- Selected value -->
+                  <input
+                    type="text"
+                    [value]="selectedCategory"
+                    placeholder="Bitte wählen..."
+                    readonly
+                  />
+
+                  <!-- Custom Arrow -->
+                  <span class="arrow"></span>
+
+                  <!-- Dropdown -->
+                  <div class="dropdown" *ngIf="showDropdown">
+                    <div
+                      class="dropdown-item"
+                      *ngFor="let item of categories"
+                      (click)="selectCategory(item, $event)"
+                    >
+                      {{ item }}
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <div class="form-group label">
                 <div class="tab-heading">Ihr Anfragetext</div>
               </div>
-
               <textarea
                 class="textarea"
                 rows="5"
@@ -290,7 +329,7 @@
                   margin-top: 10px;
                 "
               >
-                <button class="btn-primary" (click)="nextStep(2)">
+                <button class="btn-primary" (click)="toggleService(2)">
                   <span class="spinner"></span>
                   Anfrage abschicken
                 </button>
@@ -1071,6 +1110,30 @@
         <div class="login-berich">Bitte geben Sie Ihr neues Passwort ein</div>
         <div class="tab-row">
           <div class="form-group">
+            <div class="login-text">Altes Passwort eingeben:</div>
+          </div>
+
+          <div class="form-group">
+            <div class="field-wrap">
+              <div>
+                <span class="field-label">Altes Passwort</span>
+                <input
+                  #oldPwField
+                  name="oldPassword"
+                  [(ngModel)]="oldPassword"
+                  [type]="showOldPw ? 'text' : 'password'"
+                />
+              </div>
+              <span class="material-symbols-outlined pw-toggle" (click)="showOldPw = !showOldPw">{{
+                showOldPw ? 'visibility' : 'visibility_off'
+              }}</span>
+            </div>
+            <div class="field-error-msg" *ngIf="fieldErrors['oldPassword']">
+              {{ fieldErrors['oldPassword'] }}
+            </div>
+          </div>
+
+          <div class="form-group">
             <div class="login-text">Neues Passwort eingeben:</div>
           </div>
 
@@ -1080,12 +1143,13 @@
                 <span class="field-label">Passwort</span>
                 <input
                   #pwField
-                  name="password"
+                  name="newPassword"
                   [type]="showPw ? 'text' : 'password'"
-                  [value]="password"
+                  [value]="newPassword"
+                  [(ngModel)]="newPassword"
                   [style.background-color]="passwordMismatch ? '#fff0f0' : 'white'"
                   (input)="
-                    password = $any($event.target).value;
+                    newPassword = $any($event.target).value;
                     validatePassword($any($event.target).value, repField.value)
                   "
                 />
@@ -1093,6 +1157,9 @@
               <span class="material-symbols-outlined pw-toggle" (click)="showPw = !showPw">{{
                 showPw ? 'visibility' : 'visibility_off'
               }}</span>
+            </div>
+            <div class="field-error-msg" *ngIf="fieldErrors['newPassword']">
+              {{ fieldErrors['newPassword'] }}
             </div>
           </div>
 
@@ -1106,9 +1173,10 @@
                 <span class="field-label">Passwort wiederholen</span>
                 <input
                   #repField
-                  name="passwordRepeat"
+                  name="confirmPassword"
                   [type]="showRepPw ? 'text' : 'password'"
                   [style.background-color]="passwordMismatch ? '#fff0f0' : 'white'"
+                  [(ngModel)]="confirmPassword"
                   (input)="validatePassword(pwField.value, $any($event.target).value)"
                 />
               </div>
@@ -1116,7 +1184,11 @@
                 showRepPw ? 'visibility' : 'visibility_off'
               }}</span>
             </div>
+            <div class="login-text" style="color: #cc0000" *ngIf="passwordMismatch">
+              Die Passwörter stimmen nicht überein
+            </div>
           </div>
+          <div class="error-msg" *ngIf="apiError">{{ apiError }}</div>
 
           <div class="password-guidelines">
             <div class="login-text" style="font-weight: 50; margin-bottom: 6px">
@@ -1189,10 +1261,27 @@
             "
           >
             <button class="btn-back">&lt; Zurück</button>
+            <!-- <div class="form-actions">
+              <button class="btn-primary" [disabled]="isLoadingReset" (click)="resetPassword()">
+                <span *ngIf="isLoadingReset" class="spinner"></span>
+                {{ isLoadingReset ? 'Einreichen...' : 'Neues Passwort absenden' }}
+              </button>
+            </div> -->
+
             <div class="form-actions">
-              <button class="btn-primary" (click)="nextStep(2)">
-                <span class="spinner"></span>
-                Neues Passwort absenden
+              <button
+                type="button"
+                class="btn-primary"
+                [disabled]="isLoadingReset"
+                (click)="resetPassword()"
+              >
+                <span *ngIf="isLoadingReset; else normal">
+                  <span class="spinner"></span> Einreichen...
+                </span>
+
+                <ng-template #normal>
+                  <span> Neues Passwort absenden</span>
+                </ng-template>
               </button>
             </div>
           </div>
@@ -1202,17 +1291,17 @@
       <!-- OTP VERIFY  -->
       <div class="container-login" *ngIf="activeTab === 7 && currentStep === 2">
         <div class="login-berich">
-          {{ otpInvalid || newOtp ? 'Geben Sie den Code ein' : 'Bitte überprüfen Sie den Code' }}
+          {{ otpInvalid ? 'Bitte überprüfen Sie den Code' : 'Geben Sie den Code ein' }}
         </div>
 
         <div class="login-row">
-          <div class="login-text" *ngIf="otpInvalid">
+          <div class="login-text" *ngIf="otpInvalid" style="font-size: 15px">
             <strong>
               Der eingegebene Code stimmt leider nicht mit dem gesendeten Code überein
             </strong>
           </div>
 
-          <div class="login-text" *ngIf="newOtp">
+          <div class="login-text" *ngIf="newOtp" style="font-size: 14px">
             Wir haben bereits einen neuen Code an Ihre E-Mail-Adresse gesendet.
           </div>
 
@@ -1223,7 +1312,7 @@
               <input
                 name="email"
                 type="email"
-                value="marie@mustermann.de"
+                [value]="customerData.email"
                 style="background-color: #afadad"
                 readonly
               />
@@ -1239,7 +1328,7 @@
                 : 'Bitte geben Sie den Code ein, den wir an '
             }}
 
-            <strong>marie@mustermann.de</strong> gesendet haben.
+            <strong>{{ customerData.email }}</strong> gesendet haben.
           </div>
           <div class="login-text">Code aus E-Mail eingeben</div>
           <div class="code-inputs" [class.code-error]="otpError">
@@ -1262,6 +1351,8 @@
             <span
               [style.color]="isResendDisabled ? '#999' : '#0085e0'"
               [style.pointerEvents]="isResendDisabled ? 'none' : 'auto'"
+              (click)="resendOtp()"
+              style="cursor: pointer"
             >
               <span *ngIf="isResendDisabled">
                 Code erneut senden&nbsp;
@@ -1270,16 +1361,45 @@
 
               <span *ngIf="!isResendDisabled"> Code erneut senden </span>
             </span>
+            <span *ngIf="resendSuccess" style="color: green; margin-left: 8px"
+              >✓ Code gesendet</span
+            >
           </div>
 
           <div style="display: flex; flex-direction: row; justify-content: space-between">
             <button class="btn-back" (click)="nextStep(1)" style="cursor: pointer">
               &lt; Zurück
             </button>
+            <!-- <div class="form-actions">
+              <button
+                class="btn-primary"
+                [disabled]="isLoading || otpValue.length < 6"
+                (click)="verifyOtp()"
+              >
+                <span *ngIf="isLoading" class="spinner"></span>
+                {{
+                  isLoading
+                    ? 'Prüfen...'
+                    : otpInvalid || newOtp
+                      ? 'Code erneut prüfen'
+                      : 'Code prüfen'
+                }}
+              </button>
+            </div> -->
             <div class="form-actions">
-              <button class="btn-primary" [disabled]="otpValue.length < 6" (click)="nextStep(3)">
-                <span class="spinner"></span>
-                {{ otpInvalid || newOtp ? 'Code erneut prüfen' : 'Code prüfen' }}
+              <button
+                type="button"
+                class="btn-primary"
+                [disabled]="isLoading || otpValue.length < 6"
+                (click)="verifyOtp()"
+              >
+                <span *ngIf="isLoading; else normal">
+                  <span class="spinner"></span> Prüfen...
+                </span>
+
+                <ng-template #normal>
+                  <span> {{ otpInvalid || newOtp ? 'Code erneut prüfen' : 'Code prüfen' }}</span>
+                </ng-template>
               </button>
             </div>
           </div>
@@ -1295,7 +1415,7 @@
             </div>
             <div class="tab-text">
               Ein Bestätigungsmail zur Passwortänderung wurde an Ihre E-Mail-Adresse
-              marie@mustermann.de gesendet.
+              {{ customerData.email }} gesendet.
             </div>
           </div>
         </div>

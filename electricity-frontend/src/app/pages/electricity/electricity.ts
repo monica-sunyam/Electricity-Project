@@ -6,6 +6,7 @@ import {
   ViewChild,
   HostListener,
   ElementRef,
+  computed,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +45,8 @@ export class Electricity implements OnInit {
   cityOptions: { city: string; city_id: string }[] = [];
   streetOptions: { street: string; street_id: string }[] = [];
   isRestoring = false;
+
+  isLoggedIn = computed(() => !!this.authService.currentUser()?.user_id);
 
   constructor(
     public dialog: MatDialog,
@@ -104,25 +107,31 @@ export class Electricity implements OnInit {
     this.handlePostalCodeChanges();
     this.handleCityChanges();
     this.handleStreetChanges();
+    if (this.isLoggedIn()) {
+      this.authService.fetchCustomer();
+    }
 
-    // Restore saved data
-    const saved = this.authService.getAddressData();
+    this.authService.getCustomerData().subscribe((data) => {
+      if (!data?.address) return;
 
-    if (saved) {
+      const saved = data.address;
+
+      console.log('Prefill Address:', saved);
+
       this.isRestoring = true;
 
       this.addressForm.patchValue({
         postalCode: saved.zip,
       });
 
-      this.selectedPersons = saved.persons;
-      this.consumption = saved.consumption;
+      // this.selectedPersons = saved.persons;
+      // this.consumption = saved.consumption;
 
-      if (this.selectedPersons > 4) {
-        this.showCustomInput = true;
-        this.customPersonsValue = this.selectedPersons;
-        this.onCustomPersonsChange(this.customPersonsValue.toString());
-      }
+      // if (this.selectedPersons > 4) {
+      //   this.showCustomInput = true;
+      //   this.customPersonsValue = this.selectedPersons;
+      //   this.onCustomPersonsChange(this.customPersonsValue.toString());
+      // }
       // else {
       //   this.showCustomInput = false;
       // }
@@ -187,13 +196,10 @@ export class Electricity implements OnInit {
           });
           this.cdr.detectChanges();
         });
-        // }
         this.showCityDropdown = false;
         this.showDropdown = false;
-
-        // this.isRestoring = false;
       });
-    }
+    });
   }
 
   streetSearch = '';
@@ -480,17 +486,17 @@ export class Electricity implements OnInit {
       return; // or show error
     }
 
-    const data = {
-      zip: this.addressForm.value.postalCode,
-      city: selectedCityObj.city,
-      city_id: selectedCityObj.city_id,
-      street: this.addressForm.value.street,
-      houseNumber: this.addressForm.value.houseNumber,
-      persons: this.selectedPersons,
-      consumption: this.consumption,
-    };
+    // const data = {
+    //   zip: this.addressForm.value.postalCode,
+    //   city: selectedCityObj.city,
+    //   city_id: selectedCityObj.city_id,
+    //   street: this.addressForm.value.street,
+    //   houseNumber: this.addressForm.value.houseNumber,
+    //   persons: this.selectedPersons,
+    //   consumption: this.consumption,
+    // };
 
-    this.authService.setAddressData(data);
+    // this.authService.setAddressData(data);
 
     this.router.navigate(['/electricity-comparision']);
   }

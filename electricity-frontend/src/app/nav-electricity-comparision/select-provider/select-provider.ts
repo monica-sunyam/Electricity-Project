@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
   HostListener,
   NgZone,
@@ -201,29 +202,30 @@ export class SelectProvider implements OnInit {
     private ngZone: NgZone,
     private fb: FormBuilder,
   ) {}
+  isLoggedIn = computed(() => !!this.authService.currentUser()?.user_id);
 
   hasAddress = false;
-  // ngOnInit(): void {}
+
   ngOnInit(): void {
     this.restoreViewState();
-    const data = this.authService.getAddressData();
+    // const data = this.authService.getAddressData();
 
-    console.log('Received:', data);
+    // console.log('Received:', data);
 
-    if (data && data.zip && data.city && data.street) {
-      this.zip = data.zip;
-      this.city = data.city;
-      this.street = data.street;
-      this.houseNumber = data.houseNumber;
-      this.consum = data.consumption;
+    // if (data && data.zip && data.city && data.street) {
+    //   this.zip = data.zip;
+    //   this.city = data.city;
+    //   this.street = data.street;
+    //   this.houseNumber = data.houseNumber;
+    //   this.consum = data.consumption;
 
-      this.hasAddress = true;
-      // this.isOpen = true;
-      this.isOpen = false;
-      this.toggleDiv();
-    } else {
-      this.hasAddress = false;
-    }
+    //   this.hasAddress = true;
+    //   // this.isOpen = true;
+    //   this.isOpen = false;
+    //   this.toggleDiv();
+    // } else {
+    //   this.hasAddress = false;
+    // }
 
     this.addressForm = this.fb.group({
       postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
@@ -244,10 +246,19 @@ export class SelectProvider implements OnInit {
     this.handleCityChanges();
     this.handleStreetChanges();
 
-    // Restore saved data
-    const saved = this.authService.getAddressData();
+    if (this.isLoggedIn()) {
+      this.authService.fetchCustomer();
+    }
 
-    if (saved) {
+    this.authService.getCustomerData().subscribe((data) => {
+      if (!data?.address) return;
+      this.hasAddress = true;
+      this.isOpen = false;
+      this.toggleDiv();
+      const saved = data.address;
+
+      console.log('Prefill Address:', saved);
+
       this.isRestoring = true;
 
       this.addressForm.patchValue({
@@ -255,8 +266,8 @@ export class SelectProvider implements OnInit {
         consum: saved.consumption,
       });
 
-      this.selectedPersons = saved.persons;
-      this.consum = saved.consumption;
+      // this.selectedPersons = saved.persons;
+      // this.consum = saved.consumption;
 
       this.addressService.getCitiesByZip(saved.zip).subscribe((cities) => {
         this.cityOptions = cities;
@@ -296,6 +307,7 @@ export class SelectProvider implements OnInit {
             this.addressForm.get('street')?.setValue(matchedStreet.street, {
               emitEvent: false,
             });
+            this.isStreetLoading = false;
           }
 
           this.addressForm.get('houseNumber')?.enable();
@@ -306,15 +318,13 @@ export class SelectProvider implements OnInit {
             },
             { emitEvent: false },
           );
-
-          this.showCityDropdown = false;
-          this.showDropdown = false;
-
-          this.isStreetLoading = false;
-          // this.isRestoring = false;
         });
+        this.showCityDropdown = false;
+        this.showDropdown = false;
+
+        // this.isRestoring = false;
       });
-    }
+    });
   }
   streetSearch = '';
   filteredStreetOptions: any[] = [];
@@ -406,7 +416,7 @@ export class SelectProvider implements OnInit {
     this.houseNumber = data.houseNumber;
     this.selectedPersons = data.persons;
 
-    this.authService.setAddressData(data);
+    // this.authService.setAddressData(data);
     this.hasAddress = true;
     this.fetchRates();
     this.isOpen = true;

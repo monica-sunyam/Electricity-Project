@@ -33,12 +33,10 @@ export class Header {
     private router: Router,
     private route: ActivatedRoute,
   ) {
-    // This 'effect' runs automatically every time the signal changes
     effect(() => {
       const state = this.isLoggedIn();
       console.log('UI Signal changed to:', state);
 
-      // Manually tell Angular: "I don't care what you think, redraw now!"
       this.cdr.detectChanges();
     });
   }

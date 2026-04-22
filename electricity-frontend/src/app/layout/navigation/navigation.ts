@@ -75,7 +75,7 @@ export class Navigation implements OnInit {
       next: (data) => {
         this.navItems = data;
         this.isLoading = false;
-        this.cdr.detectChanges();
+        // this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;

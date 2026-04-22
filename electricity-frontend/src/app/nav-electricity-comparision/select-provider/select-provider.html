@@ -77,7 +77,6 @@
                   (input)="onCityInput($event)"
                   (focus)="closeAllDropdowns(); showCityDropdown = true"
                   (click)="$event.stopPropagation()"
-                  [disabled]="addressForm.get('city')?.disabled"
                 />
 
                 <div class="dropdown" *ngIf="showCityDropdown">

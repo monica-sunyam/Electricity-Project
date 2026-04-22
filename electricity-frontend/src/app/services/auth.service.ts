@@ -2,6 +2,7 @@ import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 /* Interface for User */
 export interface AuthUser {
@@ -43,6 +44,7 @@ export class AuthService {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private http: HttpClient,
   ) {
     this.loadUserFromStorage();
     this.loadFromStorage();
@@ -151,8 +153,9 @@ export class AuthService {
   logout(): void {
     try {
       this.authState$.next(null);
+      this.customerData$.next(null);
       this.clearStorage();
-      this.clearAddress();
+      // this.clearAddress();
       this.clearSelectedProvider();
       this.currentUser.set(null);
       this.router.navigate(['/'], { relativeTo: this.route });
@@ -337,7 +340,6 @@ export class AuthService {
     }
   }
 
-
   /// Address save local ///
 
   /* Load from localStorage */
@@ -419,5 +421,50 @@ export class AuthService {
   clearCheckoutFlowData(): void {
     this.clearDeliveryId();
     this.clearSelectedProvider();
+  }
+
+  private customerData$ = new BehaviorSubject<any | null>(null);
+
+  // MUST exist
+  getCustomerData(): Observable<any | null> {
+    return this.customerData$.asObservable();
+  }
+
+  // MUST be public if you call from component
+  public fetchCustomer(): void {
+    const customerId = this.getUserId();
+
+    console.log('FETCH ID:', customerId); // debug
+
+    if (!customerId) return;
+
+    const body = { id: Number(customerId) };
+
+    this.http
+      .post<any>('http://192.168.0.155:8080/customer/fetch-customer-detail', body)
+      .subscribe({
+        next: (res) => {
+          console.log('API RESPONSE:', res);
+
+          if (!res?.res) return;
+
+          const data = res.data;
+
+          const formattedData = {
+            id: data.id,
+            name: `${data?.firstName || ''} ${data?.lastName || ''}`.trim(),
+            email: data.email,
+            phone: data.mobileNumber,
+            salutation: data.salutation,
+            deliveryDetails: data.deliveryDetails || [],
+            address: data.address || null, // ✅ include address
+          };
+
+          this.customerData$.next(formattedData); // ✅ important
+        },
+        error: (err) => {
+          console.error('API Error:', err);
+        },
+      });
   }
 }
