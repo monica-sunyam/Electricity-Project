@@ -5,14 +5,15 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from 'express';
 import { CommonModule } from '@angular/common';
 import SignaturePad from 'signature_pad';
-import { CountdownModule, CountdownConfig, CountdownEvent, CountdownComponent } from 'ngx-countdown';
+import { CountdownConfig, CountdownEvent, CountdownComponent } from 'ngx-countdown';
 import { environment } from '../../environments/environment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-customer',
-  imports: [CommonModule, CountdownModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, CountdownComponent, MatFormFieldModule, MatInputModule, MatIconModule],
   templateUrl: './customer.html',
   styleUrl: './customer.css',
 })
@@ -83,6 +84,123 @@ export class Customer {
 
     this.authService.logout();
   }
+  /* ════════════════════════════════════════════════════════════════════════════════════════════════*/
+
+  /*── Service Section Start ──*/
+
+  showList = true;
+  showDetails = false;
+  confirmationList = false;
+
+  openDetails() {
+    this.showList = false;
+    this.showDetails = true;
+  }
+
+  toggleService(step: number) {
+    this.serviceTab = step;
+
+    this.showList = true;
+    this.showDetails = false;
+    this.confirmationList = false;
+  }
+  backToList() {
+    this.showList = true;
+    this.showDetails = false;
+  }
+  confirmation() {
+    this.showList = false;
+    this.showDetails = false;
+    this.confirmationList = true;
+  }
+
+  cards = [
+    {
+      logo: 'assets/icons/Icons_energyprovider/eon.png',
+      title: 'E.ON Ökostrom Extra 12',
+      date: '27.03.2026',
+      data: [
+        { label: 'Zählernummer:', value: 'XXX-1399-24689-07', icon: 'meter' },
+        { label: 'Adresse:', value: 'Marie Mustermann, Musterstraße 4a', icon: 'home' },
+        { label: 'Stromtyp:', value: 'Hausstrom', icon: 'current' },
+        { label: 'Vertragsnummer:', value: 'ÖKO-234-6789-87451', icon: 'doc' },
+      ],
+    },
+    {
+      logo: 'assets/icons/Icons_energyprovider/vattenfall.png',
+      title: 'Strom XXL Extra 12',
+      date: '14.09.2026',
+      data: [
+        { label: 'Zählernummer:', value: 'B-3951-875429-07', icon: 'meter' },
+        {
+          label: 'Adresse:',
+          value: 'Marie Mustermann Mustertraße 4a 67890 Musterhausen',
+          icon: 'home',
+        },
+        { label: 'Stromtyp:', value: 'Hausstrom', icon: 'current' },
+        { label: 'Vertragsnummer:', value: 'Flex-555-697945100', icon: 'doc' },
+      ],
+    },
+    {
+      logo: 'assets/icons/Icons_energyprovider/eon.png',
+      title: 'E.ON Ökostrom Extra 12',
+      date: '27.03.2026',
+      data: [
+        { label: 'Zählernummer:', value: 'XXX-1399-24689-07', icon: 'meter' },
+        { label: 'Adresse:', value: 'Marie Mustermann, Musterstraße 4a', icon: 'home' },
+        { label: 'Stromtyp:', value: 'Hausstrom', icon: 'current' },
+        { label: 'Vertragsnummer:', value: 'ÖKO-234-6789-87451', icon: 'doc' },
+      ],
+    },
+    {
+      logo: 'assets/icons/Icons_energyprovider/vattenfall.png',
+      title: 'Strom XXL Extra 12',
+      date: '14.09.2026',
+      data: [
+        { label: 'Zählernummer:', value: 'B-3951-875429-07', icon: 'meter' },
+        {
+          label: 'Adresse:',
+          value: 'Marie Mustermann Mustertraße 4a 67890 Musterhausen',
+          icon: 'home',
+        },
+        { label: 'Stromtyp:', value: 'Hausstrom', icon: 'current' },
+        { label: 'Vertragsnummer:', value: 'Flex-555-697945100', icon: 'doc' },
+      ],
+    },
+  ];
+
+  normalizeIcon(icon: string): string {
+    if (!icon) return 'meter';
+
+    icon = icon.toLowerCase();
+
+    if (icon.includes('meter')) return 'meter';
+    if (icon.includes('home')) return 'home';
+    if (icon.includes('current') || icon.includes('electric')) return 'current';
+    if (icon.includes('doc')) return 'doc';
+
+    return 'meter';
+  }
+
+  @ViewChild('scrollContainer', { static: false })
+  scrollContainer!: ElementRef;
+
+  scrollLeft() {
+    this.scrollContainer.nativeElement.scrollBy({
+      left: -330,
+      behavior: 'smooth',
+    });
+  }
+
+  scrollRight() {
+    this.scrollContainer.nativeElement.scrollBy({
+      left: 330,
+      behavior: 'smooth',
+    });
+  }
+
+  /*── Service Section End ──*/
+
   /* ════════════════════════════════════════════════════════════════════════════════════════════════*/
 
   /*── Power of Attorney Section Start ──*/

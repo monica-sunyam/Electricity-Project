@@ -137,22 +137,40 @@
 
         <div class="tab-row">
           <div class="service-tabs-container">
-            <button class="service-tab" [class.active]="serviceTab === 1" (click)="serviceTab = 1">
+            <button
+              class="service-tab"
+              [class.active]="serviceTab === 1"
+              (click)="toggleService(1)"
+            >
               Neue Anfrage
             </button>
 
-            <button class="service-tab" [class.active]="serviceTab === 2" (click)="serviceTab = 2">
-              Offene Anfragen (0)
+            <button
+              class="service-tab"
+              [class.active]="serviceTab === 2"
+              (click)="toggleService(2)"
+            >
+              Offene Anfragen (1)
             </button>
 
-            <button class="service-tab" [class.active]="serviceTab === 3" (click)="serviceTab = 3">
+            <button
+              class="service-tab"
+              [class.active]="serviceTab === 3"
+              (click)="toggleService(3)"
+            >
               In Bearbeitung (0)
             </button>
 
-            <button class="service-tab" [class.active]="serviceTab === 4" (click)="serviceTab = 4">
+            <button
+              class="service-tab"
+              [class.active]="serviceTab === 4"
+              (click)="toggleService(4)"
+            >
               Geschlossene Anfragen (1)
             </button>
           </div>
+          <!--══════════ New request Section ══════════-->
+
           <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 1">
             <div class="form-group">
               <div class="tab-header">Hilfe zu Ihren Verträgen und allgemeine Anfragen</div>
@@ -164,13 +182,75 @@
                 „Allgemene Anfrage ohne Vertragszuordnung erstellen“ aus.
               </div>
             </div>
-            <br /><br />
+            <br />
+            <div class="scroll-wrapper">
+              <button class="nav service-left" (click)="scrollLeft()">‹</button>
+
+              <div class="service-card-container" #scrollContainer>
+                <!-- Orange Card -->
+                <div class="service-card add-service-card">
+                  <div class="icon">
+                    <img src="/assets/icons/icon_white_clean.png" class="logo" alt="logo" />
+                  </div>
+                  <div class="text">
+                    Allgemeine Anfrage ohne<br />
+                    Vertragszuordnung erstellen
+                  </div>
+                </div>
+
+                <!-- Cards -->
+                <div class="service-card contract-service-card" *ngFor="let card of cards">
+                  <!-- Logo -->
+                  <div class="logo-row">
+                    <img [src]="card.logo" class="logo" />
+                  </div>
+
+                  <!-- Title -->
+                  <div class="title-row">
+                    <span class="title">{{ card.title }}</span>
+                    <span class="date">| Auftrag vom {{ card.date }}</span>
+                  </div>
+
+                  <!-- Info -->
+                  <div class="info">
+                    <div class="info-item" *ngFor="let item of card.data">
+                      <!-- ICON -->
+                      <ng-container [ngSwitch]="normalizeIcon(item.icon)">
+                        <span *ngSwitchCase="'meter'" class="material-symbols-outlined icon">
+                          countertops
+                        </span>
+
+                        <span *ngSwitchCase="'home'" class="material-symbols-outlined icon">
+                          home
+                        </span>
+
+                        <span *ngSwitchCase="'current'" class="material-symbols-outlined icon">
+                          bolt
+                        </span>
+
+                        <span *ngSwitchCase="'doc'" class="material-symbols-outlined icon">
+                          description
+                        </span>
+                      </ng-container>
+                      <!-- LABEL -->
+                      <span class="label">{{ item.label }}</span>
+
+                      <!-- VALUE -->
+                      <span class="value">{{ item.value }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="nav right" (click)="scrollRight()">&rsaquo;</button>
+            </div>
+            <br />
             <div class="tab-header">
               Teilen Sie uns bitte Ihre Anfrage mit, die Sie an Ihren persönlichen Ansprechpartner
               stellen möchten
             </div>
 
-            <div class="tab-row">
+            <div style="display: flex; flex-direction: column; gap: 18px">
               <div class="form-group label">
                 <div class="tab-heading">Titel</div>
               </div>
@@ -213,6 +293,358 @@
                 <button class="btn-primary" (click)="nextStep(2)">
                   <span class="spinner"></span>
                   Anfrage abschicken
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!--══════════ Open requests Section ══════════-->
+
+          <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 2">
+            <div *ngIf="showList">
+              <div class="form-group">
+                <div class="tab-header">Ihre Anfrage wurde erfolgreich abgesendet!</div>
+                <div class="tab-text">
+                  In der Übersicht können Sie Ihre Anfragen einsehen und verwalten
+                </div>
+              </div>
+              <div class="request-list no-padding-child">
+                <!-- Header Row -->
+                <div class="list-header">
+                  <div>Status</div>
+                  <div>erstellt am</div>
+                  <div>Kategorie</div>
+                  <div>Betreff</div>
+                  <div>Details</div>
+                </div>
+
+                <!-- Data Row -->
+                <div class="list-row">
+                  <div class="status">Warten auf Antwort vom Berater</div>
+                  <div>28.03.2026 - 18:13 Uhr</div>
+                  <div>Gewerbestrom Allgemein</div>
+                  <div>Letzte Rechnung vom 28.03.2026</div>
+
+                  <div class="details">
+                    <span class="link" (click)="openDetails()">anzeigen</span>
+                    <span class="material-symbols-outlined edit-icon"> edit_square </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--══════ Details Section ══════-->
+            <div *ngIf="showDetails" class="details-page">
+              <div class="chat-history">
+                <!-- Meta Info -->
+                <div class="form-group">
+                  <div class="tab-header">Hilfe zu Ihren Offenen Anfragen</div>
+                  <div class="tab-text">
+                    Hier finden Sie eine offene Anfrage, die Sie ergänzen können.
+                  </div>
+                </div>
+
+                <!-- Message -->
+                <div class="message-card right">
+                  <div class="message-title">
+                    Ihre Nachricht an den Berater vom 29.03.2026 - 07:58 Uhr
+                  </div>
+                  <div class="message-body">
+                    Hallo liebes Tarifvergleich.Bayern-Team,<br /><br />
+                    ich habe noch eine Bitte bezüglich der letzten Rechnung Nr. 1234567 vom
+                    28.03.2026. Inhaltlich ist diese korrekt, aber wäre es möglich, BLINDTEXT
+                    BLINDTEXT BLINDTEXT.........
+                    <br /><br />
+                    Viele Grüße<br />
+                    Marie Mustermann
+                  </div>
+                </div>
+
+                <!-- Add new message -->
+                <div class="new-message-section">
+                  <!-- Heading -->
+                  <div class="new-message-title">Neue Nachricht hinzufügen</div>
+
+                  <!-- Input Field -->
+                  <textarea
+                    class="new-message-input"
+                    placeholder="Ihre Nachricht eingeben..."
+                  ></textarea>
+                </div>
+                <!-- Action Button -->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-end;
+                    margin-top: 10px;
+                  "
+                >
+                  <button class="btn-primary">
+                    <span class="spinner"></span>
+                    Nachricht abschicken
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--══════════ In Progress Section ══════════-->
+          <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 3">
+            <div class="form-group">
+              <div class="tab-header">
+                In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
+              </div>
+              <div class="tab-text">
+                Klicken Sie einfach die Anfrage an, die Sie einsehen möchten
+              </div>
+            </div>
+            <div class="request-list no-padding-child">
+              <!-- Header Row -->
+              <div class="list-header">
+                <div>Status</div>
+                <div>erstellt am</div>
+                <div>Kategorie</div>
+                <div>Betreff</div>
+                <div>Details</div>
+              </div>
+
+              <!-- Data Row -->
+              <div class="list-row">
+                <div class="status">Wird vom Berater bearbeitet</div>
+                <div>28.03.2026 - 18:13 Uhr</div>
+                <div>Gewerbestrom Allgemein</div>
+                <div>Letzte Rechnung vom 28.03.2026</div>
+
+                <div class="details">
+                  <span class="link">anzeigen</span>
+                  <span class="material-symbols-outlined edit-icon"> edit_square </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--══════════ Closed Requests Section ══════════-->
+          <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 4">
+            <!--══════ List Section ══════-->
+            <div *ngIf="showList">
+              <div class="form-group">
+                <div class="tab-header">
+                  In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
+                </div>
+                <div class="tab-text">
+                  Klicken Sie einfach die Nachricht an, die Sie wieder eröffnen wollen, diese wird
+                  dann in „Offene Anfragen“ angezeigt.
+                </div>
+              </div>
+              <div class="request-list no-padding-child">
+                <!-- Header Row -->
+                <div class="list-header">
+                  <div>Status</div>
+                  <div>erstellt am</div>
+                  <div>Kategorie</div>
+                  <div>Betreff</div>
+                  <div>Details</div>
+                </div>
+
+                <!-- Data Row -->
+                <div class="list-row">
+                  <div class="status">Abgeschlossen</div>
+                  <div>28.03.2026 - 18:13 Uhr</div>
+                  <div>Gewerbestrom Allgemein</div>
+                  <div>Letzte Rechnung vom 28.03.2026</div>
+
+                  <div class="details">
+                    <span class="link" (click)="openDetails()">anzeigen</span>
+                    <span class="material-symbols-outlined edit-icon"> edit_square </span>
+                  </div>
+                </div>
+                <div class="list-row">
+                  <div class="status">Abgeschlossen</div>
+                  <div>28.03.2026 - 19:12 Uhr</div>
+                  <div>Gewerbestrom Allgemein</div>
+                  <div>Re: Letzte Rechnung vom 28.03.2026</div>
+
+                  <div class="details">
+                    <span class="link" (click)="openDetails()">anzeigen</span>
+                    <span class="material-symbols-outlined edit-icon"> edit_square </span>
+                  </div>
+                </div>
+                <div class="list-row">
+                  <div class="status">Abgeschlossen</div>
+                  <div>29.03.2026 - 07:58 Uhr</div>
+                  <div>Gewerbestrom Allgemein</div>
+                  <div>Re: Re: Letzte Rechnung vom 28.03.2026</div>
+
+                  <div class="details">
+                    <span class="link" (click)="openDetails()">anzeigen</span>
+                    <span class="material-symbols-outlined edit-icon"> edit_square </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--══════ Details Section ══════-->
+            <div *ngIf="showDetails" class="details-page">
+              <div class="form-group">
+                <div class="tab-header">
+                  In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
+                </div>
+                <div class="tab-text">
+                  Sie können diese Nachrichten durch anklicken auf „Anfrage wieder eröffnen“
+                  bearbeiten.
+                </div>
+              </div>
+              <br />
+              <div class="attorney-berich no-padding-child">
+                Ihr Nachrichtenverlauf im Überblick:
+              </div>
+
+              <div class="chat-history">
+                <!-- Meta Info -->
+                <div class="chat-meta">
+                  <div><strong>Datum:</strong> 28.03.2026 - 29.03.2026</div>
+                  <div><strong>Kategorie:</strong> Gewerbestrom Allgemein</div>
+                  <div><strong>Titel:</strong> Letzte Rechnung vom 28.03.2026</div>
+                </div>
+
+                <!-- Message 1 -->
+                <div class="message-card right">
+                  <div class="message-title">
+                    Ihre Nachricht an den Berater vom 29.03.2026 - 07:58 Uhr
+                  </div>
+                  <div class="message-body">
+                    Hallo liebes Tarifvergleich.Bayern-Team,<br /><br />
+                    ich habe noch eine Bitte bezüglich der letzten Rechnung Nr. 1234567 vom
+                    28.03.2026. Inhaltlich ist diese korrekt, aber wäre es möglich, BLINDTEXT
+                    BLINDTEXT BLINDTEXT.........
+                    <br /><br />
+                    Viele Grüße<br />
+                    Marie Mustermann
+                  </div>
+                </div>
+
+                <!-- Message 2 -->
+                <div class="message-card left">
+                  <div class="message-title">
+                    Nachricht von Ihrem Berater vom 28.03.2026 - 19:12 Uhr
+                  </div>
+                  <div class="message-body">
+                    Sehr geehrte Frau Mustermann,<br /><br />
+                    vielen Dank für ihre Anfrage vom 28.03.2026 - 18:13 Uhr bezüglich der letzten
+                    Rechnung Nr. 1234567. Wir haben diese geprüft und die von Ihnen gewünschte
+                    Änderung vorgenommen. Die geänderte Rechnung wurde an Ihre E-Mail-Adresse
+                    gesendet.
+                    <br /><br />
+                    Für weitere Rückfragen stehe ich Ihnen gern zur Verfügung.<br />
+                    Mit vielen Grüßen<br /><br />
+                    Manuel Markovic<br />
+                    Kundenberater
+                  </div>
+                </div>
+
+                <!-- Message 3 -->
+                <div class="message-card right">
+                  <div class="message-title">
+                    Ihre Nachricht an den Berater vom 28.03.2026 - 18:13 Uhr
+                  </div>
+                  <div class="message-body">
+                    Hallo,<br /><br />
+                    bei der geänderten Rechnung 123456 vom 28.03.2026 ist mir aufgefallen, dass ich
+                    folgende Angabe vergessen hatte, können Sie diesen noch einfügen und mir die
+                    Rechnung erneut zukommen lassen? Sorry für die Umstände.
+                    <br /><br />
+                    Viele Grüße<br />
+                    Maria Mustermann
+                  </div>
+                </div>
+
+                <!-- Action Button -->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-end;
+                    margin-top: 10px;
+                  "
+                >
+                  <button class="btn-primary" (click)="confirmation()">
+                    <span class="spinner"></span>
+                    Anfrage wieder eröffnen
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!--══════ Confirmation Section ══════-->
+            <div *ngIf="confirmationList" class="details-page">
+              <div class="form-group">
+                <div class="tab-header">
+                  Sie können Ihre Anfragen nach Angabe Ihres Grundes wieder eröffnen.
+                </div>
+                <div class="tab-text">
+                  Sie können diese Nachrichten durch anklicken auf „Nachricht abschicken und
+                  Serviceanfrage wieder eröffnen“ bearbeiten
+                </div>
+              </div>
+              <br />
+              <div class="attorney-berich no-padding-child">
+                Ihr Nachrichtenverlauf im Überblick:
+              </div>
+              <div class="chat-history">
+                <!-- Meta Info -->
+                <div style="padding: 10px 0px">
+                  <div><strong>Datum:</strong> 28.03.2026 - 29.03.2026</div>
+                  <div><strong>Kategorie:</strong> Gewerbestrom Allgemein</div>
+                  <div><strong>Titel:</strong> Letzte Rechnung vom 28.03.2026</div>
+                </div>
+                <div class="history-confirmation">
+                  <strong> Wollen Sie die Serviceanfrage wirklich wieder eröffnen? </strong>
+                </div>
+                <div class="history-confirmation">
+                  <strong>
+                    Oder wollen sie stattdessen eine neue Anfrage zu einem anderen Thema stellen?
+                  </strong>
+                </div>
+                <div class="history-confirmation">
+                  <strong>
+                    Dann klicken Sie bitte unten auf den Button „Neue Anfrage stellen“.
+                  </strong>
+                </div>
+                <br />
+                <p>
+                  <strong>
+                    Falls Sie die Serviceanfrage wieder eröffnen möchten, geben Sie uns bitte den
+                    Grund an:
+                  </strong>
+                </p>
+                <div class="form-row">
+                  <div class="form-group" style="margin-bottom: 10px">
+                    <div class="field-wrap">
+                      <span class="field-label">
+                        Bitte Grund angeben, z.B. neue Informationen zufügen
+                      </span>
+                      <input type="text" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Action Button -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: flex-end;
+                  margin-top: 10px;
+                  gap: 20px;
+                "
+              >
+                <button class="btn-primary">
+                  <span class="spinner"></span>
+                  Nachricht abschicken und Serviceanfrage wieder eröffnen
+                </button>
+
+                <button class="btn-primary" style="margin-left: inherit">
+                  <span class="spinner"></span>
+                  Neue Anfrage stellen
                 </button>
               </div>
             </div>
