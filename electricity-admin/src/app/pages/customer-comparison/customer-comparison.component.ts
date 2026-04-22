@@ -107,7 +107,7 @@ export class ComparisonListComponent implements OnInit {
 
   hasMoreData = true;
   currentPage = 1;
-  private readonly PAGE_LIMIT = 10;
+  private readonly PAGE_LIMIT = 20;
 
   constructor(
     private api: ApiService,

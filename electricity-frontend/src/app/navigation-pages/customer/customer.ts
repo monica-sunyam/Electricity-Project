@@ -1,27 +1,42 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ContactPerson } from '../../layout/contact-person/contact-person';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { Router } from 'express';
 import { CommonModule } from '@angular/common';
 import SignaturePad from 'signature_pad';
-import { CountdownConfig, CountdownEvent, CountdownComponent } from 'ngx-countdown';
+import {
+  CountdownConfig,
+  CountdownEvent,
+  CountdownComponent,
+  CountdownModule,
+} from 'ngx-countdown';
 import { environment } from '../../environments/environment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 
+const API_BASE = 'http://192.168.0.155:8080';
 @Component({
   selector: 'app-customer',
-  imports: [CommonModule, CountdownComponent, MatFormFieldModule, MatInputModule, MatIconModule],
+  imports: [
+    CommonModule,
+    CountdownComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    FormsModule,
+  ],
   templateUrl: './customer.html',
   styleUrl: './customer.css',
 })
 export class Customer {
   constructor(
-    // private http: HttpClient,
-    // private cdr: ChangeDetectorRef,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
     private authService: AuthService,
+    private eRef: ElementRef,
     // private router: Router,
   ) {}
 
@@ -37,12 +52,33 @@ export class Customer {
   ];
 
   /* ── Tab control ──────────────────────────────────────────────── */
-  activeTab: number = 4;
+  activeTab: number = 7;
   serviceTab: number = 1;
   /* ── Step control ──────────────────────────────────────────────── */
   currentStep: number = 1;
   /* ── Customer Type (Personal/Business) ──────────────────────────────────────────────── */
   customerType: number = 1;
+
+  customerData: any = {
+    id: null,
+    name: '',
+    email: '',
+    phone: '',
+    salutation: '',
+    title: '',
+    userType: '',
+    companyName: '',
+    isVerified: false,
+    joinedOn: null,
+    address: {
+      zip: '',
+      city: '',
+      street: '',
+      houseNumber: '',
+    },
+    deliveryDetails: [],
+  };
+  isLoading = true;
 
   setActiveTab(index: number) {
     this.activeTab = index;
@@ -84,6 +120,68 @@ export class Customer {
 
     this.authService.logout();
   }
+
+  ngOnInit(): void {
+    this.fetchCustomer();
+  }
+
+  /*── Fetch customer details ──*/
+
+  private fetchCustomer(): void {
+    const customerId = this.authService.getUserId() || 0;
+
+    const body = {
+      id: Number(customerId),
+    };
+
+    this.isLoading = true;
+
+    this.http
+      .post<any>('http://192.168.0.155:8080/customer/fetch-customer-detail', body)
+      .subscribe({
+        next: (res) => {
+          if (!res?.res || !res?.data) {
+            console.error('Invalid response');
+            this.isLoading = false;
+            return;
+          }
+
+          const data = res.data;
+
+          this.customerData = {
+            id: data.id,
+            name: `${data?.firstName || ''} ${data?.lastName || ''}`.trim(),
+            email: data.email || '',
+            phone: data.mobileNumber || '',
+            salutation: data.salutation || '',
+            title: data.title || '',
+            userType: data.userType || '',
+            companyName: data.companyName || '',
+            isVerified: data.isVerified || false,
+            joinedOn: data.joinedOn || null,
+
+            address: {
+              zip: data?.address?.zip || '',
+              city: data?.address?.city || '',
+              street: data?.address?.street || '',
+              houseNumber: data?.address?.houseNumber || '',
+            },
+
+            deliveryDetails: data.deliveryDetails || [],
+          };
+
+          console.log('customerData:', this.customerData);
+
+          this.cdr.detectChanges();
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('API Error:', err);
+          this.isLoading = false;
+        },
+      });
+  }
+
   /* ════════════════════════════════════════════════════════════════════════════════════════════════*/
 
   /*── Service Section Start ──*/
@@ -91,6 +189,44 @@ export class Customer {
   showList = true;
   showDetails = false;
   confirmationList = false;
+  showDropdown = false;
+  selectedIndex: number = -1; // -1 = Orange card selected by default
+  selectedCategory = '';
+
+  categories = [
+    'Rechnung / Billing',
+    'Vertrag / Contract',
+    'Zähler / Meter',
+    'Stromausfall / Power outage',
+    'Tarif / Pricing',
+    'Allgemeine Anfrage / General inquiry',
+  ];
+
+  selectCard(index: number) {
+    this.selectedIndex = index;
+  }
+
+  selectOrangeCard() {
+    this.selectedIndex = -1;
+  }
+  toggleDropdown(event: Event) {
+    event.stopPropagation();
+    this.showDropdown = !this.showDropdown;
+  }
+
+  selectCategory(item: string, event: Event) {
+    event.stopPropagation();
+    this.selectedCategory = item;
+    this.showDropdown = false;
+  }
+
+  // Outside click listener
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: Event) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.showDropdown = false;
+    }
+  }
 
   openDetails() {
     this.showList = false;
@@ -241,16 +377,24 @@ export class Customer {
   pw_special: boolean = false;
   pw_number: boolean = false;
   showPw: boolean = false;
+  showOldPw: boolean = false;
   showRepPw: boolean = false;
   otpError: string = '';
-  password: string = '';
+  newPassword: string = '';
+  oldPassword: string = '';
+  confirmPassword: string = '';
   passwordMismatch: boolean = false;
   otpValue: string = '';
   otpInvalid = false;
   newOtp = false;
+  isLoadingReset: boolean = false;
+  apiError: string = '';
+  resendSuccess: boolean = false;
+  /* ── Field-level validation errors ─────────────────────────────── */
+  fieldErrors: Record<string, string> = {};
 
   validatePassword(password: string, repeat: string) {
-    this.password = password;
+    this.newPassword = password;
 
     this.pw_length = password.length >= 8 && password.length <= 50;
     this.pw_case = /[a-z]/.test(password) && /[A-Z]/.test(password);
@@ -266,6 +410,86 @@ export class Customer {
 
   private isPasswordValid(): boolean {
     return this.pw_length && this.pw_case && this.pw_special && this.pw_number;
+  }
+
+  private validateStepReset(passwordRepeat: string): boolean {
+    this.fieldErrors = {};
+    let valid = true;
+
+    if (!this.oldPassword) {
+      this.fieldErrors['oldPassword'] = 'Ein altes Passwort wird benötigt.';
+      valid = false;
+    } else if (!this.isPasswordValid()) {
+      this.fieldErrors['oldPassword'] = 'Passwort erfüllt nicht alle Anforderungen.';
+      valid = false;
+    }
+
+    if (!this.newPassword) {
+      this.fieldErrors['newPassword'] = 'Ein neues Passwort ist erforderlich.';
+      valid = false;
+    } else if (!this.isPasswordValid()) {
+      this.fieldErrors['newPassword'] = 'Passwort erfüllt nicht alle Anforderungen.';
+      valid = false;
+    }
+
+    if (this.newPassword !== passwordRepeat) {
+      this.passwordMismatch = true;
+      valid = false;
+    }
+    return valid;
+  }
+
+  resetPassword() {
+    console.log('resetPassword called');
+    this.apiError = '';
+
+    const isValid = this.validateStepReset(this.confirmPassword);
+
+    if (!isValid) {
+      console.log('not valid');
+      return;
+    }
+
+    if (!this.authService.getUserId()) {
+      this.apiError = 'Session abgelaufen.';
+      console.log('Session abgelaufen.');
+      return;
+    }
+
+    this.isLoadingReset = true;
+
+    this.http
+      .post<{
+        res: boolean;
+        message: string;
+        errMessage: string;
+      }>(`${API_BASE}/auth/change-password-request`, {
+        id: Number(this.authService.getUserId()),
+        oldPassword: this.oldPassword,
+        newPassword: this.newPassword,
+        confirmPassword: this.confirmPassword,
+        adminId: 1,
+      })
+      .subscribe({
+        next: (res) => {
+          this.isLoadingReset = false;
+
+          if (res.res) {
+            this.currentStep = 2;
+          } else {
+            console.log('false going');
+            console.log('error message', res.errMessage);
+
+            this.apiError = res.errMessage || 'Error occurred';
+          }
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isLoadingReset = false;
+          this.apiError =
+            err?.error?.message || 'Fehler beim Zurücksetzen. Bitte erneut versuchen.';
+        },
+      });
   }
 
   @ViewChild('countdown', { static: false }) private countdown!: CountdownComponent;
@@ -338,6 +562,86 @@ export class Customer {
     this.otpValue = val;
   }
 
+  verifyOtp() {
+    this.collectOtp();
+    if (this.otpValue.length < 6) {
+      this.otpError = 'Bitte alle 6 Stellen eingeben.';
+      return;
+    }
+    if (!this.authService.getUserId()) {
+      this.otpError = 'Sitzung abgelaufen. Bitte neu registrieren.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.otpError = '';
+
+    this.http
+      .post<{
+        res: boolean;
+        newOtp?: boolean;
+        message: string;
+      }>(`${API_BASE}/auth/verify-change-password`, {
+        id: this.authService.getUserId(),
+        otp: this.otpValue,
+        adminId: 1,
+      })
+      .subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          if (res.res) {
+            this.otpInvalid = false;
+
+            this.nextStep(3);
+            this.cdr.detectChanges();
+          } else {
+            this.otpError = 'Der eingegebene Code ist ungültig.';
+            this.otpInvalid = true;
+          }
+          this.newOtp = !!res.newOtp;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.otpError =
+            err?.error?.message || 'Code-Überprüfung fehlgeschlagen. Bitte erneut versuchen.';
+        },
+      });
+  }
+
+  resendOtp() {
+    if (!this.authService.getUserId()) return;
+    if (this.isResendDisabled) return;
+    this.isResendDisabled = true;
+
+    setTimeout(() => {
+      this.countdown?.restart();
+    });
+    this.resendSuccess = false;
+    this.otpError = '';
+
+    this.http
+      .post<{
+        res: boolean;
+        message: string;
+      }>(`${API_BASE}/auth/resend-otp`, { id: this.authService.getUserId() })
+      .subscribe({
+        next: (res) => {
+          this.resendSuccess = true;
+          // Clear boxes
+          for (let i = 0; i < 6; i++) {
+            const el = document.getElementById(`otp-${i}`) as HTMLInputElement;
+            if (el) el.value = '';
+          }
+          this.otpValue = '';
+
+          setTimeout(() => (this.resendSuccess = false), 4000);
+        },
+        error: () => {
+          this.otpError = 'Code konnte nicht gesendet werden. Bitte erneut versuchen.';
+        },
+      });
+  }
   /* ──  Reset Password Section End ──*/
   /* ════════════════════════════════════════════════════════════════════════════════════════════════*/
 }

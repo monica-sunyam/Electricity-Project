@@ -561,7 +561,7 @@ AUTH MODE
       salutation: this.formData.salutation,
       companyName: this.formData.companyName.trim(),
       mobileNumber: '+49' + this.formData.mobileNumberLocal.replace(/\s/g, ''),
-      postalCode: this.formData.postalCode.trim(),
+      zip: this.formData.postalCode.trim(),
       city: this.formData.city.trim(),
       street: this.formData.street.trim(),
       houseNumber: this.formData.houseNumber.trim(),

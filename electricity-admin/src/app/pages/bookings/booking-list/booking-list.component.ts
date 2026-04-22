@@ -94,7 +94,7 @@ export class BookingListComponent implements OnInit {
 
   hasMoreData = true;
   currentPage = 1;
-  private readonly PAGE_LIMIT = 10;
+  private readonly PAGE_LIMIT = 20;
 
   readonly dayLabels: Record<string, string> = {
     MONDAY: "Montag",

@@ -57,6 +57,24 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   errorMessage: string = '';
   validationErrors: Record<string, string> = {};
 
+  /**
+   * Datepicker bounds for the delivery date.
+   * min  → today (no past dates)
+   * max  → 2 years from today (reasonable upper bound)
+   */
+  readonly minDeliveryDate: Date = (() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+
+  readonly maxDeliveryDate: Date = (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 2);
+    d.setHours(23, 59, 59, 999);
+    return d;
+  })();
+
   private routerSub?: Subscription;
   maxAccessibleStep = 1;
   private readonly currentStep = 2;
@@ -74,11 +92,10 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
-    // Run initial load
     this.initForm();
 
     this.routerSub = this.router.events
@@ -86,10 +103,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       .subscribe((e: any) => {
         if (e.urlAfterRedirects === this.mainStepRoutes[2]) {
           this.resetFields();
-          // Use a timeout to ensure the reset finishes before we fetch/fill
-          setTimeout(() => {
-            this.initForm();
-          }, 0);
+          setTimeout(() => this.initForm(), 0);
         }
       });
   }
@@ -98,12 +112,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     this.routerSub?.unsubscribe();
   }
 
-  /**
-   * Resets all form fields to blank, then loads fresh data.
-   * Called on init AND on every back-navigation to this route.
-   */
   private initForm(): void {
-
     this.resetFields();
     this.applyLocalStorageAddress();
     this.providerDetails = this.authService.getSelectedProvider();
@@ -125,7 +134,6 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       });
   }
 
-  /** Zero out every form field so prefillForm always produces a visible change. */
   private resetFields(): void {
     this.deliveryEmail = '';
     this.deliveryTitle = '';
@@ -183,24 +191,21 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   }
 
   private prefillForm(data: any): void {
-    // 1. Basic user data
     if (data.email) this.deliveryEmail = data.email;
     this.deliveryTitle = data.title ?? '';
     this.deliveryFirstName = data.firstName ?? '';
     this.deliveryLastName = data.lastName ?? '';
     this.deliveryMobile = data.mobile ?? '';
+    this.deliveryPhone = data.telephone ?? data.phone ?? '';
 
     if (data.deliveryDate) {
       const timestampInMs = Number(data.deliveryDate) * 1000;
       const parsed = new Date(timestampInMs);
-
       if (!isNaN(parsed.getTime())) {
         this.deliveryDate = parsed;
       }
     }
 
-    // 3. Address — localStorage wins for locked fields (already applied in
-    //    applyLocalStorageAddress). Only use API values if localStorage is empty.
     const localAddr = this.authService.getAddressData();
     if (!localAddr) {
       const addr = data.deliveryAddress ?? data.address ?? data.customerAddress ?? data;
@@ -210,7 +215,6 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       this.deliveryHouseNumber = addr?.houseNumber || addr?.hausnummer || '';
     }
 
-    // 4. Billing address
     const bill = data.billingAddress;
     this.hasDifferentBilling = !!(bill?.different || bill?.isDifferent);
     if (this.hasDifferentBilling) {
@@ -237,14 +241,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   }
 
   navigateToMainStep(step: number): void {
-    if (step > this.currentStep) {
-      return;
-    }
-
-    if (step > this.maxAccessibleStep) {
-      return;
-    }
-
+    if (step > this.currentStep || step > this.maxAccessibleStep) return;
     const route = this.mainStepRoutes[step];
     if (route) this.router.navigate([route]);
   }
@@ -252,33 +249,59 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   private validate(): boolean {
     this.validationErrors = {};
 
+    // E-Mail
     if (!this.deliveryEmail?.trim()) {
       this.validationErrors['deliveryEmail'] = 'Bitte geben Sie Ihre E-Mail-Adresse ein.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.deliveryEmail.trim())) {
       this.validationErrors['deliveryEmail'] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
     }
 
+    // Vorname / Nachname
     if (!this.deliveryFirstName?.trim()) {
       this.validationErrors['deliveryFirstName'] = 'Bitte geben Sie Ihren Vornamen ein.';
     }
-
     if (!this.deliveryLastName?.trim()) {
       this.validationErrors['deliveryLastName'] = 'Bitte geben Sie Ihren Nachnamen ein.';
     }
 
+    // Handynummer (required) — digits, spaces, +, hyphens only
     if (!this.deliveryMobile?.trim()) {
       this.validationErrors['deliveryMobile'] = 'Bitte geben Sie Ihre Handynummer ein.';
+    } else if (!/^[+\d][\d\s\-/]{6,}$/.test(this.deliveryMobile.trim())) {
+      this.validationErrors['deliveryMobile'] = 'Bitte geben Sie eine gültige Handynummer ein.';
     }
 
+    // Telefonnummer (optional) — validate format only when filled in
+    if (this.deliveryPhone?.trim() && !/^[+\d][\d\s\-/]{6,}$/.test(this.deliveryPhone.trim())) {
+      this.validationErrors['deliveryPhone'] = 'Bitte geben Sie eine gültige Telefonnummer ein.';
+    }
+
+    // Liefertermin
     if (!this.deliveryDate) {
       this.validationErrors['deliveryDate'] = 'Bitte wählen Sie einen Liefertermin.';
+    } else {
+      const selected = new Date(this.deliveryDate);
+      selected.setHours(0, 0, 0, 0);
+
+      if (selected < this.minDeliveryDate) {
+        this.validationErrors['deliveryDate'] =
+          'Der Liefertermin darf nicht in der Vergangenheit liegen.';
+      } else if (selected > this.maxDeliveryDate) {
+        this.validationErrors['deliveryDate'] =
+          'Der Liefertermin darf maximal 2 Jahre in der Zukunft liegen.';
+      }
     }
 
+    // Billing address fields (only when different billing is selected)
     if (this.hasDifferentBilling) {
-      if (!this.billingPLZ?.trim()) this.validationErrors['billingPLZ'] = 'Bitte geben Sie Ihre PLZ ein.';
-      if (!this.billingOrt?.trim()) this.validationErrors['billingOrt'] = 'Bitte geben Sie Ihren Ort ein.';
-      if (!this.billingStreet?.trim()) this.validationErrors['billingStreet'] = 'Bitte geben Sie Ihre Straße ein.';
-      if (!this.billingHouseNumber?.trim()) this.validationErrors['billingHouseNumber'] = 'Bitte geben Sie Ihre Hausnummer ein.';
+      if (!this.billingPLZ?.trim())
+        this.validationErrors['billingPLZ'] = 'Bitte geben Sie Ihre PLZ ein.';
+      if (!this.billingOrt?.trim())
+        this.validationErrors['billingOrt'] = 'Bitte geben Sie Ihren Ort ein.';
+      if (!this.billingStreet?.trim())
+        this.validationErrors['billingStreet'] = 'Bitte geben Sie Ihre Straße ein.';
+      if (!this.billingHouseNumber?.trim())
+        this.validationErrors['billingHouseNumber'] = 'Bitte geben Sie Ihre Hausnummer ein.';
     }
 
     return Object.keys(this.validationErrors).length === 0;
@@ -324,7 +347,6 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       .post<{ res: boolean; deliveryId: number }>(`${API_BASE}/customer/add-delivery`, payload)
       .subscribe({
         next: (response) => {
-          // Verify the 'res' key is explicitly true before treating it as a success
           if (response && response.res === true) {
             if (response.deliveryId) {
               this.authService.setDeliveryId(response.deliveryId.toString());
@@ -333,7 +355,6 @@ export class DeliveryAddress implements OnInit, OnDestroy {
             this.successMessage = 'Daten erfolgreich gespeichert.';
             this.router.navigate([this.mainStepRoutes[3]]);
           } else {
-            // Handle the case where the API returns a 200 OK, but res is false
             this.isLoading = false;
             this.errorMessage = 'Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.';
             console.error('Submit error: API response returned false', response);
@@ -357,9 +378,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
 
   private getMaxAccessibleStep(data: any): number {
     const hasAccount = !!(data?.email && data?.firstName && data?.lastName);
-    if (!hasAccount) {
-      return 1;
-    }
+    if (!hasAccount) return 1;
 
     const address = data?.deliveryAddress ?? data?.address ?? data?.customerAddress ?? data;
     const hasDelivery = !!(

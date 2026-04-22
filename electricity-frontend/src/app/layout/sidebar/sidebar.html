@@ -6,10 +6,18 @@
       Preis
     </div>
     <div class="card-body">
-      <div class="price-amount">53,60 €</div>
-      <div class="price-sub"><span class="pro-monat">⌀ pro Monat</span><span class="info-base info-circ">i</span>
+      <div class="price-amount">{{ avgMonthlyPrice }}</div>
+      <div class="price-sub">
+        <span class="pro-monat">⌀ pro Monat</span>
+        <span class="info-base info-circ">i</span>
       </div>
-      <div class="price-save">Sie sparen: <span class="hl">31,20 €</span><span class="info-base info-circ">i</span>
+      <div class="price-save" *ngIf="isSaving">
+        Sie sparen: <span class="hl">{{ savingPerYear }}</span>
+        <span class="info-base info-circ">i</span>
+      </div>
+      <div class="price-save price-extra" *ngIf="!isSaving">
+        Mehrkosten: <span class="hl hl-negative">{{ savingPerYear }}</span>
+        <span class="info-base info-circ">i</span>
       </div>
     </div>
   </div>
@@ -20,26 +28,36 @@
       Tarifdetails
     </div>
     <div class="card-body">
-      <div style="margin-bottom:8px;">
-
-        <div class="icon-octopus">
-          <img src="assets/icons/Octopus_Energy.png" alt="Familienbetrieb" style="width: 40px; height: 40px;">
+      <!-- Provider logo: rendered from inline SVG when available, image fallback otherwise -->
+      <div style="margin-bottom: 8px;">
+        <div class="icon-provider" *ngIf="providerSVG; else logoFallback">
+          <img [src]="providerSVG" [alt]="rateName" class="provider-logo-img"
+            style="max-width: 150px; height: auto;">
         </div>
+
+        <ng-template #logoFallback>
+          <div class="icon-octopus">
+            <img src="assets/icons/Octopus_Energy.png" alt="Fallback Provider" style="width: 40px; height: 40px;">
+          </div>
+        </ng-template>
       </div>
+
       <div class="d-row">
         <div class="d-label">Tarif</div>
-        <div class="d-value">Select + Secure 12 Strom</div>
+        <div class="d-value">{{ rateName }}</div>
       </div>
+
       <div class="d-row-inline">
         <div>
           <div class="d-label">Ökostromtarif</div>
-          <div class="d-value">Ja · Öko KlimaPlus</div>
+          <div class="d-value">{{ isEco ? 'Ja · Öko KlimaPlus' : 'Nein' }}</div>
         </div>
-        <span class="info-base info-circ" style="margin-top:8px;">i</span>
+        <span class="info-base info-circ" style="margin-top: 8px;">i</span>
       </div>
+
       <div class="d-row">
         <div class="d-label">Mindestvertragslaufzeit</div>
-        <div class="d-value">12 Monate</div>
+        <div class="d-value">{{ minTerm }}</div>
       </div>
     </div>
   </div>
@@ -52,23 +70,24 @@
     <div class="card-body">
       <div class="ov-row">
         <div class="ov-label">Jahresverbrauch</div>
-        <div class="ov-value">2.500 kWh</div>
+        <div class="ov-value">{{ annualUsage }}</div>
       </div>
       <div class="ov-row">
         <div class="ov-label">Grundpreis</div>
-        <div class="ov-value">12,86 €/Monat (154,37 €/Jahr)</div>
+        <div class="ov-value">{{ basePriceDisplay }}</div>
       </div>
       <div class="ov-row">
         <div class="ov-label">Arbeitspreis</div>
-        <div class="ov-value">23,91 Cent/kWh</div>
+        <div class="ov-value">{{ workPriceDisplay }}</div>
       </div>
-      <div class="ov-row">
+      <div class="ov-row" *ngIf="bonusDisplay">
         <div class="ov-label">Neukundenbonus</div>
-        <div class="ov-value">109 €</div>
+        <div class="ov-value">{{ bonusDisplay }}</div>
       </div>
       <div class="line-blue">
-        <div class="link-blue">Tarifdetails anzeigen </div>
-        <div class="icon-blue"><span class="info-base info-border-blue">i</span>
+        <div class="link-blue">Tarifdetails anzeigen</div>
+        <div class="icon-blue">
+          <span class="info-base info-border-blue">i</span>
         </div>
       </div>
     </div>

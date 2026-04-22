@@ -45,7 +45,7 @@ export class CustomerListComponent implements OnInit {
   expandedRow: number | string | null = null;
 
   hasMoreData = true;
-  private readonly PAGE_LIMIT = 5;
+  private readonly PAGE_LIMIT = 20;
   currentPage = 1;
 
   searchTerm: string = "";
