@@ -82,6 +82,10 @@ public class AdminUser {
 	@JsonIgnoreProperties("admin")
 	private List<CustomerComparingEnergy> customerEnergyComparisons;
 	
+	@OneToMany(mappedBy = "admin", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
+	@JsonIgnoreProperties("admin")
+	private List<CustomerAttorny> customerAttornies;
+	
 	@PrePersist
 	protected void onCreate() {
 	    this.createdOn = Helper.getCurrentTimeBerlin();
@@ -132,5 +136,13 @@ public class AdminUser {
 		energy.setAdmin(this);
 		
 		customerEnergyComparisons.add(energy);
+	}
+	
+	public void addCustomerAttorny(CustomerAttorny attorny) {
+		if(customerAttornies == null)
+			customerAttornies = new LinkedList<CustomerAttorny>();
+		
+		attorny.setAdmin(this);
+		customerAttornies.add(attorny);
 	}
 }

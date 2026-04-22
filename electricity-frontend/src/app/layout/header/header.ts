@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -28,13 +29,15 @@ export class Header {
 
   constructor(
     private authService: AuthService,
-    private cdr: ChangeDetectorRef 
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
     // This 'effect' runs automatically every time the signal changes
     effect(() => {
       const state = this.isLoggedIn();
       console.log('UI Signal changed to:', state);
-      
+
       // Manually tell Angular: "I don't care what you think, redraw now!"
       this.cdr.detectChanges();
     });
@@ -42,5 +45,13 @@ export class Header {
 
   logout() {
     this.authService.logout();
+  }
+
+  redirect() {
+    if (this.isLoggedIn()) {
+      this.router.navigate(['/customer'], { relativeTo: this.route });
+    } else {
+      this.router.navigate(['/electricity-comparision/register'], { relativeTo: this.route });
+    }
   }
 }

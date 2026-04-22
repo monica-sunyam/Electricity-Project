@@ -51,7 +51,7 @@ public class AdminServiceMenu {
 	@Column(name = "original_file_name")
 	private String originalFileName;
 	
-	@Column(name = "content_service_type")
+	@Column(name = "content_service_type", comment = "1- free, 2- other")
 	private Integer type;
 	
 	@Column(name = "content_highlight")

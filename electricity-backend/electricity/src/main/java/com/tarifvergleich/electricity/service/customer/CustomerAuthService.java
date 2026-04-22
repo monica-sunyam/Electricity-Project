@@ -1,7 +1,9 @@
 package com.tarifvergleich.electricity.service.customer;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -11,8 +13,10 @@ import com.tarifvergleich.electricity.dto.CustomerDto;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminUser;
 import com.tarifvergleich.electricity.model.Customer;
+import com.tarifvergleich.electricity.model.CustomerAddress;
 import com.tarifvergleich.electricity.model.CustomerLoginHistory;
 import com.tarifvergleich.electricity.repository.AdminUserRepository;
+import com.tarifvergleich.electricity.repository.CustomerAddressRepository;
 import com.tarifvergleich.electricity.repository.CustomerRepository;
 import com.tarifvergleich.electricity.service.MailService;
 import com.tarifvergleich.electricity.util.EmailTemplate;
@@ -27,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomerAuthService {
 
 	private final CustomerRepository customerRepo;
+	private final CustomerAddressRepository customerAddressRepo;
 	private final Helper helper;
 	private final MailService mailService;
 	private final EmailTemplate emailTemplate;
@@ -52,15 +57,27 @@ public class CustomerAuthService {
 			throw new InternalServerException("Salutation missing", HttpStatus.OK);
 		if (customerDto.getMobileNumber() == null || customerDto.getMobileNumber().isEmpty())
 			throw new InternalServerException("Mobile number missing", HttpStatus.OK);
+		if (customerDto.getZip() == null || customerDto.getZip().isEmpty())
+			throw new InternalServerException("Zip code missing", HttpStatus.OK);
+
+		if (customerDto.getCity() == null || customerDto.getCity().isEmpty())
+			throw new InternalServerException("City missing", HttpStatus.OK);
+
+		if (customerDto.getStreet() == null || customerDto.getStreet().isEmpty())
+			throw new InternalServerException("Street missing", HttpStatus.OK);
 		if (customerDto.getUserType().toLowerCase().equals("business")) {
 			if (customerDto.getCompanyName() == null || customerDto.getCompanyName().isEmpty())
 				throw new InternalServerException("Company name missing", HttpStatus.OK);
+		} else {
+			if(customerDto.getHouseNumber() == null || customerDto.getHouseNumber().trim().isEmpty())
+				throw new InternalServerException("House number missing", HttpStatus.OK);
 		}
-		
-		if(customerDto.getAdminId() == null || customerDto.getAdminId() <= 0)
+
+		if (customerDto.getAdminId() == null || customerDto.getAdminId() <= 0)
 			throw new InternalServerException("Admin id missing", HttpStatus.OK);
-		
-		AdminUser admin = adminUserRepo.findById(customerDto.getAdminId()).orElseThrow(() -> new InternalServerException("Admin not found with this credential", HttpStatus.OK));
+
+		AdminUser admin = adminUserRepo.findById(customerDto.getAdminId())
+				.orElseThrow(() -> new InternalServerException("Admin not found with this credential", HttpStatus.OK));
 
 		if (!(helper.isPasswordSecure(customerDto.getPassword(), customerDto.getEmail()))) {
 			throw new InternalServerException("Password not safe", HttpStatus.OK);
@@ -76,7 +93,28 @@ public class CustomerAuthService {
 						customer.getFirstName(), "lastName", customer.getLastName(), "email", customer.getEmail()),
 						"page", "login");
 			else {
+
+				CustomerAddress address = customerAddressRepo
+						.findAddress(customer.getCustomerId(), customerDto.getZip(), customerDto.getCity(),
+								customerDto.getStreet(), customerDto.getHouseNumber())
+						.orElse(null);
+
+				if (address != null) {
+					Optional.ofNullable(customer.getCustomerAddresses()).orElse(Collections.emptyList())
+							.forEach(addres -> {
+								addres.setIsRegisterAddress(false);
+								customerAddressRepo.save(addres);
+							});
+
+					address.setIsRegisterAddress(true);
+					customerAddressRepo.save(address);
+				}
+
 				customer.setFirstName(customerDto.getFirstName());
+				customer.setZip(customerDto.getZip());
+				customer.setCity(customerDto.getCity());
+				customer.setStreet(customerDto.getStreet());
+				customer.setHouseNumber(customerDto.getHouseNumber());
 				customer.setLastName(customerDto.getLastName());
 				customer.setPassword(customerDto.getPassword());
 				customer.setTitle(customerDto.getTitle());
@@ -111,7 +149,17 @@ public class CustomerAuthService {
 				.companyName(customerDto.getUserType().toUpperCase().equals("BUSINESS") ? customerDto.getCompanyName()
 						: null)
 				.build();
-		
+
+		CustomerAddress address = CustomerAddress.builder().zip(customerDto.getZip()).city(customerDto.getCity())
+				.street(customerDto.getStreet()).houseNumber(customerDto.getHouseNumber()).isRegisterAddress(true)
+				.build();
+
+		newCustomer.setZip(customerDto.getZip());
+		newCustomer.setCity(customerDto.getCity());
+		newCustomer.setStreet(customerDto.getStreet());
+		newCustomer.setHouseNumber(customerDto.getHouseNumber());
+		newCustomer.addCustomerAddress(address);
+
 		newCustomer.setUserAdmin(admin);
 
 		Customer savedCustomer = customerRepo.save(newCustomer);
@@ -147,7 +195,7 @@ public class CustomerAuthService {
 
 		if (customer.getOtp().equals(otp) || otp.equals("123456")) {
 			customer.setIsVerified(true);
-			if(customer.getVerifiedOn() == null)
+			if (customer.getVerifiedOn() == null)
 				customer.setVerifiedOn(Helper.getCurrentTimeBerlin());
 			customerRepo.save(customer);
 			return Map.of("res", true, "message", "Valid otp");

@@ -46,6 +46,7 @@ server:
 file:
   upload-dir:
     super-admin: "../../assets/super-admin"
+    customer: "../../assets/customers"
 
 email:
   name: system@bavariaphone.de

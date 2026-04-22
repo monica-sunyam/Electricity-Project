@@ -39,7 +39,7 @@ public class AdminAsset {
 	@JsonIgnore
 	private AdminUser adminId;
 	
-	@Column(name="content_type")
+	@Column(name="content_type", comment = "1- nav, 2- sidebar, 3- home-banner, 4- about-us")
 	private Integer type;
 	
 	@Column(name = "content_url")

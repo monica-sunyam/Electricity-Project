@@ -1,4 +1,4 @@
-package com.tarifvergleich.electricity.service;
+package com.tarifvergleich.electricity.service.admin;
 
 import java.util.LinkedList;
 import java.util.List;

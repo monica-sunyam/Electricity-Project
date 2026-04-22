@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tarifvergleich.electricity.dto.AdminAssetDto;
 import com.tarifvergleich.electricity.dto.AdminServiceMenuDto;
+import com.tarifvergleich.electricity.dto.AdminAssetDto.AdminAssetSuffleDto;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminAsset;
 import com.tarifvergleich.electricity.model.AdminServiceMenu;
@@ -293,6 +294,7 @@ public class AdminAssetService {
 		return Map.of("res", true, "data", adminServiceMenus);
 	}
 
+	@Transactional
 	public Map<String, Object> deleteService(Integer adminId, Integer id) {
 		if (adminId == null || adminId == 0)
 			throw new InternalServerException("Admin not found", HttpStatus.BAD_REQUEST);
@@ -314,5 +316,33 @@ public class AdminAssetService {
 			fileUtil.deleteFile(oldContentUrl);
 
 		return Map.of("res", true);
+	}
+
+	@Transactional
+	public Map<String, Object> suffleOrder(AdminAssetSuffleDto requestDto) {
+
+		if (requestDto.getAdminId() == null || requestDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+
+		AdminUser adminUser = adminUserRepo.findById(requestDto.getAdminId())
+				.orElseThrow(() -> new InternalServerException("Admin not found with this credential", HttpStatus.OK));
+
+		requestDto.getMenu().forEach(menu -> {
+			if (menu.getId() == null)
+				throw new InternalServerException("Menu id missing", HttpStatus.OK);
+			
+			
+			AdminAsset asset = adminAssetRepo.findById(menu.getId()).orElseThrow(
+					() -> new InternalServerException("Menu not found with this credentials", HttpStatus.OK));
+			
+			if(!asset.getAdminId().getAdminId().equals(adminUser.getAdminId()))
+				throw new InternalServerException("Admin asset not accessible", HttpStatus.OK);
+			
+			asset.setOrder(menu.getOrder());
+			
+			adminAssetRepo.save(asset);
+		});
+
+		return Map.of("res", true, "message", "Order updated");
 	}
 }

@@ -50,6 +50,9 @@ public class CustomerAddress {
 	@JsonIgnore
 	@NotFound(action = NotFoundAction.IGNORE)
 	private Customer customerId;
+	
+	@Column(name = "is_register_address")
+	private Boolean isRegisterAddress;
 		
 	private BigInteger createdOn;
 	

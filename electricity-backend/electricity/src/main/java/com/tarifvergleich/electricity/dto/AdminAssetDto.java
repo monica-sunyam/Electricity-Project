@@ -1,5 +1,7 @@
 package com.tarifvergleich.electricity.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +24,14 @@ public class AdminAssetDto {
 	private String saving;
 	
 	private String savingDetail;
+	
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	public static class AdminAssetSuffleDto{
+		private Integer adminId;
+		private List<AdminAssetDto> menu;
+	}
 
 }

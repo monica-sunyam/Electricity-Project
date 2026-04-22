@@ -33,6 +33,11 @@ public class CustomerDto {
 	private Boolean isAcknowledged;
 	private List<CustomerDeliveryResponseDto> deliveryDetails;
 	private CustomerAddressDto address;
+	
+	private String zip;
+    private String city;
+    private String street;
+    private String houseNumber; 
 
 	private Integer page;
 	private Integer size;
@@ -40,6 +45,7 @@ public class CustomerDto {
 
 	// This field is used for blocking and unblocking
 	private Boolean status;
+	private String search;
 
 	@Data
 	@Builder

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.stereotype.Component;
 
@@ -101,6 +102,11 @@ public class Helper {
 	public static final String getUniqueIdForCustomerId() {
 		String currentMilli = String.valueOf(System.currentTimeMillis());
         return "9" + currentMilli.substring(currentMilli.length() - 10).substring(1);
+	}
+	
+	public static final String getUniqueId() {
+		String currentMilli = String.valueOf(System.currentTimeMillis());
+		return String.valueOf(ThreadLocalRandom.current().nextInt(10, 99)) + currentMilli.substring(currentMilli.length() - 8);
 	}
 	
 }

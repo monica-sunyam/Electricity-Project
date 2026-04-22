@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tarifvergleich.electricity.service.ViewService;
+import com.tarifvergleich.electricity.service.admin.ViewService;
 
 import lombok.RequiredArgsConstructor;
 

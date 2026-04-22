@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.tarifvergleich.electricity.dto.CustomerAttornyDto;
 import com.tarifvergleich.electricity.dto.CustomerConnectWrapper;
 import com.tarifvergleich.electricity.dto.CustomerContactScheduleRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryRequestWrapper;
@@ -71,6 +74,11 @@ public class CustomerController {
 	@PostMapping("/add-schedule")
 	public ResponseEntity<?> addCustomerSchedule(@RequestBody CustomerContactScheduleRequestDto schedule){
 		return ResponseEntity.ok(customerBookingService.submitCustomerSchedule(schedule));
+	}
+	
+	@PostMapping("/add-attorny")
+	public ResponseEntity<?> addCustomerAttorny(@RequestPart(value = "data") CustomerAttornyDto attornyDto, @RequestPart(value = "file") MultipartFile file){
+		return ResponseEntity.ok(customerDetailService.submitCustomerAttorny(attornyDto, file));
 	}
 	
 }
