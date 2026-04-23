@@ -1,8 +1,11 @@
 package com.tarifvergleich.electricity.model;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.persistence.CascadeType;
@@ -13,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -48,6 +52,9 @@ public class CustomerDelivery {
 	
 	@Column(name = "telephone_number")
 	private String telephone;
+	
+	@Column(name = "delivery_type")
+	private String deliveryType; // This determines whether delivery is of ELECTRICITY or GAS or anything else.
 	
 	@Column(name = "delivery_date")
 	private BigInteger deliveryDate;
@@ -85,6 +92,10 @@ public class CustomerDelivery {
 	@JoinColumn(name = "customer_selected_provider_id")
 	private CustomerSelectedProvider customerProvider;
 	
+	@OneToMany(mappedBy = "customerDelivery")
+	@JsonIgnoreProperties("customerDelivery")
+	private List<CustomerServiceRequest> customerServiceRequests;
+	
 	@ManyToOne
 	@JoinColumn(name = "admin_id")
 	@JsonIgnore
@@ -104,6 +115,13 @@ public class CustomerDelivery {
 	
 	public void setUserAdmin(AdminUser admin) {
 		this.admin = admin;
+	}
+	
+	public void addCustomerServiceRequest(CustomerServiceRequest request) {
+		if(customerServiceRequests == null)
+			customerServiceRequests = new LinkedList<CustomerServiceRequest>();
+		request.setCustomerDelivery(this);
+		customerServiceRequests.add(request);
 	}
 	
 }

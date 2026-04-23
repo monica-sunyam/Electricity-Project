@@ -126,6 +126,10 @@ public class Customer {
 	@OneToMany(mappedBy = "customer", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JsonIgnoreProperties("customer")
 	private List<CustomerChangePasswordHistory> customerChangePasswordHistories;
+	
+	@OneToMany(mappedBy = "customer", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JsonIgnoreProperties("customer")
+	private List<CustomerServiceRequest> customerServiceRequests;
 
 	@ManyToOne
 	@JoinColumn(name = "admin_id")
@@ -182,6 +186,13 @@ public class Customer {
 			customerChangePasswordHistories = new LinkedList<CustomerChangePasswordHistory>();
 		changePasswordHistory.setCustomer(this);
 		customerChangePasswordHistories.add(changePasswordHistory);
+	}
+	
+	public void addCustomerServiceRequest(CustomerServiceRequest request) {
+		if(this.customerServiceRequests == null)
+			customerServiceRequests = new LinkedList<CustomerServiceRequest>();
+		request.setCustomer(this);
+		customerServiceRequests.add(request);
 	}
 
 	public void setUserAdmin(AdminUser admin) {

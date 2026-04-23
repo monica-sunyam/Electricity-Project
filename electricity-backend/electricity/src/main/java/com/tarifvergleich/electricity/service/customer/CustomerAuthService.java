@@ -52,8 +52,8 @@ public class CustomerAuthService {
 		if (customerDto.getFirstName() == null || customerDto.getFirstName().isEmpty()
 				|| customerDto.getLastName() == null || customerDto.getLastName().isEmpty())
 			throw new InternalServerException("First name or last name missing", HttpStatus.OK);
-		if (customerDto.getTitle() == null || customerDto.getTitle().isEmpty())
-			throw new InternalServerException("Title not found", HttpStatus.OK);
+//		if (customerDto.getTitle() == null || customerDto.getTitle().isEmpty())
+//			throw new InternalServerException("Title not found", HttpStatus.OK);
 		if (customerDto.getSalutation() == null || customerDto.getSalutation().isEmpty())
 			throw new InternalServerException("Salutation missing", HttpStatus.OK);
 		if (customerDto.getMobileNumber() == null || customerDto.getMobileNumber().isEmpty())

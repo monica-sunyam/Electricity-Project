@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
 import com.tarifvergleich.electricity.dto.CustomerDto;
+import com.tarifvergleich.electricity.dto.CustomerServicesDto;
 import com.tarifvergleich.electricity.service.admin.AdminCustomerManagementService;
+import com.tarifvergleich.electricity.service.admin.AdminServicePointManagementService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,7 @@ public class AdminCustomerManagementController {
 
 	
 	private final AdminCustomerManagementService adminCustomerManagementService;
+	private final AdminServicePointManagementService servicePointManagementService;
 	
 	@PostMapping("/fetch-customer-details")
 	public ResponseEntity<?> getCustomer(@RequestBody CustomerDto payload){
@@ -40,5 +43,15 @@ public class AdminCustomerManagementController {
 		Integer page = (Integer) payload.get("page");
 		Integer size = (Integer) payload.get("size");
 		return ResponseEntity.ok(adminCustomerManagementService.getAllComparison(adminId, page, size));
+	}
+	
+	@PostMapping("/add-customer-service")
+	public ResponseEntity<?> addCustomerService(@RequestBody CustomerServicesDto servicesDto){
+		return ResponseEntity.ok(servicePointManagementService.addCustomerServices(servicesDto));
+	}
+	
+	@PostMapping("/remove-customer-service")
+	public ResponseEntity<?> removeCustomerService(@RequestBody CustomerServicesDto servicesDto){
+		return ResponseEntity.ok(servicePointManagementService.removeCustomerService(servicesDto));
 	}
 }

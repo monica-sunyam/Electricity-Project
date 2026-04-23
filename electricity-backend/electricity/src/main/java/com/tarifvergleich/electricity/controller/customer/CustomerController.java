@@ -17,6 +17,7 @@ import com.tarifvergleich.electricity.dto.CustomerContactScheduleRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryRequestWrapper;
 import com.tarifvergleich.electricity.dto.CustomerDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto;
+import com.tarifvergleich.electricity.dto.CustomerServicesDto;
 import com.tarifvergleich.electricity.service.customer.CustomerBookingService;
 import com.tarifvergleich.electricity.service.customer.CustomerDetailService;
 
@@ -79,6 +80,16 @@ public class CustomerController {
 	@PostMapping("/add-attorny")
 	public ResponseEntity<?> addCustomerAttorny(@RequestPart(value = "data") CustomerAttornyDto attornyDto, @RequestPart(value = "file") MultipartFile file){
 		return ResponseEntity.ok(customerDetailService.submitCustomerAttorny(attornyDto, file));
+	}
+	
+	@PostMapping("/fetch-placed-deliveries")
+	public ResponseEntity<?> fetchCustomerWithPlacedDelivery(@RequestBody CustomerDto customerDto){
+		return ResponseEntity.ok(customerDetailService.fetchAllCustomerDeliveries(customerDto.getId()));
+	}
+	
+	@PostMapping("/fetch-cutomer-service")
+	public ResponseEntity<?> fetchCustomerServices(@RequestBody CustomerServicesDto serviceDto){
+		return ResponseEntity.ok(customerDetailService.fetchCustomerServices(serviceDto.getAdminId(), serviceDto.getServiceType()));
 	}
 	
 }

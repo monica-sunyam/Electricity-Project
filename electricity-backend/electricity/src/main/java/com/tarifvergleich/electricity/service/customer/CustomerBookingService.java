@@ -162,6 +162,7 @@ public class CustomerBookingService {
 			CustomerDelivery delivery = CustomerDelivery.builder().title(deliveryDto.getTitle()).firstName(deliveryDto.getFirstName())
 					.lastName(deliveryDto.getLastName()).address(address).billingAddress(billingAddress)
 					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone())
+					.deliveryType("ELECTRICITY") // Manage this when type will be defined in frontend. Don't forget
 					.customerProvider(selectedProvider)
 					.deliveryDate(helper.toGermamUnixTimestamp(deliveryDto.getDeliveryDate())).build();
 			

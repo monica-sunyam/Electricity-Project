@@ -119,5 +119,12 @@ public class Helper {
 		return String.valueOf(ThreadLocalRandom.current().nextInt(10, 99))
 				+ currentMilli.substring(currentMilli.length() - 8);
 	}
+	
+	public static final String getUniqueTicketNumber() {
+		String currentMilli = String.valueOf(System.currentTimeMillis());
+		String ticketNumber = String.valueOf(ThreadLocalRandom.current().nextInt(1000, 9999))
+				+ currentMilli.substring(currentMilli.length() - 10);
+		return ticketNumber.substring(0, 4) + "-" + ticketNumber.substring(4, 8) + "-" + ticketNumber.substring(8, 12) + "-" +ticketNumber.substring(12);
+	}
 
 }
