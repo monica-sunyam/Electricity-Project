@@ -91,6 +91,9 @@ public class CustomerAttorny {
 	@Column(name = "customer_signature_path", columnDefinition = "TEXT")
 	private String customerSignaturePath;
 	
+	@Column(name = "place_and_date_of_signature", length = 500)
+	private String placeAndDate;
+	
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
 	@JsonIgnore

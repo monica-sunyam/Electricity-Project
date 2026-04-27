@@ -38,6 +38,7 @@ public class CustomerAttornyDto {
     private Long revokedOn;
     
     private String customerSignaturePath;
+    private String placeAndDate;
 
     private Integer customerId;
     private Integer adminId;

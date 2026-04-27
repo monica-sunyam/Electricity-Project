@@ -58,3 +58,11 @@ app:
   cleanup:
     retention-days: 30
     cron-expression: "0 0 1 1 * ?"
+
+springdoc:
+  packages-to-scan: com.tarifvergleich.electricity
+  swagger-ui:
+    path: /swagger
+    try-it-out-enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha

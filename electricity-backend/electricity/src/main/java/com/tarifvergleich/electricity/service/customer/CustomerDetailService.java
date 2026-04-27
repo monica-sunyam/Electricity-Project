@@ -93,6 +93,8 @@ public class CustomerDetailService {
 			throw new InternalServerException("City missing", HttpStatus.OK);
 		if (attornyDto.getStreet() == null || attornyDto.getStreet().trim().isEmpty())
 			throw new InternalServerException("Street missing", HttpStatus.OK);
+		if (attornyDto.getPlaceAndDate() == null || attornyDto.getPlaceAndDate().isEmpty())
+			throw new InternalServerException("Place and date missing", HttpStatus.OK);
 		if (file == null)
 			throw new InternalServerException("Signature missing", HttpStatus.OK);
 
@@ -136,7 +138,7 @@ public class CustomerDetailService {
 			attornyEntity.setIsRevoked(false);
 		}
 
-		attornyEntity.setApprovalStatus(1);
+		attornyEntity.setApprovalStatus(0);
 		attornyEntity.setSalutation(attornyDto.getSalutation());
 		attornyEntity.setTitle(attornyDto.getTitle());
 		attornyEntity.setFirstName(attornyDto.getFirstName());
@@ -148,6 +150,7 @@ public class CustomerDetailService {
 		attornyEntity.setCustomerUniqueId(customer.getCustomerUniqueId());
 		attornyEntity.setHouseNumber(attornyDto.getHouseNumber());
 		attornyEntity.setUserType(attornyDto.getUserType().toUpperCase());
+		attornyEntity.setPlaceAndDate(attornyDto.getPlaceAndDate());
 
 		if ("BUSINESS".equalsIgnoreCase(attornyDto.getUserType())) {
 			attornyEntity.setCompanyName(attornyDto.getCompanyName());
@@ -396,6 +399,56 @@ public class CustomerDetailService {
 		return Map.of("res", true, "openRequests", grouped.getOrDefault("open", List.of()), "inProgressRequets",
 				grouped.getOrDefault("progress", List.of()), "closedRequests",
 				grouped.getOrDefault("closed", List.of()));
+	}
+
+	public Map<String, Object> checkAttornyStatus(Integer customerId) {
+
+		if (customerId == null || customerId <= 0)
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
+
+		String approvalStatus = "";
+		boolean recordIsPresent = false;
+
+		List<CustomerAttorny> attornies = customerAttornyRepo
+				.findAllByCustomerCustomerIdAndIsRevokedOrderBySubmittedOnDesc(customerId, false);
+
+		if (attornies == null || attornies.isEmpty())
+			return Map.of("res", true, "recordIsPresent", recordIsPresent, "approvalStatus", "Not found");
+
+		CustomerAttorny attorny = attornies.getFirst();
+		recordIsPresent = true;
+
+		if (attorny.getApprovalStatus().equals(0))
+			approvalStatus = "pending".toUpperCase();
+		if (attorny.getApprovalStatus().equals(1))
+			approvalStatus = "approved".toUpperCase();
+		if (attorny.getApprovalStatus().equals(2))
+			approvalStatus = "rejected".toUpperCase();
+
+		return Map.of("res", true, "recordIsPresent", recordIsPresent, "approvalStatus", approvalStatus, "createdOn",
+				attorny.getSubmittedOn());
+	}
+
+	@Transactional
+	public Map<String, Object> revokeAttorny(Integer customerId) {
+
+		if (customerId == null || customerId <= 0)
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
+
+		List<CustomerAttorny> attornies = customerAttornyRepo
+				.findAllByCustomerCustomerIdAndIsRevokedOrderBySubmittedOnDesc(customerId, false);
+
+		if (attornies == null || attornies.isEmpty())
+			throw new InternalServerException("No record for attorny found", HttpStatus.OK);
+
+		CustomerAttorny attorny = attornies.getFirst();
+
+		attorny.setIsRevoked(true);
+		attorny.setRevokedOn(Helper.getCurrentTimeBerlin());
+
+		customerAttornyRepo.save(attorny);
+
+		return Map.of("res", true, "message", "Attorny successfully revoked");
 	}
 
 }

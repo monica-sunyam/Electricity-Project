@@ -88,8 +88,8 @@ public class CustomerBookingService {
 		if (deliveryDto.getStreet() == null || deliveryDto.getStreet().isEmpty())
 			throw new InternalServerException("Street missing", HttpStatus.OK);
 		
-		if (deliveryDto.getDeliveryDate().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
-			throw new InternalServerException("Delivery date is past date", HttpStatus.OK);
+//		if (deliveryDto.getDeliveryDate().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
+//			throw new InternalServerException("Delivery date is past date", HttpStatus.OK);
 
 		CustomerBillingAddress billingAddress = null;
 
@@ -205,8 +205,8 @@ public class CustomerBookingService {
 			if (customerConnectDto.getMoveInDate() == null)
 				throw new InternalServerException("Moving in date missing", HttpStatus.OK);
 
-			if (customerConnectDto.getMoveInDate().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
-				throw new InternalServerException("Moving in date is past date", HttpStatus.OK);
+//			if (customerConnectDto.getMoveInDate().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
+//				throw new InternalServerException("Moving in date is past date", HttpStatus.OK);
 		} else {
 			if (customerConnectDto.getAutoCancellation() == null)
 				throw new InternalServerException("Auto Cancellation missing", HttpStatus.OK);

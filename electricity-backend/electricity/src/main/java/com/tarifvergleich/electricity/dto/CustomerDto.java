@@ -9,6 +9,7 @@ import com.tarifvergleich.electricity.dto.CustomerChangePasswordHistoryDto.Custo
 import com.tarifvergleich.electricity.dto.CustomerDeliveryResponseDto.CustomerAddressRes;
 import com.tarifvergleich.electricity.model.Customer;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerDto {
+	
+//	@Schema
 	private Integer id;
 	private String password;
 	private String email;

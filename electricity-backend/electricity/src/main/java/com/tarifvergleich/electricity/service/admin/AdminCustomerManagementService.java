@@ -2,6 +2,7 @@ package com.tarifvergleich.electricity.service.admin;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ import com.tarifvergleich.electricity.dto.CustomerDto;
 import com.tarifvergleich.electricity.dto.CustomerDto.AdminCustomerResponse;
 import com.tarifvergleich.electricity.dto.CustomerDto.SingleCustomerResponseDelivery;
 import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto;
+import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto.CustomerServiceRequestResDtoForAdmin;
+import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto.CustomerServiceRequestResDtoForListing;
 import com.tarifvergleich.electricity.dto.ServiceRequestEmailEvent.ServiceResponseEmailEvent;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminUser;
@@ -218,6 +221,71 @@ public class AdminCustomerManagementService {
 
 		return Map.of("res", true, "ticketNo", serviceRequest.getTicketNumber(), "message",
 				"Message sended successfully");
+	}
+
+	public Map<String, Object> fetchCustomerServiceRequests(CustomerServiceRequestDto serviceRequestDto) {
+
+		if (serviceRequestDto.getAdminId() == null || serviceRequestDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+
+		if (serviceRequestDto.getPage() != null && serviceRequestDto.getPage() <= 0)
+			throw new InternalServerException("Page is not set correctly", HttpStatus.OK);
+
+		if (serviceRequestDto.getPage() != null && serviceRequestDto.getPage() > 0) {
+
+			if (serviceRequestDto.getSize() == null || serviceRequestDto.getSize() <= 0)
+				serviceRequestDto.setSize(10);
+
+			Pageable pageable = PageRequest.of(serviceRequestDto.getPage() - 1, serviceRequestDto.getSize(),
+					Sort.by("createdOn").descending());
+
+			Page<CustomerServiceRequest> customerServiceRequestsPage = customerServiceRequestRepo
+					.findAllByAdminAdminId(serviceRequestDto.getAdminId(), pageable);
+
+			List<CustomerServiceRequest> customerServiceRequests = customerServiceRequestsPage.getContent();
+
+			Map<String, List<CustomerServiceRequestResDtoForListing>> customerServiceDtoRes = customerServiceRequests
+					.stream().map(CustomerServiceRequestDto::getAllListings).collect(Collectors.groupingBy(req -> {
+						if (req.getIsOpen())
+							return "open";
+						if (req.getInProgress())
+							return "progress";
+						return "closed";
+					}));
+
+			List<CustomerServiceRequestResDtoForAdmin> allCustomerServiceRes = customerServiceRequests.stream()
+					.map(CustomerServiceRequestDto::getAllListingsForAdmin).toList();
+
+			return Map.of("res", true, "data",
+					Map.of("open", customerServiceDtoRes.getOrDefault("open", List.of()), "inProgress",
+							customerServiceDtoRes.getOrDefault("progress", List.of()), "closed",
+							customerServiceDtoRes.getOrDefault("closed", List.of()), "all", allCustomerServiceRes,
+							"page", customerServiceRequestsPage.getPageable().getPageNumber() + 1, "totalPage",
+							customerServiceRequestsPage.getTotalPages()));
+
+		}
+
+		List<CustomerServiceRequest> customerServiceRequests = customerServiceRequestRepo
+				.findAllByAdminAdminIdOrderByCreatedOnDesc(serviceRequestDto.getAdminId());
+
+		if (customerServiceRequests == null || customerServiceRequests.isEmpty())
+			return Map.of("res", true, "open", List.of(), "inProgress", List.of(), "closed", List.of());
+
+		Map<String, List<CustomerServiceRequestResDtoForListing>> customerServiceDtoRes = customerServiceRequests
+				.stream().map(CustomerServiceRequestDto::getAllListings).collect(Collectors.groupingBy(req -> {
+					if (req.getIsOpen())
+						return "open";
+					if (req.getInProgress())
+						return "progress";
+					return "closed";
+				}));
+
+		List<CustomerServiceRequestResDtoForAdmin> allCustomerServiceRes = customerServiceRequests.stream()
+				.map(CustomerServiceRequestDto::getAllListingsForAdmin).toList();
+
+		return Map.of("res", true, "open", customerServiceDtoRes.getOrDefault("open", List.of()), "inProgress",
+				customerServiceDtoRes.getOrDefault("progress", List.of()), "closed",
+				customerServiceDtoRes.getOrDefault("closed", List.of()), "all", allCustomerServiceRes);
 	}
 
 }

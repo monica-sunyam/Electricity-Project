@@ -1,11 +1,17 @@
 package com.tarifvergleich.electricity.service.admin;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tarifvergleich.electricity.dto.CustomerServicesDto;
+import com.tarifvergleich.electricity.dto.CustomerServicesDto.CustomerListOfServiceForAdminResDto;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminUser;
 import com.tarifvergleich.electricity.model.CustomerServices;
@@ -76,5 +82,40 @@ public class AdminServicePointManagementService {
 		customerServicesRepo.deleteById(servicesDto.getServiceId());
 
 		return Map.of("res", true, "message", "Customer service removed successfully");
+	}
+
+	public Map<String, Object> fetchServices(CustomerServicesDto servicesDto) {
+
+		if (servicesDto.getAdminId() == null || servicesDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+
+		if (servicesDto.getPage() != null) {
+
+			if (servicesDto.getSize() == null || servicesDto.getSize() <= 0)
+				servicesDto.setSize(10);
+
+			Pageable pageable = PageRequest.of(servicesDto.getPage() - 1, servicesDto.getSize(),
+					Sort.by("addedOn").descending());
+
+			Page<CustomerServices> servicesPage = customerServicesRepo.findAllByAdminAdminId(servicesDto.getAdminId(),
+					pageable);
+
+			List<CustomerServices> services = servicesPage.getContent();
+
+			List<CustomerListOfServiceForAdminResDto> servicesResponse = services.stream()
+					.map(CustomerServicesDto::mapCustomerServiceForAdmin).toList();
+
+			return Map.of("res", true, "data", servicesResponse, "page", servicesPage.getPageable().getPageNumber() + 1,
+					"totalPage", servicesPage.getTotalPages());
+
+		}
+
+		List<CustomerServices> services = customerServicesRepo
+				.findAllByAdminAdminIdOrderByAddedOnDesc(servicesDto.getAdminId());
+
+		List<CustomerListOfServiceForAdminResDto> servicesResponse = services.stream()
+				.map(CustomerServicesDto::mapCustomerServiceForAdmin).toList();
+
+		return Map.of("res", true, "data", servicesResponse);
 	}
 }

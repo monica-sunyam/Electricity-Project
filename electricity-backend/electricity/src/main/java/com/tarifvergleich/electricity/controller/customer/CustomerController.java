@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tarifvergleich.electricity.dto.CustomerAttornyDto;
 import com.tarifvergleich.electricity.dto.CustomerConnectWrapper;
 import com.tarifvergleich.electricity.dto.CustomerContactScheduleRequestDto;
@@ -32,6 +35,7 @@ public class CustomerController {
 
 	private final CustomerBookingService customerBookingService;
 	private final CustomerDetailService customerDetailService;
+	private final ObjectMapper objectMapper;
 
 	@PostMapping("/fetch-customer-detail")
 	public ResponseEntity<?> fetchCustomer(@RequestBody CustomerDto customerDto) {
@@ -79,9 +83,19 @@ public class CustomerController {
 		return ResponseEntity.ok(customerBookingService.submitCustomerSchedule(schedule));
 	}
 
-	@PostMapping("/add-attorny")
-	public ResponseEntity<?> addCustomerAttorny(@RequestPart(value = "data") CustomerAttornyDto attornyDto,
+	@PostMapping(value = "/add-attorny")
+	public ResponseEntity<?> addCustomerAttorny(@RequestPart("data") String jsonData,
 			@RequestPart(value = "file") MultipartFile file) {
+
+		CustomerAttornyDto attornyDto;
+		try {
+			attornyDto = objectMapper.readValue(jsonData, CustomerAttornyDto.class);
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException();
+		}
 		return ResponseEntity.ok(customerDetailService.submitCustomerAttorny(attornyDto, file));
 	}
 
@@ -105,15 +119,25 @@ public class CustomerController {
 	public ResponseEntity<?> fetchServiceMessages(@RequestBody CustomerServiceRequestDto serviceRequestDto) {
 		return ResponseEntity.ok(customerDetailService.getAllMessages(serviceRequestDto.getServiceRequestId()));
 	}
-	
+
 	@PostMapping("/fetch-service-count")
-	public ResponseEntity<?> fetchRequestCount(@RequestBody CustomerDto customerDto){
+	public ResponseEntity<?> fetchRequestCount(@RequestBody CustomerDto customerDto) {
 		return ResponseEntity.ok(customerDetailService.getCountOfRequestInDifferentTabs(customerDto.getId()));
 	}
-	
+
 	@PostMapping("/fetch-all-requests")
-	public ResponseEntity<?> fetchAllCustomerRequests(@RequestBody CustomerDto customerDto){
+	public ResponseEntity<?> fetchAllCustomerRequests(@RequestBody CustomerDto customerDto) {
 		return ResponseEntity.ok(customerDetailService.fetchAllCustomerServiceRequest(customerDto.getId()));
+	}
+
+	@PostMapping("/check-attorny")
+	public ResponseEntity<?> checkAttorny(@RequestBody CustomerDto customerDto) {
+		return ResponseEntity.ok(customerDetailService.checkAttornyStatus(customerDto.getId()));
+	}
+
+	@PostMapping("/revoke-attorny")
+	public ResponseEntity<?> revokeAttorny(@RequestBody CustomerDto customerDto) {
+		return ResponseEntity.ok(customerDetailService.revokeAttorny(customerDto.getId()));
 	}
 
 }
