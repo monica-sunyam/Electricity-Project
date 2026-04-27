@@ -1,0 +1,53 @@
+<div class="max-w-xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+
+    <!-- Header -->
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">
+        {{ serviceId ? 'Service bearbeiten' : 'Neuen Service hinzufügen' }}
+    </h2>
+
+    <form (ngSubmit)="onSubmit()" #serviceForm="ngForm" class="space-y-5">
+
+        <!-- Service Name -->
+        <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                Servicename *
+            </label>
+
+            <input type="text" name="serviceName" [(ngModel)]="serviceName"
+                placeholder="z.B. Complaints, Billing, etc."
+                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700" />
+        </div>
+
+        <!-- ERROR -->
+        @if (errorMessage) {
+        <p class="text-sm text-red-500">
+            {{ errorMessage }}
+        </p>
+        }
+
+        <!-- SUCCESS -->
+        @if (successMessage) {
+        <p class="text-sm text-green-500">
+            {{ successMessage }}
+        </p>
+        }
+
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+
+            <button type="submit" [disabled]="!serviceName.trim() || isLoading"
+                class="flex-1 bg-brand-500 text-white py-2 rounded-lg hover:bg-brand-600 transition cursor-pointer disabled:opacity-50">
+
+                {{ isLoading ? 'Wird gespeichert...' : (serviceId ? 'Aktualisieren' : 'Speichern') }}
+            </button>
+
+            <button type="button" (click)="resetForm()"
+                class="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer">
+
+                Abbrechen
+            </button>
+
+        </div>
+
+    </form>
+</div>

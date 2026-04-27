@@ -98,13 +98,22 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       subItems: [{ name: "Booking List", path: "/bookings" }],
     },
     {
-      name:"Customer comparison",
+      name: "Customer comparison",
       icon: `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none">
       <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M9.5 9C9.5 7.61929 10.6193 6.5 12 6.5C13.3807 6.5 14.5 7.61929 14.5 9C14.5 10.3807 13.3807 11.5 12 11.5C10.6193 11.5 9.5 10.3807 9.5 9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M12 11.5V14M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`,
       subItems: [{ name: "Comparison List", path: "/comparisons" }],
+    },
+    {
+      name: "Customer Queries",
+      icon: `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.5 9C9.5 7.61929 10.6193 6.5 12 6.5C13.3807 6.5 14.5 7.61929 14.5 9C14.5 10.3807 13.3807 11.5 12 11.5C10.6193 11.5 9.5 10.3807 9.5 9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 11.5V14M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+      subItems: [{ name: "Query Categories", path: "/customer-query/categories" }, { name: "Customer Queries", path: "/customer-query/customer-queries" }],
     }
   ];
 

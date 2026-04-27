@@ -1,0 +1,467 @@
+<div class="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow">
+
+    <!-- Header & Filters -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white shrink-0">Kundenanfragen</h2>
+
+        <div class="flex flex-wrap items-center gap-3 w-full lg:justify-end">
+
+            <!-- Status Dropdown Filter -->
+            <div class="relative">
+                <button (click)="toggleDropdown()"
+                    class="flex items-center gap-2 px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm min-w-[160px] justify-between">
+                    <div class="flex items-center gap-2">
+                        <!-- dot indicator -->
+                        <span class="w-2 h-2 rounded-full" [ngClass]="{
+                  'bg-gray-400': selectedTab === 'all',
+                  'bg-yellow-400': selectedTab === 'open',
+                  'bg-blue-400': selectedTab === 'inProgress',
+                  'bg-green-400': selectedTab === 'closed'
+                }">
+                        </span>
+                        <span class="text-gray-700 dark:text-gray-200">
+                            {{ selectedTab === 'all' ? 'Alle' : selectedTab === 'open' ? 'Offen' : selectedTab ===
+                            'inProgress' ?
+                            'In Bearbeitung' : 'Geschlossen' }}
+                        </span>
+                        <span
+                            class="px-1.5 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                            {{ filteredRequests.length }}
+                        </span>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-gray-400 transition-transform duration-200 shrink-0"
+                        [class.rotate-180]="dropdownOpen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                @if (dropdownOpen) {
+                <!-- click-outside overlay -->
+                <div class="fixed inset-0 z-[900]" (click)="closeDropdown()"></div>
+
+                <div
+                    class="absolute right-0 mt-1 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-[901] overflow-hidden">
+                    @for (tab of statusTabs; track tab.value) {
+                    <button (click)="onTabChange(tab.value)"
+                        class="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                        [ngClass]="selectedTab === tab.value
+                    ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-semibold'
+                    : 'text-gray-700 dark:text-gray-300'">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-2 h-2 rounded-full shrink-0" [ngClass]="{
+                        'bg-gray-400': tab.value === 'all',
+                        'bg-yellow-400': tab.value === 'open',
+                        'bg-blue-400': tab.value === 'inProgress',
+                        'bg-green-400': tab.value === 'closed'
+                      }">
+                            </span>
+                            {{ tab.label }}
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-full text-xs" [ngClass]="selectedTab === tab.value
+                      ? 'bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'">
+                            {{ tab.count }}
+                        </span>
+                    </button>
+                    }
+                </div>
+                }
+            </div>
+
+            <button (click)="fetchRequests(1)"
+                class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm active:scale-95">
+                Aktualisieren
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    @if (isLoading) {
+    <div class="flex items-center gap-2 text-gray-500 text-sm py-4">
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-500"></div>
+        <span>Anfragen werden geladen...</span>
+    </div>
+    }
+
+    <!-- Table -->
+    @if (!isLoading && !errorMessage && filteredRequests.length > 0) {
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left border-separate border-spacing-0">
+            <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                <tr>
+                    <th class="px-4 py-3 rounded-tl-lg">Ticket</th>
+                    <th class="px-4 py-3">Kunde</th>
+                    <th class="px-4 py-3">Betreff</th>
+                    <th class="px-4 py-3">Service</th>
+                    <th class="px-4 py-3">Erstellt am</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right rounded-tr-lg">Aktionen</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y dark:divide-gray-700">
+                @for (request of filteredRequests; track request.serviceRequestId) {
+
+                <!-- Main Row -->
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer"
+                    (click)="toggleRow(request.serviceRequestId)">
+
+                    <td class="px-4 py-4">
+                        <span class="text-xs font-mono text-gray-400 dark:text-gray-500">{{ request.ticketNumber
+                            }}</span>
+                    </td>
+
+                    <td class="px-4 py-4">
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ request.fistName }} {{
+                            request.lastName }}</div>
+                        <div class="text-xs text-gray-400">{{ request.email }}</div>
+                    </td>
+
+                    <td class="px-4 py-4 text-gray-700 dark:text-gray-300 font-medium">{{ request.title }}</td>
+
+                    <td class="px-4 py-4 text-gray-500 dark:text-gray-400 text-xs">{{ request.serviceName || '—' }}</td>
+
+                    <td class="px-4 py-4 text-gray-500 dark:text-gray-400 text-xs">
+                        {{ (request.createdOn * 1000) | date:'dd.MM.yyyy HH:mm' }}
+                    </td>
+
+                    <td class="px-4 py-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="{
+                    'bg-yellow-100 text-yellow-700': request.isOpen && !request.inProgress,
+                    'bg-blue-100 text-blue-700': request.inProgress,
+                    'bg-green-100 text-green-700': request.isClosed
+                  }">
+                            @if (request.isClosed) { Geschlossen }
+                            @else if (request.inProgress) { In Bearbeitung }
+                            @else { Offen }
+                        </span>
+                    </td>
+
+                    <td class="px-4 py-4 text-right" (click)="$event.stopPropagation()">
+                        <div class="flex items-center justify-end gap-2">
+
+                            <!-- Chat Button -->
+                            <button (click)="openChat(request)" title="Chat öffnen"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:hover:bg-brand-900/60 text-brand-600 dark:text-brand-400 transition active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+                                </svg>
+                            </button>
+
+                            <!-- Close Query Button -->
+                            @if (!request.isClosed) {
+                            <button (click)="requestCloseQuery(request)"
+                                [disabled]="closingId === request.serviceRequestId" title="Anfrage schließen"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-500 dark:text-red-400 transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                                @if (closingId === request.serviceRequestId) {
+                                <div class="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-red-500"></div>
+                                } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                }
+                            </button>
+                            }
+
+                            <!-- Expand Arrow -->
+                            <button class="text-brand-500 p-1"
+                                (click)="toggleRow(request.serviceRequestId); $event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 transition-transform duration-200"
+                                    [class.rotate-180]="expandedRow === request.serviceRequestId" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Expanded Detail Row -->
+                @if (expandedRow === request.serviceRequestId) {
+                <tr class="bg-blue-50/30 dark:bg-gray-800/40">
+                    <td colspan="7" class="px-8 py-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+
+                            <div class="space-y-1">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Ticket-Details</p>
+                                <p><strong>Ticket-Nr.:</strong> <span class="font-mono text-xs">{{ request.ticketNumber
+                                        }}</span></p>
+                                <p><strong>Service:</strong> {{ request.serviceName || '—' }}</p>
+                                <p><strong>Erstellt:</strong> {{ (request.createdOn * 1000) | date:'dd.MM.yyyy HH:mm' }}
+                                </p>
+                            </div>
+
+                            <div class="space-y-1">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Verlauf</p>
+                                <p>
+                                    <strong>Geschlossen am:</strong>
+                                    @if (request.requestClosedOn) {
+                                    <span>{{ (request.requestClosedOn * 1000) | date:'dd.MM.yyyy HH:mm' }}</span>
+                                    } @else {
+                                    <span class="text-gray-400 italic">—</span>
+                                    }
+                                </p>
+                                <p>
+                                    <strong>Wiedereröffnet:</strong>
+                                    @if (request.requestReopenedOn) {
+                                    <span>{{ (request.requestReopenedOn * 1000) | date:'dd.MM.yyyy HH:mm' }}</span>
+                                    } @else {
+                                    <span class="text-gray-400 italic">—</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="space-y-1">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Kundendaten</p>
+                                <p><strong>Name:</strong> {{ request.fistName }} {{ request.lastName }}</p>
+                                <p><strong>E-Mail:</strong> {{ request.email }}</p>
+                            </div>
+
+                        </div>
+                    </td>
+                </tr>
+                }
+
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+
+    <!-- Error -->
+    @if (!isLoading && errorMessage) {
+    <div class="text-center py-12">
+        <p class="text-red-500 font-medium">{{ errorMessage }}</p>
+        <button (click)="fetchRequests(1)" class="mt-2 text-sm text-brand-500 underline">Erneut versuchen</button>
+    </div>
+    }
+
+    <!-- Empty -->
+    @if (!isLoading && !errorMessage && filteredRequests.length === 0) {
+    <div class="text-center py-12">
+        <p class="text-gray-500 font-medium">Keine Anfragen gefunden</p>
+        <p class="text-xs text-gray-400 mt-1">Versuchen Sie einen anderen Filter.</p>
+    </div>
+    }
+
+    <!-- Pagination -->
+    @if (!isLoading && !errorMessage && filteredRequests.length > 0) {
+    <div class="flex items-center justify-between px-4 py-4 border-t dark:border-gray-700 mt-4">
+        <div class="text-sm text-gray-500">
+            Seite <span class="font-medium text-gray-900 dark:text-white">{{ currentPage }}</span>
+            von <span class="font-medium text-gray-900 dark:text-white">{{ totalPages }}</span>
+        </div>
+        <div class="flex gap-2">
+            <button (click)="prevPage()" [disabled]="currentPage === 1 || isLoading"
+                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                Zurück
+            </button>
+            <button (click)="nextPage()" [disabled]="currentPage >= totalPages || isLoading"
+                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                Weiter
+            </button>
+        </div>
+    </div>
+    }
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     CLOSE TICKET — Confirm Dialog
+════════════════════════════════════════════════════════ -->
+@if (showCloseConfirm && pendingCloseRequest) {
+<div class="fixed inset-0 z-[1100] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" (click)="cancelClose()"></div>
+    <div class="relative z-10 w-full max-w-sm bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
+
+        <!-- Icon -->
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+        </div>
+
+        <div class="text-center">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Anfrage schließen?</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Ticket <span class="font-mono font-medium">{{ pendingCloseRequest.ticketNumber }}</span> wird
+                geschlossen.
+                Der Kunde kann danach keine weiteren Nachrichten senden.
+            </p>
+        </div>
+
+        <div class="flex gap-3 mt-1">
+            <button (click)="cancelClose()"
+                class="flex-1 px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                Abbrechen
+            </button>
+            <button (click)="confirmClose()"
+                class="flex-1 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition active:scale-95">
+                Ja, schließen
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+
+<!-- ═══════════════════════════════════════════════════════
+     CHAT MODAL
+════════════════════════════════════════════════════════ -->
+@if (chatOpen && activeChatRequest) {
+<div class="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6" (click)="closeChat()">
+
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+    <!-- Panel — wider + taller -->
+    <div class="relative z-[1000] w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        style="height: 80vh; max-height: 700px;" (click)="$event.stopPropagation()">
+
+        <!-- Chat Header -->
+        <div
+            class="flex items-center justify-between px-5 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
+            <div>
+                <p class="font-semibold text-gray-900 dark:text-white text-sm">
+                    {{ activeChatRequest.fistName }} {{ activeChatRequest.lastName }}
+                </p>
+                <p class="text-xs text-gray-400 font-mono">{{ activeChatRequest.ticketNumber }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ activeChatRequest.title }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium" [ngClass]="{
+              'bg-yellow-100 text-yellow-700': activeChatRequest.isOpen && !activeChatRequest.inProgress,
+              'bg-blue-100 text-blue-700': activeChatRequest.inProgress,
+              'bg-green-100 text-green-700': activeChatRequest.isClosed
+            }">
+                    @if (activeChatRequest.isClosed) { Geschlossen }
+                    @else if (activeChatRequest.inProgress) { In Bearbeitung }
+                    @else { Offen }
+                </span>
+                <button (click)="closeChat()"
+                    class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+
+            @if (chatMessages.length === 0) {
+            <div class="text-center text-gray-400 text-sm py-8 italic">Keine Nachrichten vorhanden.</div>
+            }
+
+            @for (msg of chatMessages; track msg.sendOn) {
+            <div class="flex" [ngClass]="msg.chatUser === 'ADMIN' ? 'justify-end' : 'justify-start'">
+
+                <!-- Customer avatar -->
+                @if (msg.chatUser !== 'ADMIN') {
+                <div
+                    class="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs font-bold shrink-0 mr-2 mt-1">
+                    {{ activeChatRequest.fistName?.charAt(0) | uppercase }}
+                </div>
+                }
+
+                <div class="max-w-[72%]">
+                    <div class="px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap" [ngClass]="msg.chatUser === 'ADMIN'
+                  ? 'bg-brand-500 text-white rounded-tr-sm'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm'">
+                        {{ msg.message }}
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1"
+                        [ngClass]="msg.chatUser === 'ADMIN' ? 'text-right' : 'text-left'">
+                        {{ (msg.sendOn * 1000) | date:'dd.MM.yy HH:mm' }}
+                        <span class="ml-1 font-medium">{{ msg.chatUser === 'ADMIN' ? 'Admin' : 'Kunde' }}</span>
+                    </p>
+                </div>
+
+                <!-- Admin avatar -->
+                @if (msg.chatUser === 'ADMIN') {
+                <div
+                    class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-bold shrink-0 ml-2 mt-1">
+                    A
+                </div>
+                }
+
+            </div>
+            }
+        </div>
+
+        <!-- Send Confirm Banner (appears above reply box) -->
+        @if (showSendConfirm) {
+        <div
+            class="px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-700 shrink-0">
+            <div class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 shrink-0 mt-0.5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <div class="flex-1 text-sm">
+                    <p class="font-semibold text-amber-800 dark:text-amber-300">Nachricht senden?</p>
+                    <p class="text-amber-700 dark:text-amber-400 text-xs mt-0.5">
+                        Der Kunde wird über diese Antwort per E-Mail benachrichtigt.
+                    </p>
+                </div>
+                <div class="flex gap-2 shrink-0">
+                    <button (click)="cancelSend()"
+                        class="px-3 py-1 text-xs font-medium rounded-lg border border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition">
+                        Abbrechen
+                    </button>
+                    <button (click)="confirmSendReply()"
+                        class="px-3 py-1 text-xs font-medium rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition active:scale-95">
+                        Senden ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Reply Box -->
+        @if (!activeChatRequest.isClosed) {
+        <div class="px-4 py-3 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 shrink-0">
+            <div class="flex items-end gap-2">
+                <textarea [(ngModel)]="replyMessage" (keydown.enter)="onReplyEnter($event)"
+                    [disabled]="showSendConfirm || isSendingReply"
+                    placeholder="Antwort eingeben… (Enter zum Senden, Shift+Enter für neue Zeile)" rows="2"
+                    class="flex-1 resize-none text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition placeholder-gray-400 disabled:opacity-50">
+            </textarea>
+                <button (click)="requestSendReply()"
+                    [disabled]="!replyMessage.trim() || isSendingReply || showSendConfirm"
+                    class="flex items-center justify-center w-10 h-10 rounded-xl bg-brand-500 hover:bg-brand-600 text-white transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0">
+                    @if (isSendingReply) {
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                    }
+                </button>
+            </div>
+        </div>
+        } @else {
+        <div
+            class="px-4 py-3 border-t dark:border-gray-700 text-center text-xs text-gray-400 italic bg-gray-50 dark:bg-gray-800/50 shrink-0">
+            Diese Anfrage ist geschlossen. Antworten sind nicht möglich.
+        </div>
+        }
+
+    </div>
+</div>
+}

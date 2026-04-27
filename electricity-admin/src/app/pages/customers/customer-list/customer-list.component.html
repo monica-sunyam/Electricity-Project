@@ -94,33 +94,89 @@
         @if (expandedRow === customer.id) {
         <tr class="bg-blue-50/30 dark:bg-gray-800/40">
           <td colspan="6" class="px-8 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="flex flex-col gap-6">
 
-              <div class="space-y-1">
-                <p class="text-xs text-gray-400 uppercase tracking-wider">Kundenprofil</p>
-                <p><strong>Typ:</strong> {{ customer.userType }}</p>
-                <p><strong>Anrede:</strong> {{ customer.salutation }}</p>
-                <p><strong>Firma:</strong> {{ customer.companyName || "Privatkunde" }}</p>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-1">
+                  <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Kundenprofil</p>
+                  <p><strong>Typ:</strong> {{ customer.userType === 'BUSINESS' ? 'Geschäftlich' : 'Privat' }}</p>
+                  <p><strong>Anrede:</strong> {{ customer.salutation || "—" }} {{ customer.title || "" }}</p>
+                  <p><strong>Firma:</strong> {{ customer.companyName || "—" }}</p>
+                </div>
+
+                <div class="space-y-1">
+                  <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Verifizierung & Status</p>
+                  <p>
+                    <strong>E-Mail:</strong>
+                    @if (customer.isVerified) {
+                    <span class="text-green-600">Verifiziert</span>
+                    @if (customer.verifiedOn) {
+                    <span class="text-gray-500 text-xs">(am {{ (customer.verifiedOn * 1000) | date:'dd.MM.yy HH:mm'
+                      }})</span>
+                    }
+                    } @else {
+                    <span class="text-red-500">Unverifiziert</span>
+                    }
+                  </p>
+                  <p><strong>AGB:</strong> {{ customer.isAcknowledged ? "Akzeptiert" : "Offen" }}</p>
+                  <p><strong>Beigetreten:</strong> {{ (customer.joinedOn * 1000) | date:'dd.MM.yyyy HH:mm' }}</p>
+                </div>
+
+                <div class="space-y-1">
+                  <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Anschrift</p>
+                  @if (customer.address) {
+                  <p class="text-gray-700 dark:text-gray-300">
+                    {{ customer.address.street }} {{ customer.address.houseNumber }}<br>
+                    {{ customer.address.zip }} {{ customer.address.city }}
+                  </p>
+                  } @else {
+                  <p class="text-gray-400 italic">Keine Adresse hinterlegt</p>
+                  }
+                </div>
               </div>
 
-              <div class="space-y-1">
-                <p class="text-xs text-gray-400 uppercase tracking-wider">Verifizierung</p>
-                <p><strong>E-Mail:</strong> {{ customer.isVerified ? " Verifiziert" : " Offen" }}</p>
-                <p><strong>AGB:</strong> {{ customer.isAcknowledged ? " Akzeptiert" : " Offen" }}</p>
-                <p><strong>Beigetreten:</strong> {{ (customer.joinedOn * 1000) | date:'dd.MM.yyyy' }}</p>
+              @if (customer.changePasswordHistory && customer.changePasswordHistory.length > 0) {
+              <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-3">Passwort-Historie</p>
+                <div
+                  class="overflow-x-auto max-h-48 overflow-y-auto rounded border border-gray-200 dark:border-gray-700">
+                  <table class="w-full text-xs text-left">
+                    <thead class="bg-white dark:bg-gray-800 text-gray-500 sticky top-0 shadow-sm">
+                      <tr>
+                        <th class="px-3 py-2 font-medium">Angefragt am</th>
+                        <th class="px-3 py-2 font-medium">Code verifiziert</th>
+                        <th class="px-3 py-2 font-medium">Geändert am</th>
+                        <th class="px-3 py-2 font-medium">Admin ID</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                      @for (history of customer.changePasswordHistory; track history.changeRequestSubmittedOn) {
+                      <tr>
+                        <td class="px-3 py-2">{{ (history.changeRequestSubmittedOn * 1000) | date:'dd.MM.yy HH:mm:ss' }}
+                        </td>
+                        <td class="px-3 py-2">
+                          @if (history.codeVerifiedOn) {
+                          {{ (history.codeVerifiedOn * 1000) | date:'dd.MM.yy HH:mm:ss' }}
+                          } @else {
+                          <span class="text-gray-400 italic">—</span>
+                          }
+                        </td>
+                        <td class="px-3 py-2">
+                          @if (history.passwordChangedOn) {
+                          <span class="text-green-600">{{ (history.passwordChangedOn * 1000) | date:'dd.MM.yy HH:mm:ss'
+                            }}</span>
+                          } @else {
+                          <span class="text-red-400 italic">Fehlgeschlagen / Offen</span>
+                          }
+                        </td>
+                        <td class="px-3 py-2">{{ history.adminId || 'System' }}</td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
               </div>
-
-              <div class="md:col-span-2 space-y-1">
-                <p class="text-xs text-gray-400 uppercase tracking-wider">Anschrift</p>
-                @if (customer.address) {
-                <p class="text-gray-700 dark:text-gray-300">
-                  {{ customer.address.street }} {{ customer.address.houseNumber }}<br>
-                  {{ customer.address.zip }} {{ customer.address.city }}
-                </p>
-                } @else {
-                <p class="text-gray-400 italic">Keine Adresse hinterlegt</p>
-                }
-              </div>
+              }
 
             </div>
           </td>

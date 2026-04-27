@@ -14,6 +14,9 @@ import { BannersComponent } from "./pages/banners/banners.component";
 import { CustomerListComponent } from "./pages/customers/customer-list/customer-list.component";
 import { BookingListComponent } from "./pages/bookings/booking-list/booking-list.component";
 import { ComparisonListComponent } from "./pages/customer-comparison/customer-comparison.component";
+import { CustomerServiceFormComponent } from "./pages/customer-query/add-query-categories/add-query-categories.component";
+import { QueryCategoriesComponent } from "./pages/customer-query/query-categories/query-categories.component";
+import { CustomerQueriesComponent } from "./pages/customer-query/customer-queries/customer-queries.component";
 
 export const routes: Routes = [
   {
@@ -97,6 +100,25 @@ export const routes: Routes = [
         path: "comparisons",
         component: ComparisonListComponent,
         title: "Customer Comparisons",
+      },
+      {
+        path: "customer-query/categories",
+        component: QueryCategoriesComponent,
+        title: "Customer Query Categories",
+      },
+      {
+        path: "customer-query/categories/edit/:id",
+        component: CustomerServiceFormComponent,
+        title: "Edit Customer Query Category",
+      },
+      {
+        path: "customer-query/categories/create",
+        component: CustomerServiceFormComponent,
+        title: "Add Customer Query Category",
+      }, {
+        path: "customer-query/customer-queries",
+        component: CustomerQueriesComponent,
+        title: "Customer Queries",
       }
     ],
   },

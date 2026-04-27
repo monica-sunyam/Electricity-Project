@@ -4,25 +4,36 @@ import { ApiService } from "../../../shared/services/api.service";
 import { AuthService } from "../../../shared/services/auth.service";
 import { FormsModule } from "@angular/forms";
 
-/**
- * Updated Type to align with API response and template needs
- */
-type AdminCustomer = {
+export interface PasswordHistory {
+  email: string;
+  changeRequestSubmittedOn: number;
+  codeSendOn: number | null;
+  codeVerifiedOn: number | null;
+  passwordChangedOn: number | null;
+  confirmationSendOn: number | null;
+  otp: string | null;
+  customerId: number;
+  adminId: number | null;
+}
+
+export type AdminCustomer = {
   id: number | string;
   email: string | null;
   firstName: string | null;
   lastName: string | null;
-  mobileNumber: string | null; // Changed from mobile to mobileNumber
+  mobileNumber: string | null;
   telephone?: string | null;
   userType: string | null;
   title: string | null;
   salutation: string | null;
   companyName: string | null;
   isVerified: boolean;
+  verifiedOn: number | null; // Added
   isAcknowledged: boolean;
-  joinedOn: number; // Unix timestamp from API
-  uniqueCustomerId: string; // Added from API
+  joinedOn: number;
+  uniqueCustomerId: string;
   status: boolean;
+  changePasswordHistory: PasswordHistory[]; // Added
   address: {
     zip?: string;
     city?: string;
@@ -55,7 +66,7 @@ export class CustomerListComponent implements OnInit {
   constructor(
     private api: ApiService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchCustomers();
@@ -142,10 +153,12 @@ export class CustomerListComponent implements OnInit {
       salutation: item.salutation ?? "",
       companyName: item.companyName ?? null,
       isVerified: !!item.isVerified,
+      verifiedOn: item.verifiedOn ?? null,
       isAcknowledged: !!item.isAcknowledged,
       joinedOn: item.joinedOn ?? 0,
       uniqueCustomerId: item.uniqueCustomerId ?? "-",
       status: !!item.status,
+      changePasswordHistory: Array.isArray(item.changePasswordHistory) ? item.changePasswordHistory : [],
       address: item.address ? { ...item.address } : null,
     }));
   }
