@@ -473,7 +473,7 @@
           <!--══════════  Chat message Section ══════════ -->
 
           <div *ngIf="showDetails" class="details-page">
-            <!-- 🔹 Header (Open / Closed) -->
+            <!-- Header (Open / Closed) -->
             <ng-container *ngIf="!isClosed; else closedHeader">
               <div class="form-group">
                 <div class="tab-header">Hilfe zu Ihren Offenen Anfragen</div>
@@ -720,13 +720,29 @@
       <div class="container-login" *ngIf="activeTab === 5 && currentStep === 1">
         <div class="attorney-berich">
           {{
-            customerType === 2
+            customerType === 'BUSINESS'
               ? 'Beratervollmacht für Geschäftskunden'
               : 'Beratervollmacht für Privatkunden'
           }}
         </div>
 
         <div class="tab-row">
+          <div
+            class="success-box"
+            *ngIf="activeTab === 5 && approvalStatus === 'PENDING' && recordIsPresent"
+          >
+            <div class="success-content">
+              <div class="success-row">
+                <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
+
+                <div class="text-block">
+                  <div class="tab-header">Beratervollmacht erfolgreich erstellt!</div>
+                  <div class="tab-text">Erstellt am {{ attorneyCreatedOn }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
             <div class="tab-header">Beratervollmacht</div>
             <div class="tab-text">
@@ -751,7 +767,11 @@
           >
             <button class="btn-primary" (click)="nextStep(2)">
               <span class="spinner"></span>
-              Beratervollmacht für Privatkunden erteilen
+              {{
+                customerType === 'BUSINESS'
+                  ? 'Erteilung einer Vollmacht für Geschäftskunden'
+                  : 'Beratervollmacht für Privatkunden erteilen'
+              }}
             </button>
           </div>
         </div>
@@ -760,7 +780,7 @@
       <div class="container-login" *ngIf="activeTab === 5 && currentStep === 2">
         <div class="attorney-berich">
           {{
-            customerType === 2
+            customerType === 'BUSINESS'
               ? 'Beratervollmacht für Geschäftskunden'
               : 'Beratervollmacht für Privatkunden'
           }}
@@ -797,17 +817,25 @@
           <div class="form-group">
             <div class="tab-header">
               {{
-                customerType === 2 ? 'Vollmacht für Geschäftskunden' : 'Vollmacht für Privatkunden'
+                customerType === 'BUSINESS'
+                  ? 'Vollmacht für Geschäftskunden'
+                  : 'Vollmacht für Privatkunden'
               }}
             </div>
             <div class="tab-text">Hiermit bevollmächtigt</div>
           </div>
           <div class="container-readonly">
             <div class="form-row">
-              <div class="form-group" *ngIf="customerType === 2">
+              <div class="form-group" *ngIf="customerType === 'BUSINESS'">
                 <div class="field-wrap readonly">
                   <span class="field-label">Firma</span>
-                  <input type="text" class="text-field" placeholder="Muelli Industries" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.companyName"
+                    placeholder="Muelli Industries"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -816,7 +844,12 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Anrede</span>
-                  <input type="text" class="text-field" placeholder="Herr" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.salutation"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -825,7 +858,7 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Titel</span>
-                  <input type="text" class="text-field" readonly />
+                  <input type="text" class="text-field" [(ngModel)]="customerData.title" readonly />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -833,17 +866,23 @@
               </div>
             </div>
 
-            <div class="form-row" *ngIf="customerType === 2">
+            <div class="form-row" *ngIf="customerType === 'BUSINESS'">
               <div class="form-group">
                 <div class="field-wrap">
                   <span class="field-label">Vorname des gesetzlichen Vertreters</span>
-                  <input type="text" />
+                  <input type="text" [(ngModel)]="legalFirstName" />
+                </div>
+                <div class="field-error-msg" *ngIf="fieldErrors['legalFirstName']">
+                  {{ fieldErrors['legalFirstName'] }}
                 </div>
               </div>
               <div class="form-group">
                 <div class="field-wrap">
                   <span class="field-label">Nachname des gesetzlichen Vertreters</span>
-                  <input type="text" />
+                  <input type="text" [(ngModel)]="legalLastName" />
+                </div>
+                <div class="field-error-msg" *ngIf="fieldErrors['legalLastName']">
+                  {{ fieldErrors['legalLastName'] }}
                 </div>
               </div>
             </div>
@@ -852,7 +891,12 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Vorname</span>
-                  <input type="text" class="text-field" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.firstName"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -861,7 +905,12 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Nachname</span>
-                  <input type="text" class="text-field" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.lastName"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -873,7 +922,12 @@
               <div class="form-group" style="flex: 0 0 160px">
                 <div class="field-wrap readonly">
                   <span class="field-label">Ihre PLZ</span>
-                  <input type="text" class="text-field" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.address.zip"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -882,7 +936,12 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Ort</span>
-                  <input type="text" class="text-field" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.address.city"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -894,7 +953,12 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Ihre Straße</span>
-                  <input type="text" class="text-field" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.address.street"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -903,7 +967,12 @@
               <div class="form-group" style="flex: 0 0 160px">
                 <div class="field-wrap readonly">
                   <span class="field-label">Hausnummer</span>
-                  <input type="text" class="text-field" readonly />
+                  <input
+                    type="text"
+                    class="text-field"
+                    [(ngModel)]="customerData.address.houseNumber"
+                    readonly
+                  />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -915,7 +984,7 @@
               <div class="form-group">
                 <div class="field-wrap readonly">
                   <span class="field-label">Kundennnummer</span>
-                  <input type="text" class="text-field" readonly />
+                  <input type="text" class="text-field" [(ngModel)]="customerData.phone" readonly />
                   <span class="field-icon">
                     <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
                   </span>
@@ -1012,37 +1081,23 @@
             <div class="form-group">
               <div class="field-wrap">
                 <span class="field-label">Ort, Datum</span>
-                <input matInput placeholder="Musterhausen, 30.03.2026" />
+                <input matInput [(ngModel)]="placeAndDate" placeholder="Musterhausen, 30.03.2026" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['placeAndDate']">
+                {{ fieldErrors['placeAndDate'] }}
               </div>
             </div>
 
             <!-- Signature -->
-            <!-- <div class="form-group signature-group">
-              <div class="field-wrap signature">
-                <span class="field-label">Unterschrift</span>
-
-                <canvas
-                  #signaturePad
-                  class="signature-canvas"
-                  (mousedown)="startDrawing($event)"
-                  (mousemove)="draw($event)"
-                  (mouseup)="stopDrawing()"
-                  (mouseleave)="stopDrawing()"
-                ></canvas>
-
-                <button class="clear-btn" (click)="clearCanvas()">Clear</button>
-              </div>
-            </div> -->
             <div class="form-group signature-group">
               <div class="field-wrap signature">
                 <span class="field-label">Unterschrift</span>
 
                 <canvas #canvas class="signature-canvas"></canvas>
                 <button class="clear-btn" (click)="clear()">Clear</button>
-                <!-- <div class="signature-actions">
-                  <button (click)="clear()">Clear</button>
-                  <button (click)="save()">Save</button>
-                </div> -->
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['signature']">
+                {{ fieldErrors['signature'] }}
               </div>
             </div>
           </div>
@@ -1050,18 +1105,33 @@
           <div
             style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
           >
-            <button class="btn-primary" (click)="nextStep(3)">
-              <span class="spinner"></span>
-              Beratervollmacht für Privatkunden erteilen
+            <button
+              type="button"
+              class="btn-primary"
+              [disabled]="isLoading"
+              (click)="submitAttorney()"
+            >
+              <span *ngIf="isLoading; else normal">
+                <span class="spinner"></span> Einreichen...
+              </span>
+
+              <ng-template #normal>
+                <span> Beratervollmacht für Privatkunden erteilen</span>
+              </ng-template>
             </button>
           </div>
         </div>
       </div>
 
-      <div class="container-login" *ngIf="activeTab === 5 && currentStep === 3">
+      <div
+        class="container-login"
+        *ngIf="
+          activeTab === 5 && currentStep === 3 && approvalStatus === 'PENDING' && recordIsPresent
+        "
+      >
         <div class="attorney-berich-green">
           {{
-            customerType === 2
+            customerType === 'BUSINESS'
               ? 'Beratervollmacht für Geschäftskunden'
               : 'Beratervollmacht für Privatkunden'
           }}
@@ -1074,7 +1144,7 @@
 
                 <div class="text-block">
                   <div class="tab-header">Beratervollmacht erfolgreich erstellt!</div>
-                  <div class="tab-text">Erstellt am 30.03.2026 um 18:26 Uhr (MEZ)</div>
+                  <div class="tab-text">Erstellt am {{ attorneyCreatedOn }}</div>
                 </div>
               </div>
             </div>
@@ -1090,7 +1160,7 @@
           <div
             style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
           >
-            <button class="btn-primary" (click)="nextStep(4)">
+            <button class="btn-primary" (click)="revoke()">
               <span class="spinner"></span>
               Beratervollmacht widerrufen
             </button>
@@ -1098,10 +1168,13 @@
         </div>
       </div>
 
-      <div class="container-login" *ngIf="activeTab === 5 && currentStep === 4">
+      <div
+        class="container-login"
+        *ngIf="activeTab === 5 && currentStep === 4 && approvalStatus === 'APPROVED'"
+      >
         <div class="attorney-berich">
           {{
-            customerType === 2
+            customerType === 'BUSINESS'
               ? 'Beratervollmacht für Geschäftskunden'
               : 'Beratervollmacht für Privatkunden'
           }}

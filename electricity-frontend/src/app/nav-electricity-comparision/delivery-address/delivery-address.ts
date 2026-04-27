@@ -9,7 +9,7 @@ import { ContactPerson } from '../../layout/contact-person/contact-person';
 import { NeedSupport } from '../../layout/need-support/need-support';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, computed } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { take, filter } from 'rxjs/operators';
 
@@ -36,6 +36,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   deliveryEmail: string = '';
   deliveryTitle: string = '';
   deliveryFirstName: string = '';
+  salutation: string = '';
   deliveryLastName: string = '';
   deliveryPLZ: string = '';
   deliveryOrt: string = '';
@@ -62,15 +63,24 @@ export class DeliveryAddress implements OnInit, OnDestroy {
    * min  → today (no past dates)
    * max  → 2 years from today (reasonable upper bound)
    */
-  readonly minDeliveryDate: Date = (() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  })();
+  // readonly minDeliveryDate: Date = (() => {
+  //   const d = new Date();
+  //   d.setHours(0, 0, 0, 0);
+  //   return d;
+  // })();
+
+  // readonly maxDeliveryDate: Date = (() => {
+  //   const d = new Date();
+  //   d.setFullYear(d.getFullYear() + 2);
+  //   d.setHours(23, 59, 59, 999);
+  //   return d;
+  // })();
+
+  readonly minDeliveryDate: Date = new Date(1900, 0, 1);
 
   readonly maxDeliveryDate: Date = (() => {
     const d = new Date();
-    d.setFullYear(d.getFullYear() + 2);
+    d.setFullYear(d.getFullYear() - 18); // 👈 key change
     d.setHours(23, 59, 59, 999);
     return d;
   })();
@@ -86,6 +96,8 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     4: '/electricity-comparision/payment-method',
     5: '/electricity-comparision/checkout',
   };
+
+  isLoggedIn = computed(() => !!this.authService.currentUser()?.user_id);
 
   constructor(
     private router: Router,
@@ -106,6 +118,25 @@ export class DeliveryAddress implements OnInit, OnDestroy {
           setTimeout(() => this.initForm(), 0);
         }
       });
+
+    if (this.isLoggedIn()) {
+      this.authService.fetchCustomer();
+    }
+
+    this.authService.getCustomerData().subscribe((data) => {
+      if (!data) return;
+
+      this.deliveryFirstName = data.firstName || '';
+      this.deliveryLastName = data.lastName || '';
+      this.deliveryMobile = data.phone || '';
+      this.salutation = data.salutation || '';
+
+      console.log('Customer data:', data);
+
+      this.cdr.detectChanges();
+      console.log('Customer data updated in DeliveryAddress:', data);
+      console.log('firstName:', this.deliveryFirstName, 'lastName:', this.deliveryLastName);
+    });
   }
 
   ngOnDestroy(): void {
@@ -137,8 +168,8 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   private resetFields(): void {
     this.deliveryEmail = '';
     this.deliveryTitle = '';
-    this.deliveryFirstName = '';
-    this.deliveryLastName = '';
+    // this.deliveryFirstName = '';
+    // this.deliveryLastName = '';
     this.deliveryPLZ = '';
     this.deliveryOrt = '';
     this.deliveryStreet = '';
@@ -256,6 +287,12 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       this.validationErrors['deliveryEmail'] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
     }
 
+    // Salutation
+    console.log('Validating salutation:', this.salutation);
+    if (!this.salutation?.trim()) {
+      this.validationErrors['salutation'] = 'Bitte wählen Sie eine Anrede aus.';
+    }
+
     // Vorname / Nachname
     if (!this.deliveryFirstName?.trim()) {
       this.validationErrors['deliveryFirstName'] = 'Bitte geben Sie Ihren Vornamen ein.';
@@ -277,18 +314,40 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     }
 
     // Liefertermin
+    // if (!this.deliveryDate) {
+    //   this.validationErrors['deliveryDate'] = 'Bitte wählen Sie einen Liefertermin.';
+    // } else {
+    //   const selected = new Date(this.deliveryDate);
+    //   selected.setHours(0, 0, 0, 0);
+
+    //   if (selected < this.minDeliveryDate) {
+    //     this.validationErrors['deliveryDate'] =
+    //       'Der Liefertermin darf nicht in der Vergangenheit liegen.';
+    //   } else if (selected > this.maxDeliveryDate) {
+    //     this.validationErrors['deliveryDate'] =
+    //       'Der Liefertermin darf maximal 2 Jahre in der Zukunft liegen.';
+    //   }
+    // }
+
     if (!this.deliveryDate) {
-      this.validationErrors['deliveryDate'] = 'Bitte wählen Sie einen Liefertermin.';
+      this.validationErrors['deliveryDate'] = 'Bitte Geburtsdatum auswählen.';
     } else {
       const selected = new Date(this.deliveryDate);
       selected.setHours(0, 0, 0, 0);
 
-      if (selected < this.minDeliveryDate) {
-        this.validationErrors['deliveryDate'] =
-          'Der Liefertermin darf nicht in der Vergangenheit liegen.';
-      } else if (selected > this.maxDeliveryDate) {
-        this.validationErrors['deliveryDate'] =
-          'Der Liefertermin darf maximal 2 Jahre in der Zukunft liegen.';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const minDate = new Date(1900, 0, 1);
+
+      const maxDate = new Date();
+      maxDate.setFullYear(maxDate.getFullYear() - 18);
+      maxDate.setHours(0, 0, 0, 0);
+
+      if (selected < minDate) {
+        this.validationErrors['deliveryDate'] = 'Bitte geben Sie ein gültiges Geburtsdatum ein.';
+      } else if (selected > maxDate) {
+        this.validationErrors['deliveryDate'] = 'Sie müssen mindestens 18 Jahre alt sein.';
       }
     }
 
@@ -308,6 +367,12 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   }
 
   openPage(): void {
+    // Provider validation
+    if (!this.providerDetails) {
+      this.errorMessage = 'Bitte wählen Sie zuerst einen Anbieter aus.';
+      alert(this.errorMessage);
+      return;
+    }
     if (!this.validate()) return;
 
     this.isLoading = true;
@@ -324,6 +389,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
         title: this.deliveryTitle,
         firstName: this.deliveryFirstName,
         lastName: this.deliveryLastName,
+        salutation: this.salutation,
         mobile: this.deliveryMobile,
         telephone: this.deliveryPhone,
         deliveryDate: this.deliveryDate ? this.formatDate(this.deliveryDate) : null,
@@ -359,6 +425,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
             this.errorMessage = 'Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.';
             console.error('Submit error: API response returned false', response);
           }
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.isLoading = false;

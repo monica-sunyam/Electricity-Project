@@ -166,7 +166,7 @@
           </div> -->
 
           <div class="form-group">
-            <div class="field-wrap">
+            <div class="field-wrap" [class.field-error]="fieldErrors['email']">
               <div>
                 <span class="field-label">E-Mail-Adresse</span>
                 <input
@@ -188,7 +188,7 @@
           <!-- Password + Repeat Password -->
 
           <div class="form-group">
-            <div class="field-wrap">
+            <div class="field-wrap" [class.field-error]="fieldErrors['password']">
               <div>
                 <span class="field-label">Passwort</span>
                 <input
@@ -206,6 +206,9 @@
               <span class="material-symbols-outlined pw-toggle" (click)="showPw = !showPw">{{
                 showPw ? 'visibility' : 'visibility_off'
               }}</span>
+            </div>
+            <div class="field-error-msg" *ngIf="fieldErrors['password']">
+              {{ fieldErrors['password'] }}
             </div>
           </div>
 
@@ -434,10 +437,10 @@
               [class.field-error]="fieldErrors['mobileNumber']"
             >
               <input
-                type="number"
+                type="text"
                 placeholder="z.B. 175 654897"
                 [value]="formData.mobileNumberLocal"
-                (input)="formData.mobileNumberLocal = $any($event.target).value"
+                (input)="onMobileInput($event)"
               />
             </div>
           </div>

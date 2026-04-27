@@ -69,8 +69,8 @@ export class Customer {
   documentTab: number = 0;
   /* ── Step control ──────────────────────────────────────────────── */
   currentStep: number = 1;
-  /* ── Customer Type (Personal/Business) ──────────────────────────────────────────────── */
-  customerType: number = 1;
+  /* ── Customer Type (PRIVATE/Business) ──────────────────────────────────────────────── */
+  customerType: string = 'PRIVATE';
 
   fieldErrors: Record<string, string> = {};
 
@@ -108,6 +108,9 @@ export class Customer {
 
     if (this.activeTab == 4) {
       this.fetchServiceCount();
+    }
+    if (this.activeTab == 5) {
+      this.checkAttorneyStatus();
     }
     this.cdr.detectChanges();
   }
@@ -157,6 +160,8 @@ export class Customer {
     this.fetchCustomer();
     this.fetchCards();
     this.fetchCategories('general');
+
+    this.checkAttorneyStatus();
   }
 
   /*── Fetch customer details ──*/
@@ -181,6 +186,8 @@ export class Customer {
         this.customerData = {
           id: data.id,
           name: `${data?.firstName || ''} ${data?.lastName || ''}`.trim(),
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
           email: data.email || '',
           phone: data.mobileNumber || '',
           salutation: data.salutation || '',
@@ -200,6 +207,7 @@ export class Customer {
           deliveryDetails: data.deliveryDetails || [],
         };
 
+        this.customerType = this.customerData.userType;
         console.log('customerData:', this.customerData);
 
         this.cdr.detectChanges();
@@ -754,6 +762,13 @@ export class Customer {
   /*── Power of Attorney Section Start ──*/
   /* ── Signature ─── */
 
+  legalFirstName: string = '';
+  legalLastName: string = '';
+  placeAndDate: string = '';
+  recordIsPresent: boolean = false;
+  approvalStatus: string = '';
+  attorneyCreatedOn: string = '';
+
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   signaturePad!: SignaturePad;
 
@@ -772,6 +787,196 @@ export class Customer {
 
   clear() {
     this.signaturePad.clear();
+  }
+  // ngAfterViewInit() {
+  //   this.initSignature();
+  // }
+
+  // ngAfterViewChecked() {
+  //   if (this.activeTab === 5 && this.currentStep === 2 && !this.signaturePad) {
+  //     this.initSignature();
+  //   }
+  // }
+
+  checkAttorneyStatus() {
+    const customerId = this.authService.getUserId() || 0;
+    const payload = { id: customerId };
+
+    this.http.post<any>(`${API_BASE}/customer/check-attorny`, payload).subscribe({
+      next: ({ res, recordIsPresent, approvalStatus, createdOn }) => {
+        if (res) {
+          this.recordIsPresent = recordIsPresent;
+          this.approvalStatus = approvalStatus;
+          this.attorneyCreatedOn = this.formatAttorneyDate(createdOn);
+
+          if (this.activeTab === 5 && this.approvalStatus === 'PENDING' && this.recordIsPresent) {
+            this.nextStep(3);
+          }
+
+          this.cdr.detectChanges();
+          console.log('Attorney:', this.recordIsPresent);
+          console.log('Status:', this.approvalStatus);
+        }
+      },
+      error: (err) => {
+        console.error('Check Attorney API Error:', err);
+      },
+    });
+  }
+
+  formatAttorneyDate(dateValue: any): string {
+    if (!dateValue) return '';
+
+    // 👇 convert seconds → milliseconds
+    const date = new Date(Number(dateValue) * 1000);
+
+    const formatter = new Intl.DateTimeFormat('de-DE', {
+      timeZone: 'Europe/Berlin',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const parts = formatter.formatToParts(date);
+
+    const get = (type: string) => parts.find((p) => p.type === type)?.value;
+
+    return `${get('day')}.${get('month')}.${get('year')} um ${get('hour')}:${get('minute')} Uhr (MEZ)`;
+  }
+
+  revoke() {
+    const customerId = this.authService.getUserId();
+
+    if (!customerId) return;
+
+    const payload = {
+      id: customerId,
+    };
+
+    this.isLoading = true;
+
+    this.http.post<any>(`${API_BASE}/customer/revoke-attorny`, payload).subscribe({
+      next: ({ res, message }) => {
+        this.isLoading = false;
+
+        if (res) {
+          console.log('Success:', message);
+
+          this.nextStep(1);
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('API Error:', err);
+      },
+    });
+  }
+  getSignatureFile(): File {
+    const canvas = this.canvasRef.nativeElement;
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+
+    const ctx = tempCanvas.getContext('2d')!;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    ctx.drawImage(canvas, 0, 0);
+
+    const dataUrl = tempCanvas.toDataURL('image/png');
+
+    const byteString = atob(dataUrl.split(',')[1]);
+    const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new File([ab], 'signature.png', { type: mimeString });
+  }
+
+  submitAttorney() {
+    this.fieldErrors = {};
+
+    let valid = true;
+
+    if (this.customerType === 'BUSINESS') {
+      if (!this.legalFirstName?.trim()) {
+        this.fieldErrors['legalFirstName'] = 'Vorname erforderlich';
+        valid = false;
+      }
+
+      if (!this.legalLastName?.trim()) {
+        this.fieldErrors['legalLastName'] = 'Nachname erforderlich';
+        valid = false;
+      }
+    }
+
+    if (!this.placeAndDate?.trim()) {
+      this.fieldErrors['placeAndDate'] = 'Ort und Datum erforderlich';
+      valid = false;
+    }
+
+    if (!this.signaturePad || this.signaturePad.isEmpty()) {
+      this.fieldErrors['signature'] = 'Unterschrift erforderlich';
+      valid = false;
+    }
+
+    if (!valid) return;
+    const customerId = this.authService.getUserId() || 0;
+
+    const payload = {
+      adminId: 1,
+      customerId: customerId,
+      salutation: this.customerData.salutation,
+      title: this.customerData.title,
+      userType: this.customerType,
+      firstName: this.customerData.firstName,
+      lastName: this.customerData.lastName,
+      zip: this.customerData.address?.zip,
+      city: this.customerData.address?.city,
+      street: this.customerData.address?.street,
+      houseNumber: this.customerData.address?.houseNumber,
+      placeAndDate: this.placeAndDate,
+      companyName: this.customerData.companyName,
+      legalRepresentativeFirstName: this.legalFirstName,
+      legalRepresentativeLastName: this.legalLastName,
+    };
+
+    const formData = new FormData();
+
+    formData.append('data', JSON.stringify(payload));
+
+    const file = this.getSignatureFile();
+    formData.append('file', file);
+
+    this.isLoading = true;
+
+    this.http.post<any>(`${API_BASE}/customer/add-attorny`, formData).subscribe({
+      next: ({ res, message, createdOn }) => {
+        this.isLoading = false;
+
+        if (res) {
+          console.log('Success:', message);
+          console.log('Created On:', createdOn);
+
+          this.nextStep(3);
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('API Error:', err);
+      },
+    });
   }
 
   /*── Power of Attorney Section End ──*/
@@ -886,7 +1091,6 @@ export class Customer {
   isLoadingReset: boolean = false;
   apiError: string = '';
   resendSuccess: boolean = false;
-  /* ── Field-level validation errors ─────────────────────────────── */
 
   clearPwdField() {
     this.newPassword = '';

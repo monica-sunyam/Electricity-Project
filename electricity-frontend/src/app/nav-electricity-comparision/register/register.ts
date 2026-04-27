@@ -153,10 +153,11 @@ AUTH MODE
 
     if (this.isLoggedIn && this.authMode == 'login') {
       this.currentStep = 5;
-      this.selectedOption = 'same'
+      this.selectedOption = 'same';
     } else {
       this.currentStep = 1;
     }
+    this.fieldErrors = {};
     this.cdr.detectChanges();
   }
   clearField() {
@@ -491,20 +492,20 @@ AUTH MODE
   private validateStep1(passwordRepeat: string): boolean {
     this.fieldErrors = {};
     let valid = true;
-
+    const errors: any = {};
     if (!this.formData.email) {
-      this.fieldErrors['email'] = 'E-Mail-Adresse ist erforderlich.';
+      errors['email'] = 'E-Mail-Adresse ist erforderlich.';
       valid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.formData.email)) {
-      this.fieldErrors['email'] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+      errors['email'] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
       valid = false;
     }
 
     if (!this.formData.password) {
-      this.fieldErrors['password'] = 'Passwort ist erforderlich.';
+      errors['password'] = 'Passwort ist erforderlich.';
       valid = false;
     } else if (!this.isPasswordValid()) {
-      this.fieldErrors['password'] = 'Passwort erfüllt nicht alle Anforderungen.';
+      errors['password'] = 'Passwort erfüllt nicht alle Anforderungen.';
       valid = false;
     }
 
@@ -514,42 +515,42 @@ AUTH MODE
     }
 
     if (!this.formData.salutation) {
-      this.fieldErrors['salutation'] = 'Bitte Anrede auswählen.';
+      errors['salutation'] = 'Bitte Anrede auswählen.';
       valid = false;
     }
 
     if (!this.formData.firstName.trim()) {
-      this.fieldErrors['firstName'] = 'Vorname ist erforderlich.';
+      errors['firstName'] = 'Vorname ist erforderlich.';
       valid = false;
     }
 
     if (!this.formData.lastName.trim()) {
-      this.fieldErrors['lastName'] = 'Nachname ist erforderlich.';
+      errors['lastName'] = 'Nachname ist erforderlich.';
       valid = false;
     }
 
     if (!this.formData.postalCode.trim()) {
-      this.fieldErrors['postalCode'] = 'Postleitzahl ist erforderlich.';
+      errors['postalCode'] = 'Postleitzahl ist erforderlich.';
       valid = false;
     }
 
     if (!this.formData.city.trim()) {
-      this.fieldErrors['city'] = 'Stadt ist erforderlich.';
+      errors['city'] = 'Stadt ist erforderlich.';
       valid = false;
     }
 
     if (!this.formData.street.trim()) {
-      this.fieldErrors['street'] = 'Straße ist erforderlich.';
+      errors['street'] = 'Straße ist erforderlich.';
       valid = false;
     }
 
     if (!this.formData.houseNumber.trim()) {
-      this.fieldErrors['houseNumber'] = 'Hausnummer ist erforderlich.';
+      errors['houseNumber'] = 'Hausnummer ist erforderlich.';
       valid = false;
     }
 
     if (this.customerType === 'business' && !this.formData.companyName.trim()) {
-      this.fieldErrors['companyName'] = 'Unternehmensname ist erforderlich.';
+      errors['companyName'] = 'Unternehmensname ist erforderlich.';
       valid = false;
     }
 
@@ -561,23 +562,34 @@ AUTH MODE
     const mobile = (this.formData.mobileNumberLocal || '').replace(/\s/g, '');
 
     if (!mobile) {
-      this.fieldErrors['mobileNumber'] = 'Handynummer ist erforderlich.';
+      errors['mobileNumber'] = 'Handynummer ist erforderlich.';
       valid = false;
     } else if (!/^\d+$/.test(mobile)) {
-      this.fieldErrors['mobileNumber'] = 'Nur Zahlen sind erlaubt.';
+      errors['mobileNumber'] = 'Nur Zahlen sind erlaubt.';
       valid = false;
     } else if (mobile.length < 6) {
-      this.fieldErrors['mobileNumber'] = 'Mindestens 6 Ziffern erforderlich.';
-      valid = false;
-    } else if (mobile.length > 12) {
-      this.fieldErrors['mobileNumber'] = 'Maximal 12 Ziffern erlaubt.';
-      valid = false;
-    }
+      errors['mobileNumber'] = 'Mindestens 6 Ziffern erforderlich.';
 
+      valid = false;
+      this.cdr.detectChanges();
+    } else if (mobile.length > 12) {
+      errors['mobileNumber'] = 'Maximal 12 Ziffern erlaubt.';
+      valid = false;
+      this.cdr.detectChanges();
+    }
+    this.fieldErrors = errors;
+
+    // This tells Angular: "The whole object changed, please redraw the UI"
+    this.cdr.detectChanges();
     console.log('validation error', this.fieldErrors['mobileNumber']);
     return valid;
   }
 
+  onMobileInput(event: any) {
+    // Removes everything except digits
+    const val = event.target.value.replace(/\D/g, '');
+    this.formData.mobileNumberLocal = val;
+  }
   /* ══════════════════════════════════════════════════════════════════
   STEP 1 — SUBMIT (SIGNUP API)
   ══════════════════════════════════════════════════════════════════ */

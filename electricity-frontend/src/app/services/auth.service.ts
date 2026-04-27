@@ -452,15 +452,17 @@ export class AuthService {
 
           const formattedData = {
             id: data.id,
+            firstName: data.firstName,
+            lastName: data.lastName,
             name: `${data?.firstName || ''} ${data?.lastName || ''}`.trim(),
             email: data.email,
             phone: data.mobileNumber,
             salutation: data.salutation,
             deliveryDetails: data.deliveryDetails || [],
-            address: data.address || null, // ✅ include address
+            address: data.address || null,
           };
 
-          this.customerData$.next(formattedData); // ✅ important
+          this.customerData$.next(formattedData);
         },
         error: (err) => {
           console.error('API Error:', err);

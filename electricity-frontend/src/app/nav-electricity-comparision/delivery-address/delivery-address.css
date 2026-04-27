@@ -34,3 +34,75 @@
 .toggle-opt input[type="radio"] {
     accent-color: #1565c0; /* match your existing blue */
 }
+
+
+/* ══════════════════════════════════════════════
+   SELECT / DROPDOWN (fixed overlap issue)
+══════════════════════════════════════════════ */
+.input-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #4a4949;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  transition: border-color 0.15s;
+  /* flex: 1; */
+  position: relative;
+  /* display: inline-block; */
+}
+
+.input-field.select-wrap {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+.select-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 18px !important;
+  color: #888;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.styled-select {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  padding: 0 12px 10px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  right: 10px;
+  font-size: 18px !important;
+  color: #888;
+  pointer-events: none;
+}
+
+.guideline-icon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  background-color: #ccc; /* Default gray */
+  transition: background-color 0.3s ease;
+}
+
+.guideline-icon.valid {
+  background-color: #28a745; /* Success green */
+}
+
+.guideline-icon.invalid {
+  background-color: #dc3545; /* Error red */
+}
