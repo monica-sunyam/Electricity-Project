@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.tarifvergleich.electricity.dto.BaseProviderResponse;
+import com.tarifvergleich.electricity.dto.CheckIbanResponseDto;
 import com.tarifvergleich.electricity.dto.EnergyApiResponse;
 import com.tarifvergleich.electricity.exception.EnergyApiUnavailableException;
 
@@ -66,6 +67,22 @@ public class EnergyService {
 
 			throw new EnergyApiUnavailableException("External Provider Error", body);
 		}).body(BaseProviderResponse.class);
+	}
+
+	public CheckIbanResponseDto checkIban(String iban) {
+		if (iban == null)
+			return null;
+
+		return energyApi.get().uri("/checkIban/{iban}", iban).retrieve()
+				.onStatus(HttpStatusCode::isError, (request, response) -> {
+
+					Map<String, Object> body = objectMapper.readValue(response.getBody(),
+							new TypeReference<Map<String, Object>>() {
+							});
+					body.put("message", (Object)"Incorrent iban id");
+					body.put("code", (Object)200);
+					throw new EnergyApiUnavailableException("Invalid Iban id", body);
+				}).body(CheckIbanResponseDto.class);
 	}
 
 }

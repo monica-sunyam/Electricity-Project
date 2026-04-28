@@ -30,6 +30,7 @@ import com.tarifvergleich.electricity.model.CustomerSelectedProvider;
 import com.tarifvergleich.electricity.repository.CustomerAddressRepository;
 import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
 import com.tarifvergleich.electricity.repository.CustomerRepository;
+import com.tarifvergleich.electricity.service.ElectricityComparisonService;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.transaction.Transactional;
@@ -45,6 +46,7 @@ public class CustomerBookingService {
 	private final CustomerDeliveryRepository customerDeliveryRepo;
 	private final Helper helper;
 	private final ObjectMapper objectMapper;
+	private final ElectricityComparisonService electricityComparisonService;
 
 	@Transactional
 	public Map<String, Object> saveDelivery(Integer customerId, Integer deliveryId, CustomerDeliveryDto deliveryDto,
@@ -52,8 +54,8 @@ public class CustomerBookingService {
 
 		if (customerId == null || customerId <= 0)
 			throw new InternalServerException("Customer id missing", HttpStatus.OK);
-		
-		if(providerInfo == null)
+
+		if (providerInfo == null)
 			throw new InternalServerException("Provider data missing", HttpStatus.OK);
 
 		Customer customer = customerRepo.findById(customerId)
@@ -61,8 +63,8 @@ public class CustomerBookingService {
 
 		CustomerDelivery editDelivery = null;
 		if (deliveryId != null)
-			editDelivery = customerDeliveryRepo.findById(deliveryId).orElseThrow(
-					() -> new InternalServerException("Delivery record not found", HttpStatus.OK));
+			editDelivery = customerDeliveryRepo.findById(deliveryId)
+					.orElseThrow(() -> new InternalServerException("Delivery record not found", HttpStatus.OK));
 
 		if (deliveryDto == null)
 			throw new InternalServerException("Delivery details not found", HttpStatus.OK);
@@ -76,6 +78,9 @@ public class CustomerBookingService {
 		if (deliveryDto.getMobile() == null || deliveryDto.getMobile().isEmpty())
 			throw new InternalServerException("Mobile number missing", HttpStatus.OK);
 
+		if (deliveryDto.getSalutation() == null || deliveryDto.getSalutation().isEmpty())
+			throw new InternalServerException("Salutation missing", HttpStatus.OK);
+
 //		if(deliveryDto.getTelephone() == null || deliveryDto.getTelephone().isEmpty())
 //			throw new InternalServerException("Telephone number missing", HttpStatus.OK);
 
@@ -87,9 +92,18 @@ public class CustomerBookingService {
 
 		if (deliveryDto.getStreet() == null || deliveryDto.getStreet().isEmpty())
 			throw new InternalServerException("Street missing", HttpStatus.OK);
-		
+
 //		if (deliveryDto.getDeliveryDate().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
 //			throw new InternalServerException("Delivery date is past date", HttpStatus.OK);
+		LocalDate todayInBerlin = LocalDate.now(ZoneId.of("Europe/Berlin"));
+
+		// 2. Calculate the "cutoff" date (18 years ago)
+		LocalDate eighteenYearsAgo = todayInBerlin.minusYears(18);
+
+		// 3. Compare the provided date (e.g., dateOfBirth)
+		if (deliveryDto.getDob().isAfter(eighteenYearsAgo)) {
+			throw new InternalServerException("User must be at least 18 years old", HttpStatus.OK);
+		}
 
 		CustomerBillingAddress billingAddress = null;
 
@@ -117,7 +131,7 @@ public class CustomerBookingService {
 				billingAddress.setIsDifferent(true);
 			}
 		} else {
-			if (editDelivery == null) {			
+			if (editDelivery == null) {
 				billingAddress = CustomerBillingAddress.builder().zip(deliveryDto.getZip()).city(deliveryDto.getCity())
 						.street(deliveryDto.getStreet()).houseNumber(deliveryDto.getHouseNumber()).isDifferent(false)
 						.build();
@@ -144,28 +158,31 @@ public class CustomerBookingService {
 		}
 
 		if (editDelivery == null) {
-			
+
 			CustomerSelectedProvider selectedProvider = CustomerSelectedProvider.builder()
-															.branch(providerInfo.getBranch())
-															.netzProviderId(providerInfo.getNetzProviderId())
-															.providerId(providerInfo.getProviderId())
-															.providerSVGPath(providerInfo.getProviderSVGPath())
-															.providerName(providerInfo.getProviderName())
-															.rateId(providerInfo.getRateId())
-															.rateName(providerInfo.getRateName())
-															.totalPrice(providerInfo.getTotalPrice())
-															.totalPriceMonth(providerInfo.getTotalPriceMonth())
-															.type(providerInfo.getType())
-															.raw(objectMapper.valueToTree(providerInfo))
-															.build();
-			
-			CustomerDelivery delivery = CustomerDelivery.builder().title(deliveryDto.getTitle()).firstName(deliveryDto.getFirstName())
-					.lastName(deliveryDto.getLastName()).address(address).billingAddress(billingAddress)
-					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone())
-					.deliveryType("ELECTRICITY") // Manage this when type will be defined in frontend. Don't forget
-					.customerProvider(selectedProvider)
-					.deliveryDate(helper.toGermamUnixTimestamp(deliveryDto.getDeliveryDate())).build();
-			
+					.branch(providerInfo.getBranch()).netzProviderId(providerInfo.getNetzProviderId())
+					.providerId(providerInfo.getProviderId()).providerSVGPath(providerInfo.getProviderSVGPath())
+					.providerName(providerInfo.getProviderName()).rateId(providerInfo.getRateId())
+					.rateName(providerInfo.getRateName()).totalPrice(providerInfo.getTotalPrice())
+					.totalPriceMonth(providerInfo.getTotalPriceMonth()).type(providerInfo.getType())
+					.raw(objectMapper.valueToTree(providerInfo)).build();
+
+			CustomerDelivery delivery = CustomerDelivery.builder().title(deliveryDto.getTitle())
+					.firstName(deliveryDto.getFirstName()).lastName(deliveryDto.getLastName()).address(address)
+					.billingAddress(billingAddress).salutation(deliveryDto.getSalutation())
+					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone()).deliveryType("ELECTRICITY") // Manage
+																														// this
+																														// when
+																														// type
+																														// will
+																														// be
+																														// defined
+																														// in
+																														// frontend.
+																														// Don't
+																														// forget
+					.customerProvider(selectedProvider).dob(helper.toGermamUnixTimestamp(deliveryDto.getDob())).build();
+
 			delivery.setUserAdmin(customer.getAdmin());
 
 			customer.addCustomerDelivery(delivery);
@@ -175,9 +192,10 @@ public class CustomerBookingService {
 			editDelivery.setTitle(deliveryDto.getTitle());
 			editDelivery.setFirstName(deliveryDto.getFirstName());
 			editDelivery.setLastName(deliveryDto.getLastName());
+			editDelivery.setSalutation(deliveryDto.getSalutation());
 			editDelivery.setMobile(deliveryDto.getMobile());
 			editDelivery.setTelephone(deliveryDto.getTelephone());
-			editDelivery.setDeliveryDate(helper.toGermamUnixTimestamp(deliveryDto.getDeliveryDate()));
+			editDelivery.setDob(helper.toGermamUnixTimestamp(deliveryDto.getDob()));
 			editDelivery.setBillingAddress(billingAddress);
 
 			editDelivery.setAddress(address);
@@ -205,8 +223,8 @@ public class CustomerBookingService {
 			if (customerConnectDto.getMoveInDate() == null)
 				throw new InternalServerException("Moving in date missing", HttpStatus.OK);
 
-//			if (customerConnectDto.getMoveInDate().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
-//				throw new InternalServerException("Moving in date is past date", HttpStatus.OK);
+			if (customerConnectDto.getMoveInDate().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
+				throw new InternalServerException("Moving in date is past date", HttpStatus.OK);
 		} else {
 			if (customerConnectDto.getAutoCancellation() == null)
 				throw new InternalServerException("Auto Cancellation missing", HttpStatus.OK);
@@ -223,8 +241,8 @@ public class CustomerBookingService {
 			if (customerConnectDto.getDelivery()) {
 				if (customerConnectDto.getDesiredDelivery() == null
 						|| customerConnectDto.getDesiredDelivery().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin"))))
-					
-				throw new InternalServerException("Desired Delivery not found or ill formed", HttpStatus.OK);
+
+					throw new InternalServerException("Desired Delivery not found or ill formed", HttpStatus.OK);
 			}
 		}
 
@@ -304,35 +322,40 @@ public class CustomerBookingService {
 		if (paymentDetails.getPaymentMethod() == null || paymentDetails.getPaymentMethod().isEmpty())
 			throw new InternalServerException("Payment method missing", HttpStatus.OK);
 
-		if (paymentDetails.getIban() == null || paymentDetails.getIban().isEmpty())
-			throw new InternalServerException("Iban missing", HttpStatus.OK);
+		AccountHolderDto account = new AccountHolderDto();
 
-		if (paymentDetails.getAccountHolder() == null)
-			throw new InternalServerException("Account holder data missing", HttpStatus.OK);
-		
-		if(paymentDetails.getSepaConsent() == null)
-			throw new InternalServerException("Sepa Consent missing", HttpStatus.OK);
+		if (!paymentDetails.getPaymentMethod().equals("ueberweisung")) {
 
-		AccountHolderDto account = paymentDetails.getAccountHolder();
+			if (paymentDetails.getIban() == null || paymentDetails.getIban().isEmpty())
+				throw new InternalServerException("Iban missing", HttpStatus.OK);
 
-		if (account.getFirstName() == null || account.getLastName() == null || account.getFirstName().isEmpty()
-				|| account.getLastName().isEmpty())
-			throw new InternalServerException("Account holder details missing", HttpStatus.OK);
-		
-		if(delivery.getCustomerPayment() == null) {
+			electricityComparisonService.checkIban(paymentDetails.getIban());
 
-		CustomerPayment payment = CustomerPayment.builder().paymentMethod(paymentDetails.getPaymentMethod())
-				.iban(paymentDetails.getIban()).accountHolderFirstName(account.getFirstName())
-				.accountHolderLastName(account.getLastName()).customerDeliveryId(delivery)
-				.sepaConsent(paymentDetails.getSepaConsent())
-				.build();
+			if (paymentDetails.getAccountHolder() == null)
+				throw new InternalServerException("Account holder data missing", HttpStatus.OK);
 
-		delivery.setCustomerPayment(payment);
-		
+			if (paymentDetails.getSepaConsent() == null)
+				throw new InternalServerException("Sepa Consent missing", HttpStatus.OK);
+
+			account = paymentDetails.getAccountHolder();
+
+			if (account.getFirstName() == null || account.getLastName() == null || account.getFirstName().isEmpty()
+					|| account.getLastName().isEmpty())
+				throw new InternalServerException("Account holder details missing", HttpStatus.OK);
 		}
-		else {
+
+		if (delivery.getCustomerPayment() == null) {
+
+			CustomerPayment payment = CustomerPayment.builder().paymentMethod(paymentDetails.getPaymentMethod())
+					.iban(paymentDetails.getIban()).accountHolderFirstName(account.getFirstName())
+					.accountHolderLastName(account.getLastName()).customerDeliveryId(delivery)
+					.sepaConsent(paymentDetails.getSepaConsent()).build();
+
+			delivery.setCustomerPayment(payment);
+
+		} else {
 			CustomerPayment payment = delivery.getCustomerPayment();
-			
+
 			payment.setPaymentMethod(paymentDetails.getPaymentMethod());
 			payment.setIban(paymentDetails.getIban());
 			payment.setAccountHolderFirstName(account.getFirstName());
@@ -383,14 +406,14 @@ public class CustomerBookingService {
 		if (deliveryId == null || deliveryId <= 0)
 			throw new InternalServerException("Delivery id missing", HttpStatus.OK);
 
-		CustomerDelivery delivery = customerDeliveryRepo.findById(deliveryId).orElseThrow(
-				() -> new InternalServerException("Customer Delivery details not found", HttpStatus.OK));
+		CustomerDelivery delivery = customerDeliveryRepo.findById(deliveryId)
+				.orElseThrow(() -> new InternalServerException("Customer Delivery details not found", HttpStatus.OK));
 		if (delivery.getCustomerId().getCustomerId() != customerId)
 			throw new InternalServerException("Customer and delivery mis-match", HttpStatus.OK);
 
 		delivery.setOrderPlaced(true);
 		delivery.setOrderPlacedOn(Helper.getCurrentTimeBerlin());
-		
+
 		customerDeliveryRepo.save(delivery);
 
 		return Map.of("res", true, "message", "Order placed");
@@ -407,8 +430,8 @@ public class CustomerBookingService {
 		if (schedule.getTimeSlot() == null || schedule.getTimeSlot().isEmpty())
 			throw new InternalServerException("Time slot missing", HttpStatus.OK);
 
-		CustomerDelivery delivery = customerDeliveryRepo.findById(schedule.getDeliveryId()).orElseThrow(
-				() -> new InternalServerException("Customer delivery details missing", HttpStatus.OK));
+		CustomerDelivery delivery = customerDeliveryRepo.findById(schedule.getDeliveryId())
+				.orElseThrow(() -> new InternalServerException("Customer delivery details missing", HttpStatus.OK));
 
 		CustomerContactSchedule customerSchedule = CustomerContactSchedule.builder().dayOfWeek(schedule.getDayOfWeek())
 				.timeSlot(schedule.getTimeSlot()).description(schedule.getDescription()).customerDelivery(delivery)

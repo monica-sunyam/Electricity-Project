@@ -1,6 +1,7 @@
 package com.tarifvergleich.electricity.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +13,7 @@ public interface CustomerAttornyRepository extends JpaRepository<CustomerAttorny
 
 	List<CustomerAttorny> findAllByCustomerCustomerIdAndIsRevokedOrderBySubmittedOnDesc(Integer customerId,
 			Boolean isRevoked);
+	
+	Optional<CustomerAttorny> findByIdAndAdminAdminId(Integer id, Integer adminId);
 
 }

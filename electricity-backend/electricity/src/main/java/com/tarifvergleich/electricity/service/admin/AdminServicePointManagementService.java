@@ -89,6 +89,15 @@ public class AdminServicePointManagementService {
 		if (servicesDto.getAdminId() == null || servicesDto.getAdminId() <= 0)
 			throw new InternalServerException("Admin id missing", HttpStatus.OK);
 
+		if (servicesDto.getServiceId() != null && servicesDto.getServiceId() > 0) {
+
+			CustomerServices service = customerServicesRepo
+					.findByIdAndAdminAdminId(servicesDto.getServiceId(), servicesDto.getAdminId()).orElseThrow(
+							() -> new InternalServerException("Service not found with this credential", HttpStatus.OK));
+
+			return Map.of("res", true, "data", CustomerServicesDto.mapCustomerServiceForAdmin(service));
+		}
+
 		if (servicesDto.getPage() != null) {
 
 			if (servicesDto.getSize() == null || servicesDto.getSize() <= 0)

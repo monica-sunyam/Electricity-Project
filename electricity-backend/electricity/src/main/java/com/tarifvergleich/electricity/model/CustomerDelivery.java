@@ -46,6 +46,8 @@ public class CustomerDelivery {
 	
 	@Column(name = "last_name")
 	private String lastName;
+	
+	private String salutation;
 		
 	@Column(name = "mobile_number")
 	private String mobile;
@@ -56,8 +58,8 @@ public class CustomerDelivery {
 	@Column(name = "delivery_type")
 	private String deliveryType; // This determines whether delivery is of ELECTRICITY or GAS or anything else.
 	
-	@Column(name = "delivery_date")
-	private BigInteger deliveryDate;
+	@Column(name = "dob")
+	private BigInteger dob;
 	
 	@Column(name = "order_placed_on")
 	private BigInteger orderPlacedOn;

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tarifvergleich.electricity.exception.EnergyApiUnavailableException;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminUser;
 import com.tarifvergleich.electricity.model.Customer;
@@ -21,7 +22,6 @@ import com.tarifvergleich.electricity.util.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +38,14 @@ public class ElectricityComparisonService {
 	public Map<String, Object> getElectricityComparison(Map<String, Object> filters, String userAgentString,
 			HttpServletRequest request) {
 		try {
-			
+
 			Integer adminId = (Integer) filters.get("adminId");
-			
-			if(adminId == null || adminId <= 0)
+
+			if (adminId == null || adminId <= 0)
 				throw new InternalServerException("Admin Id missing", HttpStatus.OK);
-			
-			AdminUser adminUser = adminUserRepo.findById(adminId).orElseThrow(() -> new InternalServerException("Admin not found", HttpStatus.OK));
+
+			AdminUser adminUser = adminUserRepo.findById(adminId)
+					.orElseThrow(() -> new InternalServerException("Admin not found", HttpStatus.OK));
 			filters.remove("adminId");
 
 			CustomerComparingEnergy customerCompare = null;
@@ -56,7 +57,7 @@ public class ElectricityComparisonService {
 				customerCompare = CustomerComparingEnergy.builder().zip(filters.get("zip").toString())
 						.city(filters.get("city").toString()).requestIp(helper.getIp(request))
 						.requestDeviceDetails(helper.getDeviceInfo(userAgentString).toString()).build();
-				
+
 				customerCompare.setRecordAdmin(adminUser);
 
 				if (filters.get("houseNumber") != null)
@@ -67,9 +68,8 @@ public class ElectricityComparisonService {
 					customerCompare.setConsumerType(filters.get("type").toString());
 				if (filters.get("street") != null)
 					customerCompare.setStreet(filters.get("street").toString());
-				if(filters.get("branch") != null)
+				if (filters.get("branch") != null)
 					customerCompare.setBranch(filters.get("branch").toString());
-				
 
 				customerId = filters.containsKey("customerId") ? (Integer) filters.remove("customerId") : 0;
 			} else {
@@ -84,7 +84,7 @@ public class ElectricityComparisonService {
 					.supplyAsync(() -> energyService.getProviders(filters));
 
 			CompletableFuture.allOf(ratesFuture, providersFuture).join();
-			
+
 			Object rateData = ratesFuture.get();
 			Object providerData = providersFuture.get();
 
@@ -99,17 +99,16 @@ public class ElectricityComparisonService {
 					}
 
 				}
-				
+
 				if (customerId > 0) {
-				    customerRepo.findById(customerId)
-				        .ifPresent(customerCompare::setCustomerModel);
+					customerRepo.findById(customerId).ifPresent(customerCompare::setCustomerModel);
 				}
-				
+
 				JsonNode rateRes = objectMapper.valueToTree(rateData);
-			    JsonNode providerRes = objectMapper.valueToTree(providerData);
-			    
-			    customerCompare.setBaseProviderResponse(providerRes);
-			    customerCompare.setEnergyRateResponse(rateRes);
+				JsonNode providerRes = objectMapper.valueToTree(providerData);
+
+				customerCompare.setBaseProviderResponse(providerRes);
+				customerCompare.setEnergyRateResponse(rateRes);
 
 				comparingRepo.save(customerCompare);
 
@@ -123,5 +122,20 @@ public class ElectricityComparisonService {
 			e.printStackTrace();
 			throw new InternalServerException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	public Map<String, Object> checkIban(String iban) {
+		CompletableFuture<Object> ibanResponse = CompletableFuture.supplyAsync(() -> energyService.checkIban(iban));
+		Object ibanGetData = null;
+		try {
+		    ibanGetData = ibanResponse.get();
+		} catch (InterruptedException e) {
+		    Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
+		    if (e.getCause() instanceof EnergyApiUnavailableException) {
+		        throw (EnergyApiUnavailableException) e.getCause();
+		    }
+		}
+		return Map.of("res", true, "response", ibanGetData);
 	}
 }

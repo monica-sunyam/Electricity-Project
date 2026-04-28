@@ -214,6 +214,12 @@ public class AdminAssetService {
 		if (menuDto.getType() == null || menuDto.getType() <= 0 || menuDto.getType() > 2)
 			throw new InternalServerException("Type undefined", HttpStatus.BAD_REQUEST);
 
+		if (menuDto.getIsRedirect() == null)
+			menuDto.setIsRedirect(false);
+
+		if (menuDto.getIsRedirect() && (menuDto.getLink() == null || menuDto.getLink().isEmpty()))
+			throw new InternalServerException("Link not found", HttpStatus.BAD_REQUEST);
+
 		String contentType = "";
 
 		if (menuDto.getType() == 1)
@@ -247,6 +253,8 @@ public class AdminAssetService {
 			}
 			adminServiceMenu.setUpdatedOn(BigInteger.valueOf(Instant.now().getEpochSecond()));
 			adminServiceMenu.setOrder(menuDto.getOrder());
+			adminServiceMenu.setIsRedirect(menuDto.getIsRedirect());
+			adminServiceMenu.setLink(menuDto.getLink());
 
 			AdminServiceMenu updatedServiceMenu = adminServiceMenuRepo.save(adminServiceMenu);
 
@@ -266,7 +274,7 @@ public class AdminAssetService {
 		AdminServiceMenu newRecord = AdminServiceMenu.builder().contentUrl(fileUrl).adminId(adminUser)
 				.heading(menuDto.getHeading()).subheading(menuDto.getSubheading()).type(menuDto.getType())
 				.highlight(hightlight).originalFileName(fileUrl != null ? file.getOriginalFilename() : null)
-				.order(order).build();
+				.isRedirect(menuDto.getIsRedirect()).link(menuDto.getLink()).order(order).build();
 
 		adminUser.addAdminServiceMenu(newRecord);
 
@@ -292,6 +300,20 @@ public class AdminAssetService {
 					.toList();
 
 		return Map.of("res", true, "data", adminServiceMenus);
+	}
+
+	public Map<String, Object> getSingleService(Integer adminId, Integer serviceId) {
+
+		if (adminId == null || adminId <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (serviceId == null || serviceId <= 0)
+			throw new InternalServerException("Service id missing", HttpStatus.OK);
+
+		AdminServiceMenu adminServiceMenu = adminServiceMenuRepo.findByIdAndAdminIdAdminId(serviceId, adminId)
+				.orElseThrow(
+						() -> new InternalServerException("Service not found with this credential", HttpStatus.OK));
+
+		return Map.of("res", true, "data", adminServiceMenu);
 	}
 
 	@Transactional
@@ -330,16 +352,15 @@ public class AdminAssetService {
 		requestDto.getMenu().forEach(menu -> {
 			if (menu.getId() == null)
 				throw new InternalServerException("Menu id missing", HttpStatus.OK);
-			
-			
+
 			AdminAsset asset = adminAssetRepo.findById(menu.getId()).orElseThrow(
 					() -> new InternalServerException("Menu not found with this credentials", HttpStatus.OK));
-			
-			if(!asset.getAdminId().getAdminId().equals(adminUser.getAdminId()))
+
+			if (!asset.getAdminId().getAdminId().equals(adminUser.getAdminId()))
 				throw new InternalServerException("Admin asset not accessible", HttpStatus.OK);
-			
+
 			asset.setOrder(menu.getOrder());
-			
+
 			adminAssetRepo.save(asset);
 		});
 

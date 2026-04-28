@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.tarifvergleich.electricity.dto.CustomerAttornyDto;
 import com.tarifvergleich.electricity.dto.CustomerComparingEnergyDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryResponseDto;
@@ -26,10 +27,12 @@ import com.tarifvergleich.electricity.dto.ServiceRequestEmailEvent.ServiceRespon
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminUser;
 import com.tarifvergleich.electricity.model.Customer;
+import com.tarifvergleich.electricity.model.CustomerAttorny;
 import com.tarifvergleich.electricity.model.CustomerComparingEnergy;
 import com.tarifvergleich.electricity.model.CustomerDelivery;
 import com.tarifvergleich.electricity.model.CustomerServiceRequest;
 import com.tarifvergleich.electricity.model.CustomerServiceRequestMessages;
+import com.tarifvergleich.electricity.repository.CustomerAttornyRepository;
 import com.tarifvergleich.electricity.repository.CustomerComparingEnergyRepository;
 import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
 import com.tarifvergleich.electricity.repository.CustomerRepository;
@@ -48,6 +51,7 @@ public class AdminCustomerManagementService {
 	private final CustomerDeliveryRepository customerDeliveryRepo;
 	private final CustomerComparingEnergyRepository customerComparingEnergyRepo;
 	private final CustomerServiceRequestRepository customerServiceRequestRepo;
+	private final CustomerAttornyRepository customerAttornyRepo;
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailTemplate emailTemplate;
 
@@ -286,6 +290,65 @@ public class AdminCustomerManagementService {
 		return Map.of("res", true, "open", customerServiceDtoRes.getOrDefault("open", List.of()), "inProgress",
 				customerServiceDtoRes.getOrDefault("progress", List.of()), "closed",
 				customerServiceDtoRes.getOrDefault("closed", List.of()), "all", allCustomerServiceRes);
+	}
+
+	@Transactional
+	public Map<String, Object> closeCustomerServiceRequest(Integer adminId, Integer serviceRequestId) {
+
+		if (adminId == null || adminId <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (serviceRequestId == null || serviceRequestId <= 0)
+			throw new InternalServerException("Customer service request id missing", HttpStatus.OK);
+
+		CustomerServiceRequest serviceRequest = customerServiceRequestRepo
+				.findByIdAndAdminAdminId(serviceRequestId, adminId).orElseThrow(() -> new InternalServerException(
+						"Customer Service request not found with this credential", HttpStatus.OK));
+
+		if (serviceRequest.getInProgress()) {
+			serviceRequest.setIsOpen(false);
+			serviceRequest.setInProgress(false);
+			serviceRequest.setIsClosed(true);
+			serviceRequest.setRequestClosedOn(Helper.getCurrentTimeBerlin());
+		} else if (serviceRequest.getIsClosed()) {
+			serviceRequest.setIsOpen(false);
+			serviceRequest.setInProgress(true);
+			serviceRequest.setIsClosed(false);
+			serviceRequest.setRequestClosedOn(null);
+		}
+
+		customerServiceRequestRepo.save(serviceRequest);
+
+		return Map.of("res", true, "message", "Customer service request closed successfully");
+	}
+
+	@Transactional
+	public Map<String, Object> updateAttornyStatus(CustomerAttornyDto attornyDto) {
+
+		if (attornyDto.getAdminId() == null || attornyDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (attornyDto.getAttornyId() == null || attornyDto.getAttornyId() <= 0)
+			throw new InternalServerException("Attorny id missing", HttpStatus.OK);
+		if (attornyDto.getApprovalStatus() == null || attornyDto.getApprovalStatus() < 1
+				|| attornyDto.getApprovalStatus() > 2)
+			throw new InternalServerException("Approval status missing", HttpStatus.OK);
+
+		CustomerAttorny attorny = customerAttornyRepo
+				.findByIdAndAdminAdminId(attornyDto.getAttornyId(), attornyDto.getAdminId()).orElseThrow(
+						() -> new InternalServerException("Attorny not found with this credential", HttpStatus.OK));
+
+		if (attorny.getIsRevoked())
+			throw new InternalServerException("Attorny is already revoked by customer", HttpStatus.OK);
+
+		attorny.setApprovalStatus(attorny.getApprovalStatus());
+
+		if (attornyDto.getApprovalStatus().equals(1))
+			attorny.setApprovedOn(Helper.getCurrentTimeBerlin());
+		else
+			attorny.setRejectedOn(Helper.getCurrentTimeBerlin());
+
+		customerAttornyRepo.save(attorny);
+
+		return Map.of("res", true, "message", "Status updated successfully");
 	}
 
 }

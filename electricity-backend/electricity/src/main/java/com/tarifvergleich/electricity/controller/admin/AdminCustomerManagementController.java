@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tarifvergleich.electricity.dto.CustomerAttornyDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
 import com.tarifvergleich.electricity.dto.CustomerDto;
 import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto;
@@ -80,5 +81,16 @@ public class AdminCustomerManagementController {
 	@PostMapping("/fetch-services")
 	public ResponseEntity<?> fetchServices(@RequestBody CustomerServicesDto servicesDto) {
 		return ResponseEntity.ok(servicePointManagementService.fetchServices(servicesDto));
+	}
+
+	@PostMapping("/close-service-request")
+	public ResponseEntity<?> closeCustomerServiceRequest(@RequestBody CustomerServiceRequestDto serviceRequestDto) {
+		return ResponseEntity.ok(adminCustomerManagementService
+				.closeCustomerServiceRequest(serviceRequestDto.getAdminId(), serviceRequestDto.getServiceRequestId()));
+	}
+
+	@PostMapping("/update-attorny-status")
+	public ResponseEntity<?> updateAttornyStatus(@RequestBody CustomerAttornyDto attornyDto) {
+		return ResponseEntity.ok(adminCustomerManagementService.updateAttornyStatus(attornyDto));
 	}
 }

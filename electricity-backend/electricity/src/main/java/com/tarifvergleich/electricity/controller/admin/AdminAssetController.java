@@ -42,47 +42,54 @@ public class AdminAssetController {
 	public ResponseEntity<Map<String, Object>> getAll(@RequestBody Map<String, Integer> payload) {
 		Integer adminId = (int) payload.get("adminId");
 		Integer type = 0;
-		if(payload.get("type") != null)
+		if (payload.get("type") != null)
 			type = (int) payload.get("type");
 		Map<String, Object> response = adminAssetService.getAllAssets(adminId, type);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@PostMapping("/fetch-menu")
-	public ResponseEntity<?> fetchSingleMenu(@RequestBody Map<String, Object> payload){
+	public ResponseEntity<?> fetchSingleMenu(@RequestBody Map<String, Object> payload) {
 		Integer menuId = (int) payload.get("id");
 		Integer adminId = (int) payload.get("adminId");
 		return ResponseEntity.ok(adminAssetService.getSingleMenu(menuId, adminId));
 	}
-	
+
 	@PostMapping("/add-service-menu")
-	public ResponseEntity<?> addServiceMenu(@RequestParam("data") String serviceMenuDto, @RequestPart(name = "file", required = false) MultipartFile file){
+	public ResponseEntity<?> addServiceMenu(@RequestParam("data") String serviceMenuDto,
+			@RequestPart(name = "file", required = false) MultipartFile file) {
 		AdminServiceMenuDto menuDto = new ObjectMapper().readValue(serviceMenuDto, AdminServiceMenuDto.class);
 		return ResponseEntity.ok(adminAssetService.addServiceMenu(menuDto, file));
 	}
-	
-	@PostMapping("/get-all-service-menu")
-	public ResponseEntity<?> getAllService(@RequestBody AdminServiceMenuDto menuDto){
-		return ResponseEntity.ok(adminAssetService.getAllAdminServiceMenu(menuDto.getAdminId(), menuDto.getType(), menuDto.getHighlight()));
+
+	@PostMapping("/fetch-service-menu")
+	public ResponseEntity<?> fetchSingleServiceMenu(@RequestBody AdminServiceMenuDto payload) {
+		return ResponseEntity.ok(adminAssetService.getSingleService(payload.getAdminId(), payload.getId()));
 	}
-	
+
+	@PostMapping("/get-all-service-menu")
+	public ResponseEntity<?> getAllService(@RequestBody AdminServiceMenuDto menuDto) {
+		return ResponseEntity.ok(adminAssetService.getAllAdminServiceMenu(menuDto.getAdminId(), menuDto.getType(),
+				menuDto.getHighlight()));
+	}
+
 	@PostMapping("/delete-menu")
-	public ResponseEntity<?> deleteAsset(@RequestBody AdminAssetDto assetDto){
+	public ResponseEntity<?> deleteAsset(@RequestBody AdminAssetDto assetDto) {
 		return ResponseEntity.ok(adminAssetService.deleteAsset(assetDto.getAdminId(), assetDto.getId()));
 	}
-	
+
 	@PostMapping("/delete-service-menu")
-	public ResponseEntity<?> deleteServiceMenu(@RequestBody AdminServiceMenuDto menuDto){
+	public ResponseEntity<?> deleteServiceMenu(@RequestBody AdminServiceMenuDto menuDto) {
 		return ResponseEntity.ok(adminAssetService.deleteService(menuDto.getAdminId(), menuDto.getId()));
 	}
-	
+
 	@PostMapping("/order-menu")
-	public ResponseEntity<?> suffleMenu(@RequestBody AdminAssetSuffleDto suffleDto){
+	public ResponseEntity<?> suffleMenu(@RequestBody AdminAssetSuffleDto suffleDto) {
 		return ResponseEntity.ok(adminAssetService.suffleOrder(suffleDto));
 	}
-	
+
 	@PostMapping("/content")
-	public ResponseEntity<?> getAllContents(){
+	public ResponseEntity<?> getAllContents() {
 		return ResponseEntity.ok(viewService.getAllView());
 	}
 }

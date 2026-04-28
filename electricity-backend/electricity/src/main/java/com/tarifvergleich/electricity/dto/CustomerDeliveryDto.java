@@ -23,10 +23,11 @@ public class CustomerDeliveryDto {
 	private String title;
 	private String firstName;
 	private String lastName;
+	private String salutation;
 	private String mobile;
 	private String telephone;
 	@JsonFormat(pattern = "dd.MM.yyyy")
-	private LocalDate deliveryDate;
+	private LocalDate dob;
 	private String zip;
 	private String city;
 	private String street;

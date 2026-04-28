@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -22,7 +23,8 @@ public class GlobalExceptionHandler {
 		body.put("error", ex.getErrorDetails().get("error"));
 		body.put("message", ex.getErrorDetails().get("message"));
 		body.put("details", ex.getErrorDetails());
-
+		body.put("res", false);
+		
 		return new ResponseEntity<>(body, HttpStatusCode.valueOf((int) ex.getErrorDetails().get("code")));
 	}
 

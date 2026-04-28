@@ -60,6 +60,12 @@ public class AdminServiceMenu {
 	@Column(name = "service_order")
 	private Integer order;
 	
+	@Column(name = "is_redirect")
+	private Boolean isRedirect;
+	
+	@Column(name = "link")
+	private String link;
+	
 	@Column(name = "created_on")
 	private BigInteger createdOn;
 	

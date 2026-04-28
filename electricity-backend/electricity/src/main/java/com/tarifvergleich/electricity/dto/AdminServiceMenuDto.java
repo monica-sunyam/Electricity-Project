@@ -20,5 +20,8 @@ public class AdminServiceMenuDto {
     private Integer type;        
     private Integer highlight;
     
+    private Boolean isRedirect;
+    private String link;
+    
     private Integer order;
 }
