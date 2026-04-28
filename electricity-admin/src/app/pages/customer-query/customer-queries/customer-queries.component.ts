@@ -70,21 +70,37 @@ export class CustomerQueriesComponent implements OnInit {
   // ── Tab filter ────────────────────────────────────────────────────────────
   selectedTab: StatusTab = "all";
 
-  get statusTabs(): { value: StatusTab; label: string; count: number | null }[] {
+  get statusTabs(): {
+    value: StatusTab;
+    label: string;
+    count: number | null;
+  }[] {
     return [
       { value: "all", label: "Alle", count: this.allRequests.length },
       { value: "open", label: "Offen", count: this.openRequests.length },
-      { value: "inProgress", label: "In Bearbeitung", count: this.inProgressRequests.length },
-      { value: "closed", label: "Geschlossen", count: this.closedRequests.length },
+      {
+        value: "inProgress",
+        label: "In Bearbeitung",
+        count: this.inProgressRequests.length,
+      },
+      {
+        value: "closed",
+        label: "Geschlossen",
+        count: this.closedRequests.length,
+      },
     ];
   }
 
   get filteredRequests(): ServiceRequest[] {
     switch (this.selectedTab) {
-      case "open": return this.openRequests;
-      case "inProgress": return this.inProgressRequests;
-      case "closed": return this.closedRequests;
-      default: return this.allRequests;
+      case "open":
+        return this.openRequests;
+      case "inProgress":
+        return this.inProgressRequests;
+      case "closed":
+        return this.closedRequests;
+      default:
+        return this.allRequests;
     }
   }
 
@@ -106,7 +122,7 @@ export class CustomerQueriesComponent implements OnInit {
   constructor(
     private api: ApiService,
     private authService: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.fetchRequests(1);
@@ -154,7 +170,9 @@ export class CustomerQueriesComponent implements OnInit {
 
         this.allRequests = Array.isArray(data.all) ? data.all : [];
         this.openRequests = Array.isArray(data.open) ? data.open : [];
-        this.inProgressRequests = Array.isArray(data.inProgress) ? data.inProgress : [];
+        this.inProgressRequests = Array.isArray(data.inProgress)
+          ? data.inProgress
+          : [];
         this.closedRequests = Array.isArray(data.closed) ? data.closed : [];
         this.totalPages = data.totalPage ?? 1;
       },
@@ -208,12 +226,33 @@ export class CustomerQueriesComponent implements OnInit {
     };
 
     this.api.post("admin/close-service-request", payload).subscribe({
+      // next: () => {
+      //   this.closingId = null;
+      //   request.isClosed = true;
+      //   request.isOpen = false;
+      //   request.inProgress = false;
+      //   request.requestClosedOn = Math.floor(Date.now() / 1000);
+      //   this.fetchRequests(this.currentPage);
+      // },
       next: () => {
         this.closingId = null;
-        request.isClosed = true;
-        request.isOpen = false;
+
+        // 🔁 Toggle state
+        const wasClosed = request.isClosed;
+
+        request.isClosed = !wasClosed;
+        request.isOpen = wasClosed; // reopen -> open
         request.inProgress = false;
-        request.requestClosedOn = Math.floor(Date.now() / 1000);
+
+        if (wasClosed) {
+          // reopening
+          request.requestClosedOn = null;
+          request.requestReopenedOn = Math.floor(Date.now() / 1000);
+        } else {
+          // closing
+          request.requestClosedOn = Math.floor(Date.now() / 1000);
+        }
+
         this.fetchRequests(this.currentPage);
       },
       error: () => {
@@ -225,7 +264,9 @@ export class CustomerQueriesComponent implements OnInit {
   // ── Chat ──────────────────────────────────────────────────────────────────
   openChat(request: ServiceRequest): void {
     this.activeChatRequest = request;
-    const full = this.allRequests.find(r => r.serviceRequestId === request.serviceRequestId);
+    const full = this.allRequests.find(
+      (r) => r.serviceRequestId === request.serviceRequestId,
+    );
     this.chatMessages = (full?.messages ?? request.messages ?? [])
       .slice()
       .sort((a, b) => a.sendOn - b.sendOn);
@@ -265,7 +306,12 @@ export class CustomerQueriesComponent implements OnInit {
 
   // Step 2 — actually send
   confirmSendReply(): void {
-    if (!this.pendingReplyText || this.isSendingReply || !this.activeChatRequest) return;
+    if (
+      !this.pendingReplyText ||
+      this.isSendingReply ||
+      !this.activeChatRequest
+    )
+      return;
 
     this.showSendConfirm = false;
     this.isSendingReply = true;

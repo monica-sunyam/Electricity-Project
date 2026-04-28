@@ -16,6 +16,33 @@ export interface PasswordHistory {
   adminId: number | null;
 }
 
+export interface Attorney {
+  attornyId: number;
+  salutation: string | null;
+  title: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  userType: string | null;
+  zip: string | null;
+  city: string | null;
+  street: string | null;
+  houseNumber: string | null;
+  companyName: string | null;
+  legalRepresentativeFirstName: string | null;
+  legalRepresentativeLastName: string | null;
+  uniqueAttornyId: string;
+  submittedOn: number;
+  approvalStatus: number; // 0 = pending, 1 = approved, 2 = rejected
+  approvedOn: number | null;
+  rejectedOn: number | null;
+  isRevoked: boolean;
+  revokedOn: number | null;
+  customerSignaturePath: string | null;
+  placeAndDate: string | null;
+  // UI state flag
+  isProcessing?: boolean;
+}
+
 export type AdminCustomer = {
   id: number | string;
   email: string | null;
@@ -28,18 +55,19 @@ export type AdminCustomer = {
   salutation: string | null;
   companyName: string | null;
   isVerified: boolean;
-  verifiedOn: number | null; // Added
+  verifiedOn: number | null;
   isAcknowledged: boolean;
   joinedOn: number;
   uniqueCustomerId: string;
   status: boolean;
-  changePasswordHistory: PasswordHistory[]; // Added
+  changePasswordHistory: PasswordHistory[];
   address: {
     zip?: string;
     city?: string;
     street?: string;
     houseNumber?: string;
   } | null;
+  attornies: Attorney[];
 };
 
 @Component({
@@ -53,20 +81,23 @@ export class CustomerListComponent implements OnInit {
   customers: AdminCustomer[] = [];
   isLoading = false;
   errorMessage = "";
-  expandedRow: number | string | null = null;
+
+  /** Currently selected customer shown in the sidebar */
+  selectedCustomer: AdminCustomer | null = null;
 
   hasMoreData = true;
   private readonly PAGE_LIMIT = 20;
   currentPage = 1;
+  totalPage: number | null = null;
 
   searchTerm: string = "";
-  selectedUserType: string = ""; // "", "PRIVATE", "BUSINESS"
-  selectedVerifiedStatus: string = ""; // "", "true", "false"
+  selectedUserType: string = "";
+  selectedVerifiedStatus: string = "";
 
   constructor(
     private api: ApiService,
     private authService: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.fetchCustomers();
@@ -76,11 +107,15 @@ export class CustomerListComponent implements OnInit {
     this.fetchCustomers(1);
   }
 
-  /**
-   * Toggles the accordion view for a specific customer
-   */
-  toggleRow(id: number | string): void {
-    this.expandedRow = this.expandedRow === id ? null : id;
+  /** Open sidebar with selected customer */
+  selectCustomer(customer: AdminCustomer): void {
+    this.selectedCustomer =
+      this.selectedCustomer?.id === customer.id ? null : customer;
+  }
+
+  /** Close the sidebar */
+  closeSidebar(): void {
+    this.selectedCustomer = null;
   }
 
   fetchCustomers(page: number = 1): void {
@@ -90,12 +125,12 @@ export class CustomerListComponent implements OnInit {
       page: this.currentPage,
       search: this.searchTerm,
       userType: this.selectedUserType,
-      isVerified: this.selectedVerifiedStatus
+      isVerified: this.selectedVerifiedStatus,
     };
 
     this.isLoading = true;
     this.errorMessage = "";
-    this.expandedRow = null; // Close any open rows when switching pages
+    this.selectedCustomer = null;
 
     this.api.post("admin/fetch-customer-details", payload).subscribe({
       next: (res: any) => {
@@ -103,26 +138,73 @@ export class CustomerListComponent implements OnInit {
         const newData = this.extractList(res);
         this.customers = newData;
         this.hasMoreData = newData.length === this.PAGE_LIMIT;
-
-        this.expandedRow = null;
+        this.totalPage = res?.totalPage ?? null;
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
         this.errorMessage = "Fehler beim Laden der Kundenliste.";
       },
     });
   }
 
-  nextPage() {
+  nextPage(): void {
     if (this.hasMoreData) {
       this.fetchCustomers(this.currentPage + 1);
     }
   }
 
-  prevPage() {
+  prevPage(): void {
     if (this.currentPage > 1) {
       this.fetchCustomers(this.currentPage - 1);
     }
+  }
+
+  /** Approve an attorney */
+  approveAttorney(customer: AdminCustomer, attorney: Attorney): void {
+    if (attorney.isProcessing) return;
+    attorney.isProcessing = true;
+
+    const payload = {
+      adminId: this.authService.getUserId(),
+      customerId: customer.id,
+      attornyId: attorney.attornyId,
+      status: 1,
+    };
+
+    this.api.post("admin/update-attorny-status", payload).subscribe({
+      next: () => {
+        attorney.approvalStatus = 1;
+        attorney.approvedOn = Math.floor(Date.now() / 1000);
+        attorney.isProcessing = false;
+      },
+      error: () => {
+        attorney.isProcessing = false;
+      },
+    });
+  }
+
+  /** Reject an attorney */
+  rejectAttorney(customer: AdminCustomer, attorney: Attorney): void {
+    if (attorney.isProcessing) return;
+    attorney.isProcessing = true;
+
+    const payload = {
+      adminId: this.authService.getUserId(),
+      customerId: customer.id,
+      attornyId: attorney.attornyId,
+      status: 2,
+    };
+
+    this.api.post("admin/update-attorny-status", payload).subscribe({
+      next: () => {
+        attorney.approvalStatus = 2;
+        attorney.rejectedOn = Math.floor(Date.now() / 1000);
+        attorney.isProcessing = false;
+      },
+      error: () => {
+        attorney.isProcessing = false;
+      },
+    });
   }
 
   /**
@@ -158,8 +240,13 @@ export class CustomerListComponent implements OnInit {
       joinedOn: item.joinedOn ?? 0,
       uniqueCustomerId: item.uniqueCustomerId ?? "-",
       status: !!item.status,
-      changePasswordHistory: Array.isArray(item.changePasswordHistory) ? item.changePasswordHistory : [],
+      changePasswordHistory: Array.isArray(item.changePasswordHistory)
+        ? item.changePasswordHistory
+        : [],
       address: item.address ? { ...item.address } : null,
+      attornies: Array.isArray(item.attornies)
+        ? item.attornies.map((a: any) => ({ ...a, isProcessing: false }))
+        : [],
     }));
   }
 }
