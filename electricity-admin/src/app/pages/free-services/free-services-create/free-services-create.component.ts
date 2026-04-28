@@ -25,6 +25,9 @@ export class FreeServicesCreateComponent {
   imageFile: File | null = null;
   imagePreview: string | null = null;
 
+  hasRedirect: boolean = false;
+  redirectUrl: string = "";
+
   isLoading: boolean = false;
   errorMessage: string = "";
 
@@ -49,13 +52,15 @@ export class FreeServicesCreateComponent {
       id: parseInt(this.serviceId!),
     };
 
-    this.api.post("admin/fetch-menu", payload).subscribe({
+    this.api.post("admin/fetch-service-menu", payload).subscribe({
       next: (res: any) => {
         if (res?.res && res.data) {
           this.title = res.data.heading;
           this.description = res.data.subheading;
           this.isFreeService = res.data.type === 1;
           this.isHighlighted = res.data.highlight === 1;
+          this.hasRedirect = res.data.isRedirect;
+          this.redirectUrl = res.data.link || "";
           if (res.data.contentUrl) {
             this.imagePreview = environment.imageBaseUrl + res.data.contentUrl;
           }
@@ -101,6 +106,12 @@ export class FreeServicesCreateComponent {
       return;
     }
 
+    if (this.hasRedirect && !this.redirectUrl?.trim()) {
+      this.errorMessage =
+        "Bitte geben Sie eine gültige Weiterleitungs-URL ein.";
+      return;
+    }
+
     // Adjust validation: Image required for 'Other' ONLY if not in Edit Mode or if new file selected
     if (!this.isFreeService && !this.imageFile && !this.isEditMode) {
       this.errorMessage = "Ein Bild ist für 'Andere Services' erforderlich";
@@ -114,6 +125,8 @@ export class FreeServicesCreateComponent {
       subheading: this.description,
       type: this.isFreeService ? 1 : 2,
       highlight: this.isHighlighted ? 1 : 0,
+      isRedirect: this.hasRedirect,
+      link: this.hasRedirect ? this.redirectUrl : null,
     };
 
     // Add ID if editing

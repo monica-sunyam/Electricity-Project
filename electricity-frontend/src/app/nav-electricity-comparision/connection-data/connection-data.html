@@ -1,15 +1,13 @@
 <div class="page-layout">
-
   <!-- ══════════ SIDEBAR ══════════ -->
   <div class="sidebar">
-    <app-sidebar></app-sidebar>
+    <app-sidebar [providerDetails]="providerDetails"></app-sidebar>
     <app-contact-person></app-contact-person>
     <app-need-support></app-need-support>
   </div>
 
   <!-- ══════════ MAIN CONTENT ══════════ -->
   <div class="main-content">
-
     <!-- Progress stepper -->
     <div class="progress-card">
       <div class="progress-header">Nur noch wenige Klicks zu Ihrem neuen Tarif</div>
@@ -64,7 +62,6 @@
         </a>
       </div> -->
       <div class="section-body">
-
         <!-- Anschlussdaten -->
         <div class="section-panel">
           <div class="section-header">
@@ -75,24 +72,39 @@
           </div>
 
           <div class="section-body">
-
             <!-- Neu einziehen toggle -->
             <div class="toggle-row header">
               <span>Ziehen Sie an der angegebenen Adresse neu ein?</span>
             </div>
             <div class="toggle-row">
               <div class="toggle-box">
-                <div class="toggle-opt" [class.selected]="selection === 'yes'" (click)="selectOption('yes')">
+                <div
+                  class="toggle-opt"
+                  [class.selected]="selection === 'yes'"
+                  (click)="selectOption('yes')"
+                >
                   <label class="cb-row">
-                    <input type="checkbox" name="selectionYes" [checked]="selection === 'yes'"
-                      (click)="$event.stopPropagation()" />
+                    <input
+                      type="checkbox"
+                      name="selectionYes"
+                      [checked]="selection === 'yes'"
+                      (click)="$event.stopPropagation()"
+                    />
                   </label>
                   Ja
                 </div>
-                <div class="toggle-opt" [class.selected]="selection === 'no'" (click)="selectOption('no')">
+                <div
+                  class="toggle-opt"
+                  [class.selected]="selection === 'no'"
+                  (click)="selectOption('no')"
+                >
                   <label class="cb-row">
-                    <input type="checkbox" name="selectionNo" [checked]="selection === 'no'"
-                      (click)="$event.stopPropagation()" />
+                    <input
+                      type="checkbox"
+                      name="selectionNo"
+                      [checked]="selection === 'no'"
+                      (click)="$event.stopPropagation()"
+                    />
                   </label>
                   Nein
                 </div>
@@ -108,27 +120,37 @@
                 <div>
                   <span class="info-base info-circ">i</span>
                 </div>
-                Bei Umzug müssen Sie Ihren aktuellen Stromvertrag selbst kündigen. Neuanmeldungen sind aktuell erst ab
-                dem 16.02.2026 möglich. <br>
-                Bei einem früheren Einzugsdatum werden Sie vorübergehend vom örtlichen Grundversorger beliefert.
+                Bei Umzug müssen Sie Ihren aktuellen Stromvertrag selbst kündigen. Neuanmeldungen
+                sind aktuell erst ab dem 16.02.2026 möglich. <br />
+                Bei einem früheren Einzugsdatum werden Sie vorübergehend vom örtlichen
+                Grundversorger beliefert.
               </div>
             </div>
 
             <!-- Move-in date picker -->
-            <div class="toggle-row" *ngIf="selection === 'yes'" style="margin-bottom: 12px;">
+            <div class="toggle-row" *ngIf="selection === 'yes'" style="margin-bottom: 12px">
               <div class="form-group">
                 <div class="field-wrap date">
-                  <div style="width: 100%;">
+                  <div style="width: 100%">
                     <span class="field-label">Gewünschter Liefertermin</span>
-                    <div style="display: flex; flex-direction: row;">
-                      <input matInput name="moveInDate" [matDatepicker]="moveInPicker" placeholder="TT.MM.JJJJ"
-                        [(ngModel)]="moveInDate" (click)="moveInPicker.open()">
+                    <div style="display: flex; flex-direction: row">
+                      <input
+                        matInput
+                        name="moveInDate"
+                        [matDatepicker]="moveInPicker"
+                        placeholder="TT.MM.JJJJ"
+                        [(ngModel)]="moveInDate"
+                        (click)="moveInPicker.open()"
+                      />
                     </div>
                   </div>
                   <mat-datepicker-toggle matSuffix [for]="moveInPicker">
                     <mat-icon>calendar_month</mat-icon>
                   </mat-datepicker-toggle>
                 </div>
+                <span *ngIf="validationErrors['moveInDate']" class="error-hint">
+                  {{ validationErrors['moveInDate'] }}
+                </span>
                 <mat-datepicker #moveInPicker></mat-datepicker>
               </div>
               <div>
@@ -141,23 +163,33 @@
               <span>Angaben zur Belieferung</span>
             </div>
             <div class="toggle-row">
-              <div class="toggle-box-check" style="display: flex; width: 97.7%;">
+              <div class="toggle-box-check" style="display: flex; width: 97.7%">
                 <div class="toggle-opt-check">
                   <label class="cb-row">
-                    <input type="checkbox" name="submitLaterChecked" [(ngModel)]="submitLaterChecked" />
+                    <input
+                      type="checkbox"
+                      name="submitLaterChecked"
+                      [(ngModel)]="submitLaterChecked"
+                    />
                   </label>
                   Ich reiche die benötigten Daten zur Belieferung nach
                 </div>
               </div>
             </div>
+            <span *ngIf="validationErrors['submitLaterChecked']" class="error-hint">
+              {{ validationErrors['submitLaterChecked'] }}
+            </span>
 
             <!-- Zählernummer -->
-            <div class="toggle-row" style="margin-bottom: 12px;">
+            <div class="toggle-row" style="margin-bottom: 12px">
               <div class="form-group">
                 <div class="field-wrap">
                   <span class="field-label">Zählernummer</span>
-                  <input name="meterNumber" type="text" [(ngModel)]="meterNumber" value="">
+                  <input name="meterNumber" type="text" [(ngModel)]="meterNumber" value="" />
                 </div>
+                <span *ngIf="validationErrors['meterNumber']" class="error-hint">
+                  {{ validationErrors['meterNumber'] }}
+                </span>
               </div>
               <div>
                 <span class="info-base info-circ">i</span>
@@ -168,20 +200,26 @@
             <div class="row-with-info">
               <div class="express-box">
                 <div>
-                  <span><img src="assets/icons/Express.png" class="icon-express" alt="check"></span>
+                  <span
+                    ><img src="assets/icons/Express.png" class="icon-express" alt="check"
+                  /></span>
                 </div>
                 <div class="container-express">
-                  <div class="express-header">
-                    Optional: Kostenlose Express-Bearbeitung
-                  </div>
+                  <div class="express-header">Optional: Kostenlose Express-Bearbeitung</div>
                   <p class="express-desc">
-                    Bei Angabe der Marktlokations-ID können Anbieter Ihren Wechsel beschleunigt bearbeiten.<br>
+                    Bei Angabe der Marktlokations-ID können Anbieter Ihren Wechsel beschleunigt
+                    bearbeiten.<br />
                     Die Marktlokations-ID finden Sie auf Ihrer letzten Jahresrechnung.
                   </p>
                   <div class="form-group">
                     <div class="field-wrap">
                       <span class="field-label">Marktlokations-ID (optional)</span>
-                      <input name="marketLocationId" type="text" [(ngModel)]="marketLocationId" value="">
+                      <input
+                        name="marketLocationId"
+                        type="text"
+                        [(ngModel)]="marketLocationId"
+                        value=""
+                      />
                     </div>
                   </div>
                 </div>
@@ -192,7 +230,7 @@
             </div>
 
             <!-- Stromanbieter dropdown -->
-            <div class="row-with-info" style="margin-top:10px;" *ngIf="selection === 'no'">
+            <div class="row-with-info" style="margin-top: 10px" *ngIf="selection === 'no'">
               <div class="field-wraper select-wraper">
                 <select name="currentProvider" [(ngModel)]="currentProvider">
                   <option value="" disabled selected>Ihr derzeitiger Stromanbieter</option>
@@ -205,10 +243,22 @@
                   <option value="Yello Strom">Yello Strom</option>
                   <option value="Sonstiger Anbieter">Sonstiger Anbieter</option>
                 </select>
-                <svg class="select-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#888"
-                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  class="select-chevron"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#888"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
+                <span *ngIf="validationErrors['currentProvider']" class="error-hint">
+                  {{ validationErrors['currentProvider'] }}
+                </span>
               </div>
               <div>
                 <span class="info-base info-circ">i</span>
@@ -224,9 +274,13 @@
               <div class="kuendigung-box">
                 <!-- Auto option (top full-width) -->
                 <div class="kuendigung-top">
-                  <div class="checkbox-row" id="auto-kuend-row" style="border:none;padding:0;">
-                    <label class="cb-row" style="margin-right: 4px;">
-                      <input type="checkbox" name="autoCancellation" [(ngModel)]="autoCancellation" />
+                  <div class="checkbox-row" id="auto-kuend-row" style="border: none; padding: 0">
+                    <label class="cb-row" style="margin-right: 4px">
+                      <input
+                        type="checkbox"
+                        name="autoCancellation"
+                        [(ngModel)]="autoCancellation"
+                      />
                     </label>
                     <span>Automatische Kündigung durch neuen Anbieter</span>
                   </div>
@@ -237,53 +291,90 @@
                 </div>
                 <!-- Two sub-options -->
                 <div class="kuendigung-bottom">
-                  <div class="toggle-opt" [class.selected]="alreadyCancelled"
-                    (click)="selectCancellation('alreadyCancelled')">
+                  <div
+                    class="toggle-opt"
+                    [class.selected]="alreadyCancelled"
+                    (click)="selectCancellation('alreadyCancelled')"
+                  >
                     <label class="cb-row">
-                      <input type="checkbox" name="alreadyCancelled" [checked]="alreadyCancelled"
-                        (click)="$event.stopPropagation()" />
+                      <input
+                        type="checkbox"
+                        name="alreadyCancelled"
+                        [checked]="alreadyCancelled"
+                        (click)="$event.stopPropagation()"
+                      />
                     </label>
                     Vertrag wurde bereits gekündigt
                   </div>
-                  <div class="toggle-opt" [class.selected]="selfCancellation"
-                    (click)="selectCancellation('selfCancellation')">
+                  <div
+                    class="toggle-opt"
+                    [class.selected]="selfCancellation"
+                    (click)="selectCancellation('selfCancellation')"
+                  >
                     <label class="cb-row">
-                      <input type="checkbox" name="selfCancellation" [checked]="selfCancellation"
-                        (click)="$event.stopPropagation()" />
+                      <input
+                        type="checkbox"
+                        name="selfCancellation"
+                        [checked]="selfCancellation"
+                        (click)="$event.stopPropagation()"
+                      />
                     </label>
                     Ich werde selbst kündigen
                   </div>
                 </div>
+                <span *ngIf="validationErrors['cancellationOption']" class="error-hint">
+                  {{ validationErrors['cancellationOption'] }}
+                </span>
               </div>
+
               <div>
                 <span class="info-base info-circ">i</span>
               </div>
             </div>
 
-            <a class="link-hint" *ngIf="selection === 'no'">Wann sollten Sie besser selbst kündigen?</a>
+            <a class="link-hint" *ngIf="selection === 'no'"
+              >Wann sollten Sie besser selbst kündigen?</a
+            >
 
             <!-- Gewünschter Liefertermin -->
             <div class="toggle-row header" *ngIf="selection === 'no'">
               <span>Gewünschter Liefertermin</span>
             </div>
             <div class="toggle-row" *ngIf="selection === 'no'">
-              <div class="toggle-box" style="width: 98.5%;">
-                <div class="toggle-opt" [class.selected]="deliveryOption === 'schnellstmoeglich'"
-                  (click)="selectDeliveryOption('schnellstmoeglich')">
+              <div class="toggle-box" style="width: 98.5%">
+                <div
+                  class="toggle-opt"
+                  [class.selected]="deliveryOption === 'schnellstmoeglich'"
+                  (click)="selectDeliveryOption('schnellstmoeglich')"
+                >
                   <label class="cb-row">
-                    <input type="checkbox" name="deliveryOptionSchnell"
-                      [checked]="deliveryOption === 'schnellstmoeglich'" (click)="$event.stopPropagation()" />
+                    <input
+                      type="checkbox"
+                      name="deliveryOptionSchnell"
+                      [checked]="deliveryOption === 'schnellstmoeglich'"
+                      (click)="$event.stopPropagation()"
+                    />
                   </label>
                   Schnellstmöglich
                 </div>
-                <div class="toggle-opt" [class.selected]="deliveryOption === 'wunschtermin'"
-                  (click)="selectDeliveryOption('wunschtermin')">
+                <div
+                  class="toggle-opt"
+                  [class.selected]="deliveryOption === 'wunschtermin'"
+                  (click)="selectDeliveryOption('wunschtermin')"
+                >
                   <label class="cb-row">
-                    <input type="checkbox" name="deliveryOptionWunsch" [checked]="deliveryOption === 'wunschtermin'"
-                      (click)="$event.stopPropagation()" />
+                    <input
+                      type="checkbox"
+                      name="deliveryOptionWunsch"
+                      [checked]="deliveryOption === 'wunschtermin'"
+                      (click)="$event.stopPropagation()"
+                    />
                   </label>
                   Wunschtermin
                 </div>
+                <span *ngIf="validationErrors['deliveryOption']" class="error-hint">
+                  {{ validationErrors['deliveryOption'] }}
+                </span>
               </div>
               <div>
                 <span class="info-base info-circ">i</span>
@@ -291,15 +382,24 @@
             </div>
 
             <!-- Wunschtermin date picker -->
-            <div *ngIf="selection === 'no' && deliveryOption === 'wunschtermin'" style="margin-top:8px;">
+            <div
+              *ngIf="selection === 'no' && deliveryOption === 'wunschtermin'"
+              style="margin-top: 8px"
+            >
               <div class="row-with-info">
                 <div class="form-group">
                   <div class="field-wrap date">
-                    <div style="width: 100%;">
+                    <div style="width: 100%">
                       <span class="field-label">Wunschtermin (Datum)</span>
-                      <div style="display: flex; flex-direction: row;">
-                        <input matInput name="desiredDeliveryDate" [matDatepicker]="wunschPicker"
-                          placeholder="TT.MM.JJJJ" [(ngModel)]="desiredDeliveryDate" (click)="wunschPicker.open()">
+                      <div style="display: flex; flex-direction: row">
+                        <input
+                          matInput
+                          name="desiredDeliveryDate"
+                          [matDatepicker]="wunschPicker"
+                          placeholder="TT.MM.JJJJ"
+                          [(ngModel)]="desiredDeliveryDate"
+                          (click)="wunschPicker.open()"
+                        />
                       </div>
                     </div>
                     <mat-datepicker-toggle matSuffix [for]="wunschPicker">
@@ -310,6 +410,9 @@
                 </div>
                 <span class="info-base info-circ">i</span>
               </div>
+              <span *ngIf="validationErrors['desiredDeliveryDate']" class="error-hint">
+                {{ validationErrors['desiredDeliveryDate'] }}
+              </span>
             </div>
 
             <!-- API feedback messages -->
@@ -323,11 +426,10 @@
                 {{ isLoading ? 'Wird gespeichert…' : 'Anschlussdaten übernehmen' }}
               </button>
             </div>
-
           </div>
         </div>
       </div>
     </div>
-
-  </div><!-- /main-content -->
+  </div>
+  <!-- /main-content -->
 </div>

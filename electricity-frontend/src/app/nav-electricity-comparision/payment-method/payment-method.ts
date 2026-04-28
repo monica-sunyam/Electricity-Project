@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -67,7 +67,7 @@ export class PaymentMethod implements OnInit, OnDestroy {
   isLoading: boolean = false;
   successMessage: string = '';
   errorMessage: string = '';
-
+  providerDetails: any = null;
   /** Per-field validation error messages shown inline under each input */
   validationErrors: Record<string, string> = {};
   private routerSub?: Subscription;
@@ -88,7 +88,8 @@ export class PaymentMethod implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     private authService: AuthService,
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -109,10 +110,11 @@ export class PaymentMethod implements OnInit, OnDestroy {
   private initForm(): void {
     this.resetFields();
     this.fetchFormData();
+    this.providerDetails = this.authService.getSelectedProvider();
   }
 
   private resetFields(): void {
-    this.paymentMethod = 'ueberweisung';
+    // this.paymentMethod = 'ueberweisung';
     this.iban = '';
     this.firstName = '';
     this.lastName = '';
@@ -208,19 +210,38 @@ export class PaymentMethod implements OnInit, OnDestroy {
 
     console.log('Payload being sent to API:', JSON.stringify(payload, null, 2));
 
-    this.http.post(`${API_BASE}/customer/add-payment`, payload).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.successMessage = 'Zahlungsart erfolgreich gespeichert.';
-        this.router.navigate([this.mainStepRoutes[5]]);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage =
-          err?.error?.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
-        console.error('Payment method API error:', err);
-      },
-    });
+    // this.http.post(`${API_BASE}/customer/add-payment`, payload).subscribe({
+    this.http
+      .post<{
+        res: boolean;
+        errorMessage: string;
+        message: string;
+      }>(`${API_BASE}/customer/add-payment`, payload)
+      .subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          // this.successMessage = 'Zahlungsart erfolgreich gespeichert.';
+          // this.router.navigate([this.mainStepRoutes[5]]);
+          if (res?.res) {
+            this.successMessage = 'Zahlungsart erfolgreich gespeichert.';
+            this.router.navigate([this.mainStepRoutes[5]]);
+          } else {
+            this.errorMessage = res?.message || 'Speichern fehlgeschlagen.';
+            if (res?.message) {
+              this.validationErrors['iban'] = res?.message;
+            }
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage =
+            err?.error?.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+          console.error('Payment method API error:', err);
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   private fetchFormData(): void {
@@ -232,7 +253,7 @@ export class PaymentMethod implements OnInit, OnDestroy {
     }
 
     this.errorMessage = '';
-    this.isLoading = true;
+    // this.isLoading = true;
 
     const payload = {
       customerId: parseInt(userId ?? '0', 10),
@@ -242,10 +263,11 @@ export class PaymentMethod implements OnInit, OnDestroy {
 
     this.http.post<FetchFormResponse>(`${API_BASE}/customer/fetch-form`, payload).subscribe({
       next: (res) => {
-        this.isLoading = false;
+        // this.isLoading = false;
 
         if (res?.res === false) {
-          this.errorMessage = res?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
+          this.errorMessage =
+            res?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
           return;
         }
 
@@ -253,7 +275,7 @@ export class PaymentMethod implements OnInit, OnDestroy {
         this.maxAccessibleStep = this.getMaxAccessibleStep(res?.data ?? null);
       },
       error: (err) => {
-        this.isLoading = false;
+        // this.isLoading = false;
         this.errorMessage =
           err?.error?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
         console.error('Payment method fetch-form API error:', err);
@@ -270,6 +292,7 @@ export class PaymentMethod implements OnInit, OnDestroy {
 
     const normalizedMethod = this.normalizePaymentMethod(payment.paymentMethod);
     this.selectPaymentMethod(normalizedMethod);
+    this.cdr.detectChanges();
 
     if (normalizedMethod === 'lastschrift') {
       this.iban = payment.iban || '';

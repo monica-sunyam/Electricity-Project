@@ -104,6 +104,15 @@
               </div>
             </div>
 
+             <div class="form-row">
+              <div class="form-group">
+                <div class="field-wrap readonly">
+                  <span class="field-label">Anrede</span>
+                  <input type="text" [value]="salutation" readonly />
+                </div>
+              </div>
+            </div>
+
             <div class="form-row">
               <div class="form-group">
                 <div class="field-wrap readonly">
@@ -195,7 +204,7 @@
             <div class="form-row">
               <div class="form-group">
                 <div class="field-wrap readonly">
-                  <span class="field-label">Gewünschter Liefertermin</span>
+                  <span class="field-label">Geburtsdatum</span>
                   <input type="text" [value]="deliveryDateLabel" readonly />
                 </div>
               </div>
@@ -314,7 +323,7 @@
               <span>Kündigung des bisherigen Vertrags</span>
               <span>Gewünschter Liefertermin</span>
             </div>
-            <div class="toggle-column right">
+            <div class="toggle-column right" *ngIf="formData as data">
               <span>{{ moveInLabel }}</span>
               <span>{{ meterNumberLabel }}</span>
               <span>{{ marketLocationLabel }}</span>
@@ -347,7 +356,7 @@
               <span>Kontoinhaber</span>
               <span>SEPA-Lastschriftmandat</span>
             </div>
-            <div class="toggle-column right">
+            <div class="toggle-column right" *ngIf="formData as data">
               <span>{{ paymentMethodLabel }}</span>
               <span>{{ valueOrFallback(payment?.iban) }}</span>
               <span>{{ accountHolderLabel }}</span>
@@ -531,7 +540,7 @@
             class="btn-primary"
             style="flex: 1; margin: 0;"
             (click)="submitSchedule()"
-            [disabled]="isScheduleLoading || !selectedDay || !selectedTimeSlot"
+            [disabled]="isScheduleLoading"
           >
             {{ isScheduleLoading ? 'Wird übermittelt...' : 'Rückrufzeit & Infos übermitteln' }}
           </button>

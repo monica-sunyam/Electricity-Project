@@ -185,6 +185,8 @@ AUTH MODE
   }
   handleContinue() {
     if (this.selectedOption === 'same') {
+      this.authService.clearDeliveryId();
+      this.cdr.detectChanges();
       this.router.navigate([this.mainStepRoutes[2]]);
     } else if (this.selectedOption === 'different') {
       this.currentStep = 1;
@@ -850,7 +852,8 @@ AUTH MODE
               full_name: `${res.data.firstName} ${res.data.lastName}`,
               token: undefined,
             });
-
+            this.authService.clearDeliveryId();
+            this.cdr.detectChanges();
             this.router.navigate([this.mainStepRoutes[2]]);
             console.log('Login successful');
           } else {
@@ -900,6 +903,7 @@ AUTH MODE
             });
 
             console.log('Login successful');
+            this.authService.clearDeliveryId();
 
             // Redirect
             this.router.navigate([this.mainStepRoutes[2]]);

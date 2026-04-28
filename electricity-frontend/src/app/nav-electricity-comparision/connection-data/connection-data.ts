@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -86,7 +86,7 @@ export class ConnectionData implements OnInit, OnDestroy {
   // ── Delivery date options (only when selection === 'no') ─────────────────
   deliveryOption: string = 'schnellstmoeglich'; // 'schnellstmoeglich' | 'wunschtermin'
   desiredDeliveryDate: Date | null = null;
-
+  providerDetails: any = null;
   // ── UI state ─────────────────────────────────────────────────────────────
   isLoading: boolean = false;
   successMessage: string = '';
@@ -112,7 +112,8 @@ export class ConnectionData implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     private authService: AuthService,
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -133,6 +134,7 @@ export class ConnectionData implements OnInit, OnDestroy {
   private initForm(): void {
     this.resetFields();
     this.fetchFormData();
+    this.providerDetails = this.authService.getSelectedProvider();
   }
 
   private resetFields(): void {
@@ -195,10 +197,15 @@ export class ConnectionData implements OnInit, OnDestroy {
         this.validationErrors['moveInDate'] = 'Bitte wählen Sie ein Einzugsdatum.';
       }
     }
+    // if (!this.submitLaterChecked) {
+    //   this.validationErrors['submitLaterChecked'] =
+    //     ' Bitte bestätigen Sie, dass Sie die Daten später absenden werden.';
+    // }
 
     // Meter number — required unless the user checked "Ich reiche … nach"
-    if (!this.submitLaterChecked && !this.meterNumber?.trim()) {
+    if (!this.meterNumber?.trim()) {
       this.validationErrors['meterNumber'] = 'Bitte geben Sie Ihre Zählernummer ein.';
+      console.log('validation errror:', this.validationErrors['meterNumber']);
     }
 
     if (this.selection === 'no') {
@@ -208,6 +215,16 @@ export class ConnectionData implements OnInit, OnDestroy {
           'Bitte wählen Sie Ihren derzeitigen Stromanbieter.';
       }
 
+      const isAnySelected = this.autoCancellation || this.alreadyCancelled || this.selfCancellation;
+
+      if (!isAnySelected) {
+        this.validationErrors['cancellationOption'] =
+          'Bitte wählen Sie mindestens eine Kündigungsoption aus.';
+      }
+
+      if (!this.deliveryOption) {
+        this.validationErrors['deliveryOption'] = 'Bitte wählen Sie eine Lieferoption aus.';
+      }
       // Desired delivery date — required only when "Wunschtermin" is chosen
       if (this.deliveryOption === 'wunschtermin' && !this.desiredDeliveryDate) {
         this.validationErrors['desiredDeliveryDate'] = 'Bitte wählen Sie Ihren Wunschtermin.';
@@ -269,12 +286,14 @@ export class ConnectionData implements OnInit, OnDestroy {
         this.isLoading = false;
         this.successMessage = 'Daten erfolgreich gespeichert.';
         this.router.navigate([this.mainStepRoutes[4]]);
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage =
           err?.error?.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
         console.error('Connection data API error:', err);
+        this.cdr.detectChanges();
       },
     });
   }
@@ -296,7 +315,7 @@ export class ConnectionData implements OnInit, OnDestroy {
     }
 
     this.errorMessage = '';
-    this.isLoading = true;
+    // this.isLoading = true;
 
     const payload = {
       customerId: parseInt(userId ?? '0', 10),
@@ -306,10 +325,11 @@ export class ConnectionData implements OnInit, OnDestroy {
 
     this.http.post<FetchFormResponse>(`${API_BASE}/customer/fetch-form`, payload).subscribe({
       next: (res) => {
-        this.isLoading = false;
+        // this.isLoading = false;
 
         if (res?.res === false) {
-          this.errorMessage = res?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
+          this.errorMessage =
+            res?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
           return;
         }
 
@@ -317,7 +337,7 @@ export class ConnectionData implements OnInit, OnDestroy {
         this.maxAccessibleStep = this.getMaxAccessibleStep(res?.data ?? null);
       },
       error: (err) => {
-        this.isLoading = false;
+        // this.isLoading = false;
         this.errorMessage =
           err?.error?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
         console.error('Connection data fetch-form API error:', err);
@@ -344,18 +364,22 @@ export class ConnectionData implements OnInit, OnDestroy {
       this.currentProvider = connection.currentProvider || '';
 
       const cancellation = connection.cancellation as
-        | { autoCancellation?: boolean | string | number | null; alreadyCancelled?: boolean | string | number | null; selfCancellation?: boolean | string | number | null }
+        | {
+            autoCancellation?: boolean | string | number | null;
+            alreadyCancelled?: boolean | string | number | null;
+            selfCancellation?: boolean | string | number | null;
+          }
         | undefined;
 
       const autoCancellation = this.toBoolean(
         cancellation?.autoCancellation ?? connection.autoCancellation,
-        true
+        true,
       );
       const alreadyCancelled = this.toBoolean(
-        cancellation?.alreadyCancelled ?? connection.alreadyCancelled
+        cancellation?.alreadyCancelled ?? connection.alreadyCancelled,
       );
       const selfCancellation = this.toBoolean(
-        cancellation?.selfCancellation ?? connection.selfCancellation
+        cancellation?.selfCancellation ?? connection.selfCancellation,
       );
 
       this.autoCancellation = autoCancellation;
@@ -374,11 +398,12 @@ export class ConnectionData implements OnInit, OnDestroy {
     } else {
       this.selectDeliveryOption('schnellstmoeglich');
     }
+    this.cdr.detectChanges();
   }
 
   private toBoolean(
     value: boolean | string | number | null | undefined,
-    fallback = false
+    fallback = false,
   ): boolean {
     if (value === null || value === undefined) {
       return fallback;

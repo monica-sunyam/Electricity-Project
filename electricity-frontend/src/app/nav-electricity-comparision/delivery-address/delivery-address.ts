@@ -44,7 +44,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   deliveryHouseNumber: string = '';
   deliveryMobile: string = '';
   deliveryPhone: string = '';
-  deliveryDate: Date | null = null;
+  dob: Date | null = null;
   providerDetails: any = null;
   hasDifferentBilling: boolean = false;
 
@@ -76,11 +76,11 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   //   return d;
   // })();
 
-  readonly minDeliveryDate: Date = new Date(1900, 0, 1);
+  readonly minDob: Date = new Date(1900, 0, 1);
 
-  readonly maxDeliveryDate: Date = (() => {
+  readonly maxDob: Date = (() => {
     const d = new Date();
-    d.setFullYear(d.getFullYear() - 18); // 👈 key change
+    d.setFullYear(d.getFullYear() - 18);
     d.setHours(23, 59, 59, 999);
     return d;
   })();
@@ -118,25 +118,6 @@ export class DeliveryAddress implements OnInit, OnDestroy {
           setTimeout(() => this.initForm(), 0);
         }
       });
-
-    if (this.isLoggedIn()) {
-      this.authService.fetchCustomer();
-    }
-
-    this.authService.getCustomerData().subscribe((data) => {
-      if (!data) return;
-
-      this.deliveryFirstName = data.firstName || '';
-      this.deliveryLastName = data.lastName || '';
-      this.deliveryMobile = data.phone || '';
-      this.salutation = data.salutation || '';
-
-      console.log('Customer data:', data);
-
-      this.cdr.detectChanges();
-      console.log('Customer data updated in DeliveryAddress:', data);
-      console.log('firstName:', this.deliveryFirstName, 'lastName:', this.deliveryLastName);
-    });
   }
 
   ngOnDestroy(): void {
@@ -161,13 +142,32 @@ export class DeliveryAddress implements OnInit, OnDestroy {
 
         if (userId && deliveryId) {
           this.fetchFormData(userId, deliveryId);
+        } else {
+          if (this.isLoggedIn()) {
+            this.authService.fetchCustomer();
+          }
+
+          this.authService.getCustomerData().subscribe((data) => {
+            if (!data) return;
+
+            this.deliveryFirstName = data.firstName || '';
+            this.deliveryLastName = data.lastName || '';
+            this.deliveryMobile = data.phone || '';
+            this.salutation = data.salutation || '';
+
+            console.log('Customer data:', data);
+
+            this.cdr.detectChanges();
+            console.log('Customer data updated in DeliveryAddress:', data);
+            console.log('firstName:', this.deliveryFirstName, 'lastName:', this.deliveryLastName);
+          });
         }
       });
   }
 
   private resetFields(): void {
     this.deliveryEmail = '';
-    this.deliveryTitle = '';
+    // this.deliveryTitle = '';
     // this.deliveryFirstName = '';
     // this.deliveryLastName = '';
     this.deliveryPLZ = '';
@@ -176,7 +176,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     this.deliveryHouseNumber = '';
     this.deliveryMobile = '';
     this.deliveryPhone = '';
-    this.deliveryDate = null;
+    this.dob = null;
     this.hasDifferentBilling = false;
     this.billingPLZ = '';
     this.billingOrt = '';
@@ -198,7 +198,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   }
 
   fetchFormData(id: string, deliveryId: string): void {
-    this.isLoading = true;
+    // this.isLoading = true;
     const payload = {
       customerId: parseInt(id, 10),
       deliveryId: parseInt(deliveryId, 10),
@@ -207,33 +207,40 @@ export class DeliveryAddress implements OnInit, OnDestroy {
 
     this.http.post<any>(`${API_BASE}/customer/fetch-form`, payload).subscribe({
       next: (res) => {
-        this.isLoading = false;
+        // this.isLoading = false;
         if (res?.res === true && res.data) {
           this.prefillForm(res.data);
           this.maxAccessibleStep = this.getMaxAccessibleStep(res.data);
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.isLoading = false;
+        // this.isLoading = false;
         this.errorMessage = 'Formulardaten konnten nicht geladen werden.';
         console.error('Fetch error:', err);
+        this.cdr.detectChanges();
       },
     });
   }
-
+  isTitleSelected(title: string): boolean {
+    return (this.deliveryTitle || '').trim() === title;
+  }
   private prefillForm(data: any): void {
     if (data.email) this.deliveryEmail = data.email;
-    this.deliveryTitle = data.title ?? '';
+    // this.deliveryTitle = data.title ?? '';
     this.deliveryFirstName = data.firstName ?? '';
     this.deliveryLastName = data.lastName ?? '';
     this.deliveryMobile = data.mobile ?? '';
     this.deliveryPhone = data.telephone ?? data.phone ?? '';
+    this.deliveryTitle = (data.title || '').trim();
+    this.deliveryTitle = this.deliveryTitle + '';
+    this.salutation = data.salutation ?? '';
 
-    if (data.deliveryDate) {
-      const timestampInMs = Number(data.deliveryDate) * 1000;
+    if (data.dob) {
+      const timestampInMs = Number(data.dob) * 1000;
       const parsed = new Date(timestampInMs);
       if (!isNaN(parsed.getTime())) {
-        this.deliveryDate = parsed;
+        this.dob = parsed;
       }
     }
 
@@ -261,6 +268,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     }
 
     this.cdr.detectChanges();
+    console.log('TITLE:', this.deliveryTitle);
   }
 
   selectTitle(title: string): void {
@@ -286,6 +294,11 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.deliveryEmail.trim())) {
       this.validationErrors['deliveryEmail'] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
     }
+
+    // Title (Titel)
+    // if (!this.deliveryTitle?.trim()) {
+    //   this.validationErrors['deliveryTitle'] = 'Bitte wählen Sie einen Titel aus.';
+    // }
 
     // Salutation
     console.log('Validating salutation:', this.salutation);
@@ -329,10 +342,10 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     //   }
     // }
 
-    if (!this.deliveryDate) {
-      this.validationErrors['deliveryDate'] = 'Bitte Geburtsdatum auswählen.';
+    if (!this.dob) {
+      this.validationErrors['dob'] = 'Bitte Geburtsdatum auswählen.';
     } else {
-      const selected = new Date(this.deliveryDate);
+      const selected = new Date(this.dob);
       selected.setHours(0, 0, 0, 0);
 
       const today = new Date();
@@ -345,9 +358,9 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       maxDate.setHours(0, 0, 0, 0);
 
       if (selected < minDate) {
-        this.validationErrors['deliveryDate'] = 'Bitte geben Sie ein gültiges Geburtsdatum ein.';
+        this.validationErrors['dob'] = 'Bitte geben Sie ein gültiges Geburtsdatum ein.';
       } else if (selected > maxDate) {
-        this.validationErrors['deliveryDate'] = 'Sie müssen mindestens 18 Jahre alt sein.';
+        this.validationErrors['dob'] = 'Sie müssen mindestens 18 Jahre alt sein.';
       }
     }
 
@@ -392,7 +405,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
         salutation: this.salutation,
         mobile: this.deliveryMobile,
         telephone: this.deliveryPhone,
-        deliveryDate: this.deliveryDate ? this.formatDate(this.deliveryDate) : null,
+        dob: this.dob ? this.formatDate(this.dob) : null,
         zip: this.deliveryPLZ,
         city: this.deliveryOrt,
         street: this.deliveryStreet,
@@ -431,6 +444,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
           this.isLoading = false;
           this.errorMessage = 'Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.';
           console.error('Submit error:', err);
+          this.cdr.detectChanges();
         },
       });
   }
@@ -454,7 +468,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       address?.street &&
       address?.houseNumber &&
       data?.mobile &&
-      data?.deliveryDate
+      data?.dob
     );
 
     return hasDelivery ? 3 : 2;

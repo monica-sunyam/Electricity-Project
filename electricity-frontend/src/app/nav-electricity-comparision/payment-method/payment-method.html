@@ -1,15 +1,14 @@
 <div class="page-layout">
-
   <!-- ══════════ SIDEBAR ══════════ -->
   <div class="sidebar">
-    <app-sidebar></app-sidebar>
+    <app-sidebar [providerDetails]="providerDetails"></app-sidebar>
     <app-contact-person></app-contact-person>
     <app-need-support></app-need-support>
-  </div><!-- /sidebar -->
+  </div>
+  <!-- /sidebar -->
 
   <!-- ══════════ MAIN CONTENT ══════════ -->
   <div class="main-content">
-
     <!-- Progress stepper -->
     <div class="progress-card">
       <div class="progress-header">Nur noch wenige Klicks zu Ihrem neuen Tarif</div>
@@ -54,10 +53,28 @@
         <div>
           <span class="info-base info-green">i</span>
         </div>
-        <a href="#" class="anpassen"
-          style="margin-left:auto;color:#ffffff;font-size:13px;text-decoration:none;display:flex;align-items:center;gap:4px;">
+        <a
+          href="#"
+          class="anpassen"
+          style="
+            margin-left: auto;
+            color: #ffffff;
+            font-size: 13px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          "
+        >
           ändern
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ffffff"
+            stroke-width="2"
+          >
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
@@ -65,24 +82,37 @@
       </div>
 
       <div class="section-body">
-
         <!-- Payment method toggle -->
         <div class="toggle-row header"><span>Zahlungsart</span></div>
         <div class="toggle-row">
-          <div class="toggle-box" style="margin: 0;">
-            <div class="toggle-opt" [class.selected]="paymentMethod === 'lastschrift'"
-              (click)="selectPaymentMethod('lastschrift')">
+          <div class="toggle-box" style="margin: 0">
+            <div
+              class="toggle-opt"
+              [class.selected]="paymentMethod === 'lastschrift'"
+              (click)="selectPaymentMethod('lastschrift')"
+            >
               <label class="cb-row">
-                <input type="checkbox" name="paymentLastschrift" [checked]="paymentMethod === 'lastschrift'"
-                  (click)="$event.stopPropagation()" />
+                <input
+                  type="checkbox"
+                  name="paymentLastschrift"
+                  [checked]="paymentMethod === 'lastschrift'"
+                  (click)="$event.stopPropagation()"
+                />
               </label>
               Lastschrift
             </div>
-            <div class="toggle-opt" [class.selected]="paymentMethod === 'ueberweisung'"
-              (click)="selectPaymentMethod('ueberweisung')">
+            <div
+              class="toggle-opt"
+              [class.selected]="paymentMethod === 'ueberweisung'"
+              (click)="selectPaymentMethod('ueberweisung')"
+            >
               <label class="cb-row">
-                <input type="checkbox" name="paymentUeberweisung" [checked]="paymentMethod === 'ueberweisung'"
-                  (click)="$event.stopPropagation()" />
+                <input
+                  type="checkbox"
+                  name="paymentUeberweisung"
+                  [checked]="paymentMethod === 'ueberweisung'"
+                  (click)="$event.stopPropagation()"
+                />
               </label>
               Überweisung
             </div>
@@ -93,11 +123,18 @@
         <div class="toggle-row">
           <div class="toggle-area">
             <div class="notice">
-              <span><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"></span>
-              <span>Die Übertragung Ihrer Bankverbindung erfolgt verschlüsselt über einen Sicherheitsserver</span>
+              <span
+                ><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"
+              /></span>
+              <span
+                >Die Übertragung Ihrer Bankverbindung erfolgt verschlüsselt über einen
+                Sicherheitsserver</span
+              >
             </div>
             <div class="notice">
-              <span><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"></span>
+              <span
+                ><img src="assets/icons/Kreis_Haken_gruen.png" class="icon-green-tick" alt="check"
+              /></span>
               <span>Abbuchung erfolgt nur, wenn der Stromvertrag auch zustande kommt</span>
             </div>
           </div>
@@ -105,67 +142,83 @@
 
         <!-- IBAN + account holder — only for Lastschrift -->
         <ng-container *ngIf="paymentMethod === 'lastschrift'">
-
           <div class="toggle-row" style="margin-bottom: 24px; align-items: center">
             <div class="form-group">
               <div class="field-wrap">
                 <span class="field-label">IBAN</span>
-                <input name="iban" type="text" [(ngModel)]="iban" placeholder="DE00 0000 0000 0000 0000 00">
+                <input
+                  name="iban"
+                  type="text"
+                  [(ngModel)]="iban"
+                  placeholder="DE00 0000 0000 0000 0000 00"
+                />
               </div>
+              <span *ngIf="validationErrors['iban']" class="error-hint">
+                {{ validationErrors['iban'] }}
+              </span>
             </div>
             <div>
               <span class="info-base info-circ">i</span>
             </div>
           </div>
 
-          <div class="toggle-row" style="width: 97.7%;">
+          <div class="toggle-row" style="width: 97.7%">
             <div class="form-group">
-              <div class="field-wrap" style="margin-bottom: 12px;">
+              <div class="field-wrap" style="margin-bottom: 12px">
                 <span class="field-label">Vorname</span>
-                <input name="firstName" type="text" [(ngModel)]="firstName">
+                <input name="firstName" type="text" [(ngModel)]="firstName" />
               </div>
+              <span *ngIf="validationErrors['firstName']" class="error-hint">
+                {{ validationErrors['firstName'] }}
+              </span>
             </div>
             <div class="form-group">
-              <div class="field-wrap" style="margin-bottom: 12px;">
+              <div class="field-wrap" style="margin-bottom: 12px">
                 <span class="field-label">Nachname</span>
-                <input name="lastName" type="text" [(ngModel)]="lastName">
+                <input name="lastName" type="text" [(ngModel)]="lastName" />
               </div>
+              <span *ngIf="validationErrors['lastName']" class="error-hint">
+                {{ validationErrors['lastName'] }}
+              </span>
             </div>
           </div>
 
           <!-- SEPA consent -->
           <div class="row-with-info">
             <div class="express-box">
-              <div class="toggle-row header" style="display: flex; justify-content: space-between;">
+              <div class="toggle-row header" style="display: flex; justify-content: space-between">
                 <span>Einwilligung zum SEPA-Lastschriftverfahren</span>
                 <span class="info-base info-circ">i</span>
               </div>
               <div class="container-express">
                 <p class="express-desc">
-                  Der genannte Kontoinhaber ermächtigt die Octopus Energy Germany GmbH, Zahlungen von seinem Konto
-                  mittels Lastschrift einzuziehen.<br>
-                  Zugleich weist der genannte Kontoinhaber sein Kreditinstitut an, die von der Octopus Energy Germany
-                  GmbH auf sein Konto gezogenen Lastschriften einzulösen.
+                  Der genannte Kontoinhaber ermächtigt die Octopus Energy Germany GmbH, Zahlungen
+                  von seinem Konto mittels Lastschrift einzuziehen.<br />
+                  Zugleich weist der genannte Kontoinhaber sein Kreditinstitut an, die von der
+                  Octopus Energy Germany GmbH auf sein Konto gezogenen Lastschriften einzulösen.
                 </p>
                 <p class="express-desc">
-                  Die Zahlungsabwicklung erfolgt über den vom Anbieter beauftragten Zahlungsdienstleister GoCardless.
+                  Die Zahlungsabwicklung erfolgt über den vom Anbieter beauftragten
+                  Zahlungsdienstleister GoCardless.
                 </p>
-                <div class="checkbox-row" style="margin-top: 8px;">
-                  <label class="cb-row" style="margin-right: 6px;">
+                <div class="checkbox-row" style="margin-top: 8px">
+                  <label class="cb-row" style="margin-right: 6px">
                     <input type="checkbox" name="sepaConsent" [(ngModel)]="sepaConsent" />
                   </label>
                   <span>Ich stimme dem SEPA-Lastschriftmandat zu</span>
                 </div>
                 <a class="link-hint">SEPA-Mandat anzeigen</a>
               </div>
+              <span *ngIf="validationErrors['sepaConsent']" class="error-hint">
+                {{ validationErrors['sepaConsent'] }}
+              </span>
             </div>
           </div>
-
         </ng-container>
 
         <!-- API feedback messages -->
         <div *ngIf="successMessage" class="api-message api-success">{{ successMessage }}</div>
-        <div *ngIf="errorMessage" class="api-message api-error">{{ errorMessage }}</div>
+        <div *ngIf="errorMessage" class="api-message api-error error-hint">{{ errorMessage }}</div>
 
         <!-- Submit -->
         <div class="form-actions">
@@ -173,15 +226,24 @@
             <span *ngIf="isLoading" class="btn-spinner"></span>
             {{ isLoading ? 'Wird gespeichert…' : 'Zahlungsart übernehmen' }}
           </button>
-          <a class="link-hint"
-            style="display: flex; justify-content: end; gap: 6px; color: #00a651; padding: 10px 5px 0 5px;">
+          <a
+            class="link-hint"
+            style="
+              display: flex;
+              justify-content: end;
+              gap: 6px;
+              color: #00a651;
+              padding: 10px 5px 0 5px;
+            "
+          >
             Übertragung über Sicherheitsserver
-            <span><img src="assets/icons/Schloss_gruen.png" class="icon-schloss-green" alt="check"></span>
+            <span
+              ><img src="assets/icons/Schloss_gruen.png" class="icon-schloss-green" alt="check"
+            /></span>
           </a>
         </div>
-
       </div>
     </div>
-
-  </div><!-- /main-content -->
+  </div>
+  <!-- /main-content -->
 </div>

@@ -1,106 +1,206 @@
 <div class="max-w-xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+  <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">
+    {{ isEditMode ? "Service bearbeiten" : "Service erstellen" }}
+  </h2>
 
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">
-        {{ isEditMode ? 'Service bearbeiten' : 'Service erstellen' }} </h2>
+  <form (ngSubmit)="onSubmit()" class="space-y-5">
+    <div
+      class="p-3 border rounded-lg dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between"
+    >
+      <div>
+        <span class="block text-sm font-medium dark:text-gray-200"
+          >Service Typ</span
+        >
+        <span class="text-xs text-gray-500">{{
+          isFreeService ? "Kostenloser Service" : "Anderer Service"
+        }}</span>
+      </div>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          [(ngModel)]="isFreeService"
+          name="isFreeService"
+          (change)="onTypeChange()"
+          class="sr-only peer"
+        />
+        <div
+          class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"
+        ></div>
+      </label>
+    </div>
 
-    <form (ngSubmit)="onSubmit()" class="space-y-5">
+    @if (!isFreeService) {
+      <div class="animate-in fade-in slide-in-from-top-2 duration-300">
+        <label
+          class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+        >
+          Bild hochladen *
+        </label>
 
         <div
-            class="p-3 border rounded-lg dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between">
-            <div>
-                <span class="block text-sm font-medium dark:text-gray-200">Service Typ</span>
-                <span class="text-xs text-gray-500">{{ isFreeService ? 'Kostenloser Service' : 'Anderer Service'
-                    }}</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="isFreeService" name="isFreeService" (change)="onTypeChange()"
-                    class="sr-only peer">
-                <div
-                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500">
-                </div>
-            </label>
-        </div>
+          class="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-brand-400 transition"
+        >
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onFileChange($event)"
+            class="hidden"
+            #fileInput
+          />
 
+          <div (click)="fileInput.click()" class="cursor-pointer">
+            @if (!imagePreview) {
+              <p class="text-sm text-gray-500">
+                Klicken Sie hier, um ein Bild hochzuladen (max. 2MB)
+              </p>
+            }
+
+            @if (imagePreview) {
+              <div
+                class="relative mx-auto h-28 w-28 bg-[url('https://www.transparenttextures.com/patterns/checkerboard.png')] bg-gray-200 rounded-lg overflow-hidden border border-gray-200"
+              >
+                <img [src]="imagePreview" class="h-full w-full object-cover" />
+              </div>
+              <p class="text-xs mt-2 text-gray-500">Zum Ändern klicken</p>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <div>
+      <label
+        class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+      >
+        Service Titel *
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="title"
+        name="title"
+        placeholder="Titel eingeben"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+      />
+    </div>
+
+    <div>
+      <label
+        class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+      >
+        Beschreibung *
+      </label>
+      <textarea
+        [(ngModel)]="description"
+        name="description"
+        rows="3"
+        placeholder="Beschreibung eingeben"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+      ></textarea>
+    </div>
+
+    <div
+      class="p-3 border rounded-lg dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between transition-opacity"
+      [class.opacity-50]="!isFreeService"
+    >
+      <div>
+        <span class="block text-sm font-medium dark:text-gray-200"
+          >Hervorheben</span
+        >
         @if (!isFreeService) {
-        <div class="animate-in fade-in slide-in-from-top-2 duration-300">
-            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Bild hochladen *
-            </label>
-
-            <div
-                class="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-brand-400 transition">
-                <input type="file" accept="image/*" (change)="onFileChange($event)" class="hidden" #fileInput />
-
-                <div (click)="fileInput.click()" class="cursor-pointer">
-                    @if (!imagePreview) {
-                    <p class="text-sm text-gray-500">
-                        Klicken Sie hier, um ein Bild hochzuladen (max. 2MB)
-                    </p>
-                    }
-
-                    @if (imagePreview) {
-                    <div
-                        class="relative mx-auto h-28 w-28 bg-[url('https://www.transparenttextures.com/patterns/checkerboard.png')] bg-gray-200 rounded-lg overflow-hidden border border-gray-200">
-                        <img [src]="imagePreview" class="h-full w-full object-cover" />
-                    </div>
-                    <p class="text-xs mt-2 text-gray-500">Zum Ändern klicken</p>
-                    }
-                </div>
-            </div>
-        </div>
+          <span
+            class="text-[10px] text-amber-600 dark:text-amber-400 font-medium italic"
+            >Nur für kostenlose Services verfügbar</span
+          >
         }
-
+      </div>
+      <label
+        class="relative inline-flex items-center"
+        [class.cursor-pointer]="isFreeService"
+        [class.cursor-not-allowed]="!isFreeService"
+      >
+        <input
+          type="checkbox"
+          [(ngModel)]="isHighlighted"
+          name="isHighlighted"
+          [disabled]="!isFreeService"
+          class="sr-only peer"
+        />
+        <div
+          class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"
+        ></div>
+      </label>
+    </div>
+    @if (!isFreeService) {
+      <div
+        class="p-3 border rounded-lg dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between"
+      >
         <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Service Titel *
-            </label>
-            <input type="text" [(ngModel)]="title" name="title" placeholder="Titel eingeben"
-                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white" />
+          <span class="block text-sm font-medium dark:text-gray-200"
+            >Weiterleitungslink</span
+          >
+          <span class="text-xs text-gray-500">
+            {{ hasRedirect ? "Aktiviert" : "Deaktiviert" }}
+          </span>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Beschreibung *
-            </label>
-            <textarea [(ngModel)]="description" name="description" rows="3" placeholder="Beschreibung eingeben"
-                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"></textarea>
-        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            [(ngModel)]="hasRedirect"
+            name="hasRedirect"
+            class="sr-only peer"
+          />
+          <div
+            class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"
+          ></div>
+        </label>
+      </div>
+    }
+    @if (hasRedirect) {
+      <div class="animate-in fade-in slide-in-from-top-2 duration-300">
+        <label
+          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+        >
+          Weiterleitungs-URL *
+        </label>
 
-        <div class="p-3 border rounded-lg dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between transition-opacity"
-            [class.opacity-50]="!isFreeService">
-            <div>
-                <span class="block text-sm font-medium dark:text-gray-200">Hervorheben</span>
-                @if (!isFreeService) {
-                <span class="text-[10px] text-amber-600 dark:text-amber-400 font-medium italic">Nur für kostenlose
-                    Services verfügbar</span>
-                }
-            </div>
-            <label class="relative inline-flex items-center" [class.cursor-pointer]="isFreeService"
-                [class.cursor-not-allowed]="!isFreeService">
-                <input type="checkbox" [(ngModel)]="isHighlighted" name="isHighlighted" [disabled]="!isFreeService"
-                    class="sr-only peer">
-                <div
-                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500">
-                </div>
-            </label>
-        </div>
+        <input
+          type="url"
+          [(ngModel)]="redirectUrl"
+          name="redirectUrl"
+          placeholder="https://example.com"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+        />
+      </div>
+    }
 
-        @if (errorMessage) {
-        <p class="text-sm text-red-500">
-            {{ errorMessage }}
-        </p>
-        }
+    @if (errorMessage) {
+      <p class="text-sm text-red-500">
+        {{ errorMessage }}
+      </p>
+    }
 
-        <div class="flex flex-col sm:flex-row gap-3 pt-2">
-            <button type="submit" [disabled]="isLoading"
-                class="flex-1 bg-brand-500 text-white py-2 rounded-lg hover:bg-brand-600 transition cursor-pointer disabled:opacity-50">
-                {{ isLoading ? 'Wird gespeichert...' : (isEditMode ? 'Aktualisieren' : 'Service erstellen') }} </button>
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <button
+        type="submit"
+        [disabled]="isLoading"
+        class="flex-1 bg-brand-500 text-white py-2 rounded-lg hover:bg-brand-600 transition cursor-pointer disabled:opacity-50"
+      >
+        {{
+          isLoading
+            ? "Wird gespeichert..."
+            : isEditMode
+              ? "Aktualisieren"
+              : "Service erstellen"
+        }}
+      </button>
 
-            <a routerLink="/services/free"
-                class="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition text-center cursor-pointer">
-                Abbrechen
-            </a>
-        </div>
-
-    </form>
+      <a
+        routerLink="/services/free"
+        class="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition text-center cursor-pointer"
+      >
+        Abbrechen
+      </a>
+    </div>
+  </form>
 </div>

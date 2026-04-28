@@ -223,8 +223,11 @@ export class CheckoutPage implements OnInit {
   }
 
   submitSchedule(): void {
+    console.log('select day:', this.selectedDay);
+    console.log('select time slot:', this.selectedTimeSlot);
     if (!this.selectedDay || !this.selectedTimeSlot) {
       this.scheduleErrorMessage = 'Bitte wählen Sie einen Tag und eine Uhrzeit aus.';
+      console.log('error', this.scheduleErrorMessage);
       return;
     }
 
@@ -259,6 +262,7 @@ export class CheckoutPage implements OnInit {
         this.scheduleSuccessMessage =
           'Ihre Rückrufzeit wurde erfolgreich übermittelt. Vielen Dank!';
         this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
+        this.authService.clearCheckoutFlowData();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -277,8 +281,10 @@ export class CheckoutPage implements OnInit {
               err?.error?.message ||
               'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
             console.error('Add-schedule API error:', err, err2);
+            this.cdr.detectChanges();
           },
         });
+        this.cdr.detectChanges();
       },
     });
   }
@@ -286,6 +292,7 @@ export class CheckoutPage implements OnInit {
   skipSchedule(): void {
     this.scheduleErrorMessage = '';
     this.scheduleSuccessMessage = '';
+    this.authService.clearCheckoutFlowData();
     this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
     this.cdr.detectChanges();
   }
@@ -363,9 +370,7 @@ export class CheckoutPage implements OnInit {
 
   get deliveryDateLabel(): string {
     const d: any = this.formData;
-    return this.formatTimestamp(
-      d?.deliveryDate ?? d?.deliveryAddress?.deliveryDate ?? d?.address?.deliveryDate ?? null,
-    );
+    return this.formatTimestamp(d?.dob ?? d?.deliveryAddress?.dob ?? d?.address?.dob ?? null);
   }
 
   get billingAddress(): CustomerAddress | null | undefined {
@@ -399,6 +404,11 @@ export class CheckoutPage implements OnInit {
     return this.valueOrFallback(this.authService.getCurrentUser()?.full_name ?? null);
   }
 
+  get salutation(): string {
+    const d: any = this.formData;
+    return d?.salutation ?? d?.deliveryAddress?.salutation ?? d?.address?.salutation ?? '';
+  }
+
   get billingAddressTitle(): string {
     return this.billingAddress?.isDifferent ? 'Abweichende Rechnungsadresse' : 'Rechnungsadresse';
   }
@@ -418,10 +428,10 @@ export class CheckoutPage implements OnInit {
   }
 
   get meterNumberLabel(): string {
-    if (this.connection?.submitLater) {
-      return 'Wird nachgereicht';
-    }
-
+    // if (this.connection?.submitLater) {
+    //   return 'Wird nachgereicht';
+    // }
+    console.log('meterNumberLabel: connection?.meterNumber=', this.connection?.meterNumber);
     return this.valueOrFallback(this.connection?.meterNumber);
   }
 
@@ -529,10 +539,11 @@ export class CheckoutPage implements OnInit {
     const userId = this.authService.getUserId();
     const deliveryId = this.authService.getDeliveryId();
 
-    this.isLoading = true;
+    // this.isLoading = true;
     this.errorMessage = '';
 
     this.fetchFormDataWithPost(userId, deliveryId);
+    this.cdr.detectChanges();
   }
 
   private fetchFormDataWithPost(userId: string | null, deliveryId: string | null): void {
@@ -555,6 +566,7 @@ export class CheckoutPage implements OnInit {
         });
       },
     });
+    this.cdr.detectChanges();
   }
 
   private handleFetchSuccess(res: FetchFormResponse): void {
@@ -580,7 +592,7 @@ export class CheckoutPage implements OnInit {
     this.isLoading = false;
     this.errorMessage =
       err?.error?.message || 'Die gespeicherten Daten konnten nicht geladen werden.';
-    this.cdr.detectChanges(); // ← was missing: UI never saw isLoading=false after fetch failure
+    this.cdr.detectChanges();
   }
 
   private formatFlexibleDate(value: boolean | string | number): string {
@@ -619,7 +631,7 @@ export class CheckoutPage implements OnInit {
     };
     this.isJourneyCompleted = true;
     this.maxAccessibleStep = 0;
-    this.authService.clearCheckoutFlowData();
+    // this.authService.clearCheckoutFlowData();
   }
 
   private getMaxAccessibleStep(data: CustomerFormData | null): number {
