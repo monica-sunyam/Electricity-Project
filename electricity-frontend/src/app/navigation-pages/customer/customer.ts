@@ -16,6 +16,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { QRCodeComponent } from 'angularx-qrcode';
+import { isPlatformBrowser } from '@angular/common';
+
 
 const API_BASE = 'http://192.168.0.155:8080';
 interface Card {
@@ -39,19 +43,23 @@ interface Card {
     MatIconModule,
     FormsModule,
     CountdownModule,
+  QRCodeComponent
   ],
   templateUrl: './customer.html',
   styleUrl: './customer.css',
 })
 export class Customer {
+   isBrowser = false;
+
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private eRef: ElementRef,
-    // private router: Router,
-  ) {}
-
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
   tabs: string[] = [
     'Persönliche Daten / Verträge',
     'Mein Haushalt',
@@ -64,7 +72,7 @@ export class Customer {
   ];
 
   /* ── Tab control ──────────────────────────────────────────────── */
-  activeTab: number = 4;
+  activeTab: number = 3;
   serviceTab: number = 1;
   documentTab: number = 0;
   /* ── Step control ──────────────────────────────────────────────── */
@@ -221,6 +229,52 @@ export class Customer {
   }
 
   /* ════════════════════════════════════════════════════════════════════════════════════════════════*/
+  selection: string = 'no';
+    selectOption(value: string): void {
+    this.selection = value;
+    if (value !== 'yes') {
+      
+    }
+    if (value !== 'no') {
+     
+    }
+  }
+
+
+  contracts = [
+  {
+    logo: 'assets/icons/Icons_energyprovider/eon.png',
+       title: 'E.ON ÖkoStrom Extra 12',
+    type: 'Strom | Hausstrom',
+    meter: 'ZKH-31259147-122',
+    name: 'Marie Mustermann',
+    address: 'Musterstraße 29, 12345 Musterhausen',
+    contractNumber: '0215/123456789',
+    duration: '12 Monate',
+    startDate: '19.04.2025',
+    renewal: '19.04.2026',
+    price: '26,80 Ct./kWh',
+    basePrice: '14,90 €/Monat',
+    monthly: '68,40 €',
+    cancelDate: '18.04.2026'
+  },
+  {
+     logo: 'assets/icons/Icons_energyprovider/vattenfall.png',
+     title: 'Easy12 Gas',
+    type: 'Gas',
+    meter: 'ZKH-31259147-122',
+    name: 'Marie Mustermann',
+    address: 'Musterstraße 29, 12345 Musterhausen',
+    contractNumber: '012455-64564564k1245',
+    duration: '12 Monate',
+    startDate: '28.03.2025',
+    renewal: '28.03.2026',
+    price: '11,72 Ct./kWh',
+    basePrice: '21,90 €/Monat',
+    monthly: '151,40 €',
+    cancelDate: '27.04.2026'
+  }
+];
 
   /*── Service Section Start ──*/
 

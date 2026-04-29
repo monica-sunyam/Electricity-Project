@@ -132,6 +132,111 @@
         </div>
       </div>
 
+      <!--══════════ Reminder Section Start (Tab - 3) ══════════-->
+
+      <div class="" *ngIf="activeTab === 3 && currentStep === 1">
+        <div class="login-berich">Wechselerinnerung</div>
+        <br />
+        <div class="attorney-berich-green" style="align-items: start; justify-content: start;padding-left: 20px;">
+          Wechselerinnerung
+        </div>
+
+
+          <div class="section-body">
+            <!-- Neu einziehen toggle -->
+            <div class="toggle-row header">
+             
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-box">
+                <div
+                  class="toggle-opt"
+                  [class.selected]="selection === 'yes'"
+                  (click)="selectOption('yes')"
+                >
+                  <label class="cb-row">
+                    <input
+                      type="checkbox"
+                      name="selectionYes"
+                      [checked]="selection === 'yes'"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </label>
+                  Ja
+                </div>
+                <div
+                  class="toggle-opt"
+                  [class.selected]="selection === 'no'"
+                  (click)="selectOption('no')"
+                >
+                  <label class="cb-row">
+                    <input
+                      type="checkbox"
+                      name="selectionNo"
+                      [checked]="selection === 'no'"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </label>
+                  Nein
+                </div>
+              </div>
+              <div>
+                <span class="info-base info-icon">i</span>
+              </div>
+            </div>
+          </div>
+
+
+          <br>
+         <div class="attorney-berich-green" style="align-items: start; justify-content: start;padding-left: 20px;">
+         Ihre Verträge und Kündigungsfristen - Haushalt 1
+        </div>
+
+        <div class="tab-row">
+
+        
+ <div class="contract-card" *ngFor="let contract of contracts">
+
+  <!-- LEFT -->
+  <div class="card-left">
+    <img [src]="contract.logo" class="company-logo" />
+    <div style="padding-bottom: 10px;"><strong>{{contract.title}}</strong></div>
+    <div class="badge">{{ contract.type }}</div>
+
+    <div class="address">
+      <p>Zählernummer: {{ contract.meter }}</p>
+      <p>Adresse: {{ contract.name }}</p>
+      <p>{{ contract.address }}</p>
+    </div>
+  </div>
+
+  <!-- MIDDLE -->
+  <div class="card-middle">
+    <p><strong>Vertragsnummer:</strong> {{ contract.contractNumber }}</p>
+    <p><strong>Mindestvertragslaufzeit:</strong> {{ contract.duration }}</p>
+    <p><strong>Vertragsbeginn:</strong> {{ contract.startDate }}</p>
+    <p><strong>Automatische Verlängerung:</strong> {{ contract.renewal }}</p>
+    <p><strong>Arbeitspreis:</strong> {{ contract.price }}</p>
+    <p><strong>Grundpreis:</strong> {{ contract.basePrice }}</p>
+    <p><strong>Abschlag geschätzt pro Monat:</strong> {{ contract.monthly }}</p>
+  </div>
+
+  <!-- RIGHT (Buttons Column) -->
+  <div class="card-actions">
+    <button class="cancel-btn">
+      Kündigungsfrist zum {{ contract.cancelDate }}
+    </button>
+
+    <button class="compare-btn">
+      Vertrag neu vergleichen
+    </button>
+  </div>
+
+</div> 
+    </div>
+      </div>
+
+
       <!--══════════ Service Request Section Start (Tab - 4) ══════════-->
 
       <div class="container-login" *ngIf="activeTab === 4 && currentStep === 1">
@@ -809,9 +914,12 @@
               </div>
             </div>
 
-            <div class="qr-section">
-              <img src="assets/icons/qr.png" alt="QR Code" />
-            </div>
+<div class="qr-section" *ngIf="isBrowser">
+  <qrcode
+    [qrdata]="'https://www.google.com'"
+    [width]="120">
+  </qrcode>
+</div>
           </div>
 
           <div class="form-group">
