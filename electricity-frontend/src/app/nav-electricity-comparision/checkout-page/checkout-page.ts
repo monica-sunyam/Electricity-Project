@@ -115,6 +115,24 @@ export class CheckoutPage implements OnInit {
     { label: 'Abends von 17:00 - 20:00 Uhr', value: 'EVENING_17_20' },
   ];
 
+  /** Maps day enum values to JS Date.getDay() numbers (0=Sun … 6=Sat). */
+  private readonly dayValueToJsDay: Record<string, number> = {
+    MONDAY: 1,
+    TUESDAY: 2,
+    WEDNESDAY: 3,
+    THURSDAY: 4,
+    FRIDAY: 5,
+    SATURDAY: 6,
+  };
+
+  /** Start hour (24-h) for each time-slot. */
+  private readonly slotStartHour: Record<string, number> = {
+    MORNING_08_11: 8,
+    MIDDAY_11_14: 11,
+    AFTERNOON_14_17: 14,
+    EVENING_17_20: 17,
+  };
+
   private readonly mainStepRoutes: Record<number, string> = {
     1: '/electricity-comparision/register',
     2: '/electricity-comparision/delivery-address',
@@ -212,12 +230,71 @@ export class CheckoutPage implements OnInit {
     });
   }
 
+  /**
+   * Returns the set of day values that are selectable.
+   * Only the 3 days starting from today (Mon–Sat) are enabled.
+   * If today is Sunday it is treated as Monday.
+   */
+  get enabledDays(): Set<string> {
+    const now = new Date();
+    let todayJs = now.getDay(); // 0=Sun, 1=Mon … 6=Sat
+    if (todayJs === 0) todayJs = 1; // Sunday → roll to Monday
+
+    const enabled = new Set<string>();
+    let count = 0;
+    let current = todayJs;
+
+    while (count < 3 && current <= 6) {
+      const entry = Object.entries(this.dayValueToJsDay).find(([, v]) => v === current);
+      if (entry) {
+        enabled.add(entry[0]);
+        count++;
+      }
+      current++;
+    }
+
+    return enabled;
+  }
+
+  isDayEnabled(dayValue: string): boolean {
+    return this.enabledDays.has(dayValue);
+  }
+
+  /**
+   * A time slot is enabled when:
+   *  - No day is selected yet (preview state — all shown as selectable), OR
+   *  - The selected day is in the future → all slots open, OR
+   *  - The selected day is today → the slot's start hour must be > now + 2 h (2-hour buffer).
+   */
+  isTimeSlotEnabled(slotValue: string): boolean {
+    if (!this.selectedDay) return true;
+
+    const now = new Date();
+    let todayJs = now.getDay();
+    if (todayJs === 0) todayJs = 1;
+
+    const selectedJsDay = this.dayValueToJsDay[this.selectedDay];
+    if (selectedJsDay === todayJs) {
+      const currentDecimalHour = now.getHours() + now.getMinutes() / 60;
+      const slotStart = this.slotStartHour[slotValue] ?? 0;
+      return slotStart > currentDecimalHour + 2;
+    }
+
+    return true; // future day → all slots available
+  }
+
   selectDay(day: string): void {
+    if (!this.isDayEnabled(day)) return;
     this.selectedDay = day;
+    // Clear time slot if it is no longer valid for the newly selected day
+    if (this.selectedTimeSlot && !this.isTimeSlotEnabled(this.selectedTimeSlot)) {
+      this.selectedTimeSlot = '';
+    }
     this.cdr.detectChanges();
   }
 
   selectTimeSlot(slot: string): void {
+    if (!this.isTimeSlotEnabled(slot)) return;
     this.selectedTimeSlot = slot;
     this.cdr.detectChanges();
   }
@@ -328,9 +405,9 @@ export class CheckoutPage implements OnInit {
     const d: any = this.formData;
     return this.valueOrFallback(
       d?.email ??
-        d?.deliveryAddress?.email ??
-        d?.address?.email ??
-        this.authService.getCurrentUser()?.email,
+      d?.deliveryAddress?.email ??
+      d?.address?.email ??
+      this.authService.getCurrentUser()?.email,
     );
   }
 

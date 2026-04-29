@@ -1,0 +1,400 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+    <div class="max-w-3xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-8">
+            <button (click)="goBack()"
+                class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-sm cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Zurück
+            </button>
+            <div>
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white">Buchung bearbeiten</h1>
+                @if (originalBooking) {
+                <p class="text-sm text-gray-500 mt-0.5">#{{ originalBooking.uniqueDeliveryId }} &mdash; {{
+                    originalBooking.firstName }} {{ originalBooking.lastName }}</p>
+                }
+            </div>
+        </div>
+
+        <!-- Loading -->
+        @if (isLoading) {
+        <div class="flex items-center gap-2 text-gray-500 text-sm py-12 justify-center">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-500"></div>
+            Wird geladen…
+        </div>
+        }
+
+        @if (!isLoading && originalBooking) {
+        <form (ngSubmit)="onSubmit()" #editForm="ngForm" class="space-y-6">
+
+            <!-- ── Step 2: Lieferadresse ── -->
+            <div class="section-card">
+                <div class="section-title">
+                    <span class="section-num">2</span>
+                    Lieferadresse
+                </div>
+
+                <!-- E-Mail -->
+                <div class="field-group">
+                    <label class="field-label">E-Mail-Adresse *</label>
+                    <input type="email" [(ngModel)]="form.email" name="email" required class="field-input"
+                        placeholder="email@beispiel.de" />
+                    <span *ngIf="validationErrors['email']" class="field-error">{{ validationErrors['email'] }}</span>
+                </div>
+
+                <!-- Anrede + Titel -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="field-group">
+                        <label class="field-label">Anrede</label>
+                        <select [(ngModel)]="form.salutation" name="salutation" class="field-select">
+                            <option value="">Bitte wählen…</option>
+                            <option value="Herr">Herr</option>
+                            <option value="Frau">Frau</option>
+                            <option value="Divers">Divers</option>
+                            <option value="Keine Angabe">Keine Angabe</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Titel</label>
+                        <select [(ngModel)]="form.title" name="title" class="field-select">
+                            <option value="">Kein Titel</option>
+                            <option value="Dr.">Dr.</option>
+                            <option value="Prof.">Prof.</option>
+                            <option value="Prof. Dr.">Prof. Dr.</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Vorname + Nachname -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="field-group">
+                        <label class="field-label">Vorname *</label>
+                        <input type="text" [(ngModel)]="form.firstName" name="firstName" required class="field-input"
+                            placeholder="Vorname" />
+                        <span *ngIf="validationErrors['firstName']" class="field-error">{{ validationErrors['firstName']
+                            }}</span>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Nachname *</label>
+                        <input type="text" [(ngModel)]="form.lastName" name="lastName" required class="field-input"
+                            placeholder="Nachname" />
+                        <span *ngIf="validationErrors['lastName']" class="field-error">{{ validationErrors['lastName']
+                            }}</span>
+                    </div>
+                </div>
+
+                <!-- Read-only address -->
+                <div class="readonly-block">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="field-group">
+                            <label class="field-label">PLZ</label>
+                            <input type="text" [value]="originalBooking.customerAddress?.zip ?? ''" readonly
+                                class="field-input readonly" />
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Ort</label>
+                            <input type="text" [value]="originalBooking.customerAddress?.city ?? ''" readonly
+                                class="field-input readonly" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div class="field-group">
+                            <label class="field-label">Straße</label>
+                            <input type="text" [value]="originalBooking.customerAddress?.street ?? ''" readonly
+                                class="field-input readonly" />
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Hausnummer</label>
+                            <input type="text" [value]="originalBooking.customerAddress?.houseNumber ?? ''" readonly
+                                class="field-input readonly" />
+                        </div>
+                    </div>
+                    <p class="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Adressfelder können nicht bearbeitet werden.
+                    </p>
+                </div>
+
+                <!-- Handynummer + Telefon -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="field-group">
+                        <label class="field-label">Handynummer *</label>
+                        <input type="tel" [(ngModel)]="form.mobile" name="mobile" required class="field-input"
+                            placeholder="+49 …" />
+                        <span *ngIf="validationErrors['mobile']" class="field-error">{{ validationErrors['mobile']
+                            }}</span>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Telefonnummer</label>
+                        <input type="tel" [(ngModel)]="form.telephone" name="telephone" class="field-input"
+                            placeholder="+49 …" />
+                    </div>
+                </div>
+
+                <!-- Geburtsdatum -->
+                <div class="field-group">
+                    <label class="field-label">Geburtsdatum</label>
+                    <input type="date" [(ngModel)]="form.dob" name="dob" class="field-input" />
+                </div>
+
+                <!-- Abweichende Rechnungsadresse -->
+                <div class="field-group">
+                    <label class="field-label">Abweichende Rechnungsadresse?</label>
+                    <div class="toggle-pair">
+                        <button type="button" (click)="form.hasDifferentBilling = true"
+                            [class.active]="form.hasDifferentBilling === true">Ja</button>
+                        <button type="button" (click)="form.hasDifferentBilling = false"
+                            [class.active]="form.hasDifferentBilling === false">Nein</button>
+                    </div>
+                </div>
+
+                @if (form.hasDifferentBilling) {
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="field-group">
+                        <label class="field-label">PLZ *</label>
+                        <input type="text" [(ngModel)]="form.billingZip" name="billingZip" class="field-input"
+                            placeholder="PLZ" />
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Ort *</label>
+                        <input type="text" [(ngModel)]="form.billingCity" name="billingCity" class="field-input"
+                            placeholder="Ort" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="field-group">
+                        <label class="field-label">Straße *</label>
+                        <input type="text" [(ngModel)]="form.billingStreet" name="billingStreet" class="field-input"
+                            placeholder="Straße" />
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Hausnummer *</label>
+                        <input type="text" [(ngModel)]="form.billingHouseNumber" name="billingHouseNumber"
+                            class="field-input" placeholder="Nr." />
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- ── Step 3: Anschlussdaten ── -->
+            @if (originalBooking.connection) {
+            <div class="section-card">
+                <div class="section-title">
+                    <span class="section-num">3</span>
+                    Anschlussdaten
+                </div>
+
+                <!-- Neu einziehen -->
+                <div class="field-group">
+                    <label class="field-label">Zieht der Kunde neu ein?</label>
+                    <div class="toggle-pair">
+                        <button type="button" (click)="form.isMovingIn = true"
+                            [class.active]="form.isMovingIn === true">Ja</button>
+                        <button type="button" (click)="form.isMovingIn = false"
+                            [class.active]="form.isMovingIn === false">Nein</button>
+                    </div>
+                </div>
+
+                <!-- Move-in date (only if moving in) -->
+                @if (form.isMovingIn) {
+                <div class="field-group">
+                    <label class="field-label">Gewünschter Liefertermin (Einzugsdatum)</label>
+                    <input type="date" [(ngModel)]="form.moveInDate" name="moveInDate" class="field-input" />
+                </div>
+                }
+
+                <!-- Daten nachreichen -->
+                <div class="field-group">
+                    <label class="field-label">Daten werden nachgereicht</label>
+                    <div class="toggle-pair">
+                        <button type="button" (click)="form.submitLater = true"
+                            [class.active]="form.submitLater === true">Ja</button>
+                        <button type="button" (click)="form.submitLater = false"
+                            [class.active]="form.submitLater === false">Nein</button>
+                    </div>
+                </div>
+
+                <!-- Zählernummer -->
+                <div class="field-group">
+                    <label class="field-label">Zählernummer</label>
+                    <input type="text" [(ngModel)]="form.meterNumber" name="meterNumber" class="field-input font-mono"
+                        placeholder="Zählernummer" />
+                </div>
+
+                <!-- Marktlokations-ID -->
+                <div class="field-group">
+                    <label class="field-label">Marktlokations-ID <span
+                            class="text-gray-400 font-normal">(optional)</span></label>
+                    <input type="text" [(ngModel)]="form.marketLocationId" name="marketLocationId"
+                        class="field-input font-mono" placeholder="Marktlokations-ID" />
+                </div>
+
+                <!-- Only show these when NOT moving in -->
+                @if (form.isMovingIn === false) {
+                <!-- Derzeitiger Stromanbieter -->
+                <div class="field-group">
+                    <label class="field-label">Derzeitiger Stromanbieter</label>
+                    <select [(ngModel)]="form.currentProvider" name="currentProvider" class="field-select">
+                        <option value="">Bitte wählen…</option>
+                        <option value="Stadtwerke München">Stadtwerke München</option>
+                        <option value="E.ON">E.ON</option>
+                        <option value="RWE">RWE</option>
+                        <option value="Vattenfall">Vattenfall</option>
+                        <option value="EnBW">EnBW</option>
+                        <option value="Innogy">Innogy</option>
+                        <option value="Yello Strom">Yello Strom</option>
+                        <option value="Sonstiger Anbieter">Sonstiger Anbieter</option>
+                    </select>
+                </div>
+
+                <!-- Kündigung -->
+                <div class="field-group">
+                    <label class="field-label">Kündigung des bisherigen Vertrags</label>
+                    <div class="space-y-2">
+                        <label class="checkbox-row">
+                            <input type="checkbox" [(ngModel)]="form.autoCancellation" name="autoCancellation" />
+                            Automatische Kündigung durch neuen Anbieter
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" [(ngModel)]="form.alreadyCancelled" name="alreadyCancelled" />
+                            Vertrag wurde bereits gekündigt
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" [(ngModel)]="form.selfCancellation" name="selfCancellation" />
+                            Ich werde selbst kündigen
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Lieferoption -->
+                <div class="field-group">
+                    <label class="field-label">Gewünschter Liefertermin</label>
+                    <div class="toggle-pair">
+                        <button type="button" (click)="form.deliveryOption = 'schnellstmoeglich'"
+                            [class.active]="form.deliveryOption === 'schnellstmoeglich'">Schnellstmöglich</button>
+                        <button type="button" (click)="form.deliveryOption = 'wunschtermin'"
+                            [class.active]="form.deliveryOption === 'wunschtermin'">Wunschtermin</button>
+                    </div>
+                </div>
+
+                @if (form.deliveryOption === 'wunschtermin') {
+                <div class="field-group">
+                    <label class="field-label">Wunschtermin (Datum)</label>
+                    <input type="date" [(ngModel)]="form.desiredDeliveryDate" name="desiredDeliveryDate"
+                        class="field-input" />
+                </div>
+                }
+                }
+            </div>
+            }
+
+            <!-- ── Step 4: Zahlung ── -->
+            @if (originalBooking.payment) {
+            <div class="section-card">
+                <div class="section-title">
+                    <span class="section-num">4</span>
+                    Zahlungsart
+                </div>
+
+                <!-- Zahlungsmethode -->
+                <div class="field-group">
+                    <label class="field-label">Zahlungsart</label>
+                    <div class="toggle-pair">
+                        <button type="button" (click)="form.paymentMethod = 'lastschrift'"
+                            [class.active]="form.paymentMethod === 'lastschrift'">Lastschrift</button>
+                        <button type="button" (click)="form.paymentMethod = 'ueberweisung'"
+                            [class.active]="form.paymentMethod === 'ueberweisung'">Überweisung</button>
+                    </div>
+                </div>
+
+                <!-- IBAN + Kontoinhaber (nur bei Lastschrift) -->
+                @if (form.paymentMethod === 'lastschrift') {
+                <div class="field-group">
+                    <label class="field-label">IBAN</label>
+                    <input type="text" [(ngModel)]="form.iban" name="iban" class="field-input font-mono"
+                        placeholder="DE00 0000 0000 0000 0000 00" />
+                    <span *ngIf="validationErrors['iban']" class="field-error">{{ validationErrors['iban'] }}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="field-group">
+                        <label class="field-label">Vorname Kontoinhaber</label>
+                        <input type="text" [(ngModel)]="form.paymentFirstName" name="paymentFirstName"
+                            class="field-input" placeholder="Vorname" />
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Nachname Kontoinhaber</label>
+                        <input type="text" [(ngModel)]="form.paymentLastName" name="paymentLastName" class="field-input"
+                            placeholder="Nachname" />
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="checkbox-row">
+                        <input type="checkbox" [(ngModel)]="form.sepaConsent" name="sepaConsent" />
+                        SEPA-Lastschriftmandat erteilt
+                    </label>
+                    <span *ngIf="validationErrors['sepaConsent']" class="field-error">{{ validationErrors['sepaConsent']
+                        }}</span>
+                </div>
+                }
+            </div>
+            }
+            
+            <!-- ── Save bar ── -->
+            <div class="flex items-center justify-between gap-4 pb-8">
+                <div class="flex-1 text-sm">
+                    @if (successMessage) {
+                    <span class="text-green-600 dark:text-green-400 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {{ successMessage }}
+                    </span>
+                    }
+                    @if (errorMessage) {
+                    <span class="text-red-500 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ errorMessage }}
+                    </span>
+                    }
+                </div>
+                <div class="flex gap-3 shrink-0">
+                    <button type="button" (click)="goBack()"
+                        class="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer">
+                        Abbrechen
+                    </button>
+                    <button type="submit" [disabled]="isSaving || editForm.invalid"
+                        class="px-6 py-2.5 text-sm font-semibold rounded-xl bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 cursor-pointer">
+                        @if (isSaving) {
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Wird gespeichert…
+                        } @else {
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Änderungen speichern
+                        }
+                    </button>
+                </div>
+            </div>
+
+        </form>
+        }
+
+    </div>
+</div>

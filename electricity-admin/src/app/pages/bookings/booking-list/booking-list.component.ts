@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ApiService } from "../../../shared/services/api.service";
 import { AuthService } from "../../../shared/services/auth.service";
+import { Router } from "@angular/router";
 
 type CustomerAddress = {
   zip?: string;
@@ -116,10 +117,18 @@ export class BookingListComponent implements OnInit {
   constructor(
     private api: ApiService,
     private authService: AuthService,
-  ) {}
+    private router: Router
+
+  ) { }
 
   ngOnInit(): void {
     this.fetchBookings();
+  }
+
+  editBooking(booking: ApiBooking): void {
+    this.router.navigate(["bookings/change", booking.deliveryId, "edit"], {
+      state: { booking },
+    });
   }
 
   fetchBookings(page: number = 1): void {

@@ -86,7 +86,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       <path d="M20 21V19C20 18.067 19.3638 17.2519 18.5 17.0127" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M15.5 3.28906C16.3968 3.64352 17 4.52164 17 5.5C17 6.47836 16.3968 7.35648 15.5 7.71094" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`,
-      subItems: [{ name: "Customer List", path: "/customers" }],
+      subItems: [{ name: "Customer List", path: "/customers" }, { name: "Holiday Markers", path: "/customers/holiday-markers" }],
     },
     {
       name: "Bookings",

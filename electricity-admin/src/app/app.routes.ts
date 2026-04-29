@@ -13,10 +13,12 @@ import { AboutUsComponent } from "./pages/about-us/about-us.component";
 import { BannersComponent } from "./pages/banners/banners.component";
 import { CustomerListComponent } from "./pages/customers/customer-list/customer-list.component";
 import { BookingListComponent } from "./pages/bookings/booking-list/booking-list.component";
+import { BookingEditComponent } from "./pages/bookings/change-customer-booking/change-customer-booking.component";
 import { ComparisonListComponent } from "./pages/customer-comparison/customer-comparison.component";
 import { CustomerServiceFormComponent } from "./pages/customer-query/add-query-categories/add-query-categories.component";
 import { QueryCategoriesComponent } from "./pages/customer-query/query-categories/query-categories.component";
 import { CustomerQueriesComponent } from "./pages/customer-query/customer-queries/customer-queries.component";
+import { HolidayMarkerComponent } from "./pages/customers/holiday-markers/holiday-markers.component";
 
 export const routes: Routes = [
   {
@@ -115,10 +117,21 @@ export const routes: Routes = [
         path: "customer-query/categories/create",
         component: CustomerServiceFormComponent,
         title: "Add Customer Query Category",
-      }, {
+      },
+      {
         path: "customer-query/customer-queries",
         component: CustomerQueriesComponent,
         title: "Customer Queries",
+      },
+      {
+        path: "bookings/change/:id/edit",
+        component: BookingEditComponent,
+        title: "Edit Booking",
+      },
+      {
+        path: "customers/holiday-markers",
+        component: HolidayMarkerComponent,
+        title: "Holiday Markers",
       }
     ],
   },
