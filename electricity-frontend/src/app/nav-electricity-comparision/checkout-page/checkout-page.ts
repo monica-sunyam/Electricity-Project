@@ -7,6 +7,7 @@ import { ContactPerson } from '../../layout/contact-person/contact-person';
 import { NeedSupport } from '../../layout/need-support/need-support';
 import { AuthService } from '../../services/auth.service';
 import { Environment, ENVIRONMENT } from '../../environment.token';
+import { Sidebar } from '../../layout/sidebar/sidebar';
 
 interface CustomerAddress {
   id?: number;
@@ -74,7 +75,7 @@ interface FetchFormResponse {
 
 @Component({
   selector: 'app-checkout-page',
-  imports: [ContactPerson, NeedSupport, RouterModule, CommonModule, FormsModule],
+  imports: [ContactPerson, NeedSupport, RouterModule, CommonModule, FormsModule, Sidebar],
   templateUrl: './checkout-page.html',
   styleUrl: './checkout-page.css',
 })
@@ -109,10 +110,10 @@ export class CheckoutPage implements OnInit {
   ];
 
   readonly timeSlots = [
-    { label: 'Vormittags von 08:00 - 11:00 Uhr', value: 'MORNING_08_11' },
-    { label: 'Mittags von 11:00 - 14:00 Uhr', value: 'MIDDAY_11_14' },
-    { label: 'Nachmittags von 14:00 - 17:00 Uhr', value: 'AFTERNOON_14_17' },
-    { label: 'Abends von 17:00 - 20:00 Uhr', value: 'EVENING_17_20' },
+    { label: 'Vormittags von 08:00 - 11:00 Uhr', value: '08-11' },
+    { label: 'Mittags von 11:00 - 14:00 Uhr', value: '11-14' },
+    { label: 'Nachmittags von 14:00 - 17:00 Uhr', value: '14-17' },
+    { label: 'Abends von 17:00 - 20:00 Uhr', value: '17-20' },
   ];
 
   /** Maps day enum values to JS Date.getDay() numbers (0=Sun … 6=Sat). */
@@ -150,9 +151,10 @@ export class CheckoutPage implements OnInit {
   ) {
     this.API_BASE = env.apiBaseUrl;
   }
-
+  providerDetails: any = null;
   ngOnInit(): void {
     this.fetchFormData();
+    this.providerDetails = this.authService.getSelectedProvider();
   }
 
   openPage(): void {
@@ -235,25 +237,56 @@ export class CheckoutPage implements OnInit {
    * Only the 3 days starting from today (Mon–Sat) are enabled.
    * If today is Sunday it is treated as Monday.
    */
+  // get enabledDays(): Set<string> {
+  //   const now = new Date();
+  //   let todayJs = now.getDay(); // 0=Sun, 1=Mon … 6=Sat
+  //   if (todayJs === 0) todayJs = 1; // Sunday → roll to Monday
+
+  //   const enabled = new Set<string>();
+  //   let count = 0;
+  //   let current = todayJs;
+
+  //   while (count < 3 && current <= 6) {
+  //     const entry = Object.entries(this.dayValueToJsDay).find(([, v]) => v === current);
+  //     if (entry) {
+  //       enabled.add(entry[0]);
+  //       count++;
+  //     }
+  //     current++;
+  //   }
+
+  //   return enabled;
+  // }
+
   get enabledDays(): Set<string> {
     const now = new Date();
     let todayJs = now.getDay(); // 0=Sun, 1=Mon … 6=Sat
-    if (todayJs === 0) todayJs = 1; // Sunday → roll to Monday
+
+    // Sunday → treat as Monday
+    if (todayJs === 0) {
+      todayJs = 1;
+    }
 
     const enabled = new Set<string>();
-    let count = 0;
-    let current = todayJs;
 
-    while (count < 3 && current <= 6) {
-      const entry = Object.entries(this.dayValueToJsDay).find(([, v]) => v === current);
+    for (let i = 0; i < 3; i++) {
+      const day = todayJs + i;
+
+      // Stop if beyond Saturday
+      if (day > 6) break;
+
+      const entry = Object.entries(this.dayValueToJsDay).find(([, v]) => v === day);
+
       if (entry) {
         enabled.add(entry[0]);
-        count++;
       }
-      current++;
     }
 
     return enabled;
+  }
+
+  get filteredDays() {
+    return this.daysOfWeek.filter((d) => this.isDayEnabled(d.value));
   }
 
   isDayEnabled(dayValue: string): boolean {
@@ -266,23 +299,80 @@ export class CheckoutPage implements OnInit {
    *  - The selected day is in the future → all slots open, OR
    *  - The selected day is today → the slot's start hour must be > now + 2 h (2-hour buffer).
    */
+  // isTimeSlotEnabled(slotValue: string): boolean {
+  //   if (!this.selectedDay) return true;
+
+  //   const now = new Date();
+  //   let todayJs = now.getDay();
+  //   if (todayJs === 0) todayJs = 1;
+
+  //   const selectedJsDay = this.dayValueToJsDay[this.selectedDay];
+  //   if (selectedJsDay === todayJs) {
+  //     const currentDecimalHour = now.getHours() + now.getMinutes() / 60;
+  //     const slotStart = this.slotStartHour[slotValue] ?? 0;
+  //     return slotStart > currentDecimalHour + 2;
+  //   }
+
+  //   return true; // future day → all slots available
+  // }
+
+  getSlotTime(slotValue: string): { start: number; end: number } | null {
+    const parts = slotValue.split('_'); // ["MORNING","08","11"]
+
+    if (parts.length < 3) return null;
+
+    const start = parseInt(parts[1], 10);
+    const end = parseInt(parts[2], 10);
+
+    return { start, end };
+  }
+
   isTimeSlotEnabled(slotValue: string): boolean {
     if (!this.selectedDay) return true;
 
+    // Get German time
     const now = new Date();
-    let todayJs = now.getDay();
+    const germanNow = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+
+    let todayJs = germanNow.getDay();
     if (todayJs === 0) todayJs = 1;
 
     const selectedJsDay = this.dayValueToJsDay[this.selectedDay];
-    if (selectedJsDay === todayJs) {
-      const currentDecimalHour = now.getHours() + now.getMinutes() / 60;
-      const slotStart = this.slotStartHour[slotValue] ?? 0;
-      return slotStart > currentDecimalHour + 2;
-    }
 
-    return true; // future day → all slots available
+    if (selectedJsDay !== todayJs) return true;
+
+    const currentHour = germanNow.getHours() + germanNow.getMinutes() / 60;
+
+    const slot = this.getSlotTime(slotValue);
+    if (!slot) return false;
+
+    if (currentHour >= slot.end) return false;
+
+    if (currentHour >= slot.start && currentHour < slot.end) return false;
+
+    if (slot.end - currentHour <= 2) return false;
+
+    return true;
   }
+  getDateFromDay(dayValue: string): string {
+    const now = new Date();
 
+    const germanNow = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+
+    let todayJs = germanNow.getDay();
+    if (todayJs === 0) todayJs = 1;
+
+    const targetJsDay = this.dayValueToJsDay[dayValue];
+
+    let diff = targetJsDay - todayJs;
+
+    if (diff < 0) diff += 7;
+
+    const targetDate = new Date(germanNow);
+    targetDate.setDate(germanNow.getDate() + diff);
+
+    return targetDate.toISOString().split('T')[0];
+  }
   selectDay(day: string): void {
     if (!this.isDayEnabled(day)) return;
     this.selectedDay = day;
@@ -324,23 +414,34 @@ export class CheckoutPage implements OnInit {
     const payload = {
       customerId: parseInt(userId, 10),
       deliveryId: parseInt(deliveryId, 10),
+      adminId: 1,
       dayOfWeek: this.selectedDay,
       timeSlot: this.selectedTimeSlot,
+      scheduleDate: this.getDateFromDay(this.selectedDay),
       description: this.scheduleDescription ?? '',
     };
 
     console.log('Schedule payload:', JSON.stringify(payload, null, 2));
 
-    const submit = (apiBase: string) => this.http.post(`${apiBase}/customer/add-schedule`, payload);
+    const submit = (apiBase: string) =>
+      this.http.post<any>(`${apiBase}/customer/add-schedule`, payload);
 
     submit(this.API_BASE).subscribe({
-      next: () => {
-        this.isScheduleLoading = false;
-        this.scheduleSuccessMessage =
-          'Ihre Rückrufzeit wurde erfolgreich übermittelt. Vielen Dank!';
-        this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
-        this.authService.clearCheckoutFlowData();
-        this.cdr.detectChanges();
+      next: (res) => {
+        if (res?.res === true) {
+          this.isScheduleLoading = false;
+          this.scheduleSuccessMessage =
+            'Ihre Rückrufzeit wurde erfolgreich übermittelt. Vielen Dank!';
+          this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
+          this.authService.clearCheckoutFlowData();
+          this.cdr.detectChanges();
+        } else {
+          this.isScheduleLoading = false;
+          this.scheduleErrorMessage =
+            res.errMessage || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+          console.error('Add-schedule API error:', res.errMessage);
+          this.cdr.detectChanges();
+        }
       },
       error: (err) => {
         submit(this.LOCAL_API_BASE).subscribe({
@@ -405,9 +506,9 @@ export class CheckoutPage implements OnInit {
     const d: any = this.formData;
     return this.valueOrFallback(
       d?.email ??
-      d?.deliveryAddress?.email ??
-      d?.address?.email ??
-      this.authService.getCurrentUser()?.email,
+        d?.deliveryAddress?.email ??
+        d?.address?.email ??
+        this.authService.getCurrentUser()?.email,
     );
   }
 

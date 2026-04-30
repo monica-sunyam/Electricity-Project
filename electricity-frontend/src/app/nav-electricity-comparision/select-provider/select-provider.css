@@ -286,6 +286,7 @@
   align-items: center;
   gap: 6px;
   float: right;
+  cursor: pointer;
 }
 
 .vergleich-bar__provider {
@@ -821,4 +822,243 @@ a {
   flex-direction: column;
   gap: 0px;
   align-items: flex-start;
+}
+
+/* BACKDROP */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* MODAL POSITION */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+}
+
+/* BOX */
+.modal-content {
+  font-family: Arial, sans-serif;
+  padding: 20px 24px;
+  width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #f7f7f7;
+  border-radius: 10px;
+  position: relative;
+}
+
+/* TOP DARK BAR */
+.modal-header {
+  background: transparent;
+  height: 50px;
+  position: relative;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  position: absolute;
+  right: 18px;
+  top: 10px;
+  color: black;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* BODY */
+/* TITLE */
+.modal-body h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+/* TEXT */
+.desc {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.desc-small {
+  font-size: 12px;
+  color: #666;
+  margin: 14px 0;
+}
+
+/* FIELD */
+.field {
+  margin-bottom: 12px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+/* SELECT STYLE */
+.fake-select {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/* PRICE ROW */
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* PRICE TEXT */
+.price-label {
+  font-weight: 600;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* space between price and icon */
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* SUB TEXT */
+.sub {
+  font-size: 11px;
+  color: #777;
+}
+
+/* BUTTON */
+.actions {
+  text-align: right;
+  margin-top: 15px;
+}
+
+.submit-btn {
+  background: #0085e0;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* REMOVE extra padding from modal-body */
+.modal-body {
+  padding: 0;
+}
+
+/* ══════════════════════════════════════════════
+   SELECT / DROPDOWN (fixed overlap issue)
+══════════════════════════════════════════════ */
+.input-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #4a4949;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  transition: border-color 0.15s;
+  /* flex: 1; */
+  position: relative;
+  /* display: inline-block; */
+}
+
+.input-field.select-wrap {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+.select-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 18px !important;
+  color: #888;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.styled-select {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  padding: 0 12px 10px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  right: 10px;
+  font-size: 18px !important;
+  color: #888;
+  pointer-events: none;
+}
+
+/* reuse from previous */
+.section {
+  margin-bottom: 12px;
+}
+
+.toggle {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.toggle-btn.active {
+  background: #e6f0fb;
+  border: 1px solid #0085e0;
+}
+.edit-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.tab {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  color: #0085e0;
+  border-bottom: 2px solid #0085e0;
+  font-weight: 600;
 }

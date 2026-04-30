@@ -226,7 +226,7 @@ export class PaymentMethod implements OnInit, OnDestroy {
             this.successMessage = 'Zahlungsart erfolgreich gespeichert.';
             this.router.navigate([this.mainStepRoutes[5]]);
           } else {
-            this.errorMessage = res?.message || 'Speichern fehlgeschlagen.';
+            // this.errorMessage = res?.message || 'Speichern fehlgeschlagen.';
             if (res?.message) {
               this.validationErrors['iban'] = res?.message;
             }

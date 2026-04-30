@@ -6,7 +6,7 @@ import { Observable, shareReplay, map } from 'rxjs';
   providedIn: 'root',
 })
 export class ContentService {
-  private readonly API_URL = 'http://localhost:8080/api/content';
+  private readonly API_URL = 'http://192.168.0.155:8080/api/content';
   private readonly BASE_IMAGE_URL = 'http://192.168.0.155:8080/assets/super-admin/';
 
   private data$: Observable<any>;

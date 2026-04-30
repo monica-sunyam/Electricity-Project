@@ -131,483 +131,604 @@
           </button>
         </div>
       </div>
-
-      <!--══════════ Reminder Section Start (Tab - 3) ══════════-->
-
-      <div class="" *ngIf="activeTab === 3 && currentStep === 1">
-        <div class="login-berich">Wechselerinnerung</div>
-        <br />
-        <div class="attorney-berich-green" style="align-items: start; justify-content: start;padding-left: 20px;">
-          Wechselerinnerung
-        </div>
-
-
-          <div class="section-body">
-            <!-- Neu einziehen toggle -->
-            <div class="toggle-row header">
-             
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-box">
-                <div
-                  class="toggle-opt"
-                  [class.selected]="selection === 'yes'"
-                  (click)="selectOption('yes')"
-                >
-                  <label class="cb-row">
-                    <input
-                      type="checkbox"
-                      name="selectionYes"
-                      [checked]="selection === 'yes'"
-                      (click)="$event.stopPropagation()"
-                    />
-                  </label>
-                  Ja
-                </div>
-                <div
-                  class="toggle-opt"
-                  [class.selected]="selection === 'no'"
-                  (click)="selectOption('no')"
-                >
-                  <label class="cb-row">
-                    <input
-                      type="checkbox"
-                      name="selectionNo"
-                      [checked]="selection === 'no'"
-                      (click)="$event.stopPropagation()"
-                    />
-                  </label>
-                  Nein
-                </div>
-              </div>
-              <div>
-                <span class="info-base info-icon">i</span>
-              </div>
-            </div>
-          </div>
-
-
-          <br>
-         <div class="attorney-berich-green" style="align-items: start; justify-content: start;padding-left: 20px;">
-         Ihre Verträge und Kündigungsfristen - Haushalt 1
-        </div>
-
-        <div class="tab-row">
-
-        
- <div class="contract-card" *ngFor="let contract of contracts">
-
-  <!-- LEFT -->
-  <div class="card-left">
-    <img [src]="contract.logo" class="company-logo" />
-    <div style="padding-bottom: 10px;"><strong>{{contract.title}}</strong></div>
-    <div class="badge">{{ contract.type }}</div>
-
-    <div class="address">
-      <p>Zählernummer: {{ contract.meter }}</p>
-      <p>Adresse: {{ contract.name }}</p>
-      <p>{{ contract.address }}</p>
     </div>
-  </div>
 
-  <!-- MIDDLE -->
-  <div class="card-middle">
-    <p><strong>Vertragsnummer:</strong> {{ contract.contractNumber }}</p>
-    <p><strong>Mindestvertragslaufzeit:</strong> {{ contract.duration }}</p>
-    <p><strong>Vertragsbeginn:</strong> {{ contract.startDate }}</p>
-    <p><strong>Automatische Verlängerung:</strong> {{ contract.renewal }}</p>
-    <p><strong>Arbeitspreis:</strong> {{ contract.price }}</p>
-    <p><strong>Grundpreis:</strong> {{ contract.basePrice }}</p>
-    <p><strong>Abschlag geschätzt pro Monat:</strong> {{ contract.monthly }}</p>
-  </div>
+    <!--══════════ Reminder Section Start (Tab - 3) ══════════-->
 
-  <!-- RIGHT (Buttons Column) -->
-  <div class="card-actions">
-    <button class="cancel-btn">
-      Kündigungsfrist zum {{ contract.cancelDate }}
-    </button>
-
-    <button class="compare-btn">
-      Vertrag neu vergleichen
-    </button>
-  </div>
-
-</div> 
-    </div>
+    <div class="" *ngIf="activeTab === 3 && currentStep === 1">
+      <div class="login-berich">Wechselerinnerung</div>
+      <br />
+      <div
+        class="attorney-berich-green"
+        style="align-items: start; justify-content: start; padding-left: 20px"
+      >
+        Wechselerinnerung
       </div>
 
+      <div class="section-body">
+        <!-- Neu einziehen toggle -->
+        <div class="toggle-row header"></div>
+        <div class="toggle-row">
+          <div class="toggle-box">
+            <div
+              class="toggle-opt"
+              [class.selected]="selection === 'yes'"
+              (click)="selectOption('yes')"
+            >
+              <label class="cb-row">
+                <input
+                  type="checkbox"
+                  name="selectionYes"
+                  [checked]="selection === 'yes'"
+                  (click)="$event.stopPropagation()"
+                />
+              </label>
+              Ja
+            </div>
+            <div
+              class="toggle-opt"
+              [class.selected]="selection === 'no'"
+              (click)="selectOption('no')"
+            >
+              <label class="cb-row">
+                <input
+                  type="checkbox"
+                  name="selectionNo"
+                  [checked]="selection === 'no'"
+                  (click)="$event.stopPropagation()"
+                />
+              </label>
+              Nein
+            </div>
+          </div>
+          <div>
+            <span class="info-base info-circ" style="flex-shrink: 0">i</span>
+          </div>
+        </div>
+      </div>
 
-      <!--══════════ Service Request Section Start (Tab - 4) ══════════-->
-
-      <div class="container-login" *ngIf="activeTab === 4 && currentStep === 1">
-        <div class="attorney-berich">Servicecenter</div>
+      <br />
+      <div style="border-radius: 8px; border: 1px solid #00a651">
+        <div
+          class="attorney-berich-green"
+          style="align-items: start; justify-content: start; padding-left: 20px"
+        >
+          Ihre Verträge und Kündigungsfristen - Haushalt 1
+        </div>
 
         <div class="tab-row">
-          <div class="service-tabs-container">
-            <button
-              class="service-tab"
-              [class.active]="serviceTab === 1"
-              (click)="toggleService(1)"
-            >
-              Neue Anfrage
-            </button>
+          <div class="contract-card" *ngFor="let contract of contracts">
+            <!-- LEFT -->
+            <div class="card-left">
+              <img [src]="contract.logo" class="company-logo" />
+              <div style="padding-bottom: 10px">
+                <strong>{{ contract.title }}</strong>
+              </div>
+              <div class="badge">
+                <img src="{{ contract.icon }}" alt="icon" class="badge-icon" />
+                {{ contract.type }}
+              </div>
 
-            <button
-              class="service-tab"
-              [class.active]="serviceTab === 2"
-              (click)="toggleService(2)"
-            >
-              Offene Anfragen ({{ openCount }})
-            </button>
+              <div class="address">
+                <p><strong>Zählernummer:</strong> {{ contract.meter }}</p>
+                <p><strong>Adresse:</strong> {{ contract.name }}</p>
+                <p>{{ contract.address }}</p>
+              </div>
+            </div>
 
-            <button
-              class="service-tab"
-              [class.active]="serviceTab === 3"
-              (click)="toggleService(3)"
-            >
-              In Bearbeitung ({{ progressCount }})
-            </button>
+            <!-- MIDDLE -->
+            <div class="card-middle">
+              <p>
+                Vertragsnummer: <strong>{{ contract.contractNumber }}</strong>
+              </p>
+              <p>
+                Mindestvertragslaufzeit: <strong>{{ contract.duration }}</strong>
+              </p>
+              <p>
+                Vertragsbeginn: <strong>{{ contract.startDate }}</strong>
+              </p>
+              <p>
+                Automatische Verlängerung: <strong>{{ contract.renewal }}</strong>
+              </p>
+              <p>
+                Arbeitspreis: <strong>{{ contract.price }}</strong>
+              </p>
+              <p>
+                Grundpreis: <strong>{{ contract.basePrice }}</strong>
+              </p>
+              <p>
+                Abschlag geschätzt pro Monat: <strong>{{ contract.monthly }}</strong>
+              </p>
+            </div>
 
-            <button
-              class="service-tab"
-              [class.active]="serviceTab === 4"
-              (click)="toggleService(4)"
-            >
-              Geschlossene Anfragen ({{ closedCount }})
-            </button>
+            <!-- RIGHT (Buttons Column) -->
+            <div class="card-actions">
+              <button class="cancel-btn">Kündigungsfrist zum {{ contract.cancelDate }}</button>
+
+              <button class="compare-btn">Vertrag neu vergleichen</button>
+            </div>
           </div>
-          <!--══════════ New request Section ══════════-->
+        </div>
+      </div>
+    </div>
 
-          <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 1">
-            <div class="form-group">
-              <div class="tab-header">Hilfe zu Ihren Verträgen und allgemeine Anfragen</div>
-              <div class="tab-text">
-                Klicken Sie einen Vertrag an, bei dem wir Sie unterstützen können.
-              </div>
-              <div class="tab-text">
-                Falls sich Ihre Anfrage nicht auf einen speziellen Vertrag bezieht, wählen Sie bitte
-                „Allgemene Anfrage ohne Vertragszuordnung erstellen“ aus.
-              </div>
+    <!--══════════ Service Request Section Start (Tab - 4) ══════════-->
+
+    <div class="customer-profile-box" *ngIf="activeTab === 4 && currentStep === 1">
+      <div class="attorney-berich">Servicecenter</div>
+
+      <div class="tab-row">
+        <div class="service-tabs-container">
+          <button class="service-tab" [class.active]="serviceTab === 1" (click)="toggleService(1)">
+            Neue Anfrage
+          </button>
+
+          <button class="service-tab" [class.active]="serviceTab === 2" (click)="toggleService(2)">
+            Offene Anfragen ({{ openCount }})
+          </button>
+
+          <button class="service-tab" [class.active]="serviceTab === 3" (click)="toggleService(3)">
+            In Bearbeitung ({{ progressCount }})
+          </button>
+
+          <button class="service-tab" [class.active]="serviceTab === 4" (click)="toggleService(4)">
+            Geschlossene Anfragen ({{ closedCount }})
+          </button>
+        </div>
+        <!--══════════ New request Section ══════════-->
+
+        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 1">
+          <div class="form-group">
+            <div class="tab-header">Hilfe zu Ihren Verträgen und allgemeine Anfragen</div>
+            <div class="tab-text">
+              Klicken Sie einen Vertrag an, bei dem wir Sie unterstützen können.
             </div>
-            <br />
-            <div class="scroll-wrapper">
-              <button class="nav service-left" (click)="scrollLeft()">‹</button>
-
-              <div class="service-card-container" #scrollContainer>
-                <!-- Orange Card -->
-                <div
-                  class="service-card add-service-card"
-                  [class.inactive]="selectedIndex !== -1"
-                  (click)="selectOrangeCard()"
-                >
-                  <div class="icon">
-                    <img
-                      [src]="
-                        selectedIndex === -1
-                          ? '/assets/icons/service_white.png'
-                          : '/assets/icons/service_orange.png'
-                      "
-                      class="logo"
-                      alt="logo"
-                    />
-                  </div>
-
-                  <div class="text">
-                    Allgemeine Anfrage ohne<br />
-                    Vertragszuordnung erstellen
-                  </div>
-                </div>
-
-                <!-- Cards -->
-                <div
-                  class="service-card contract-service-card"
-                  *ngFor="let card of cards; let i = index"
-                  (click)="selectCard(i, card.deliveryId)"
-                  [class.active]="selectedIndex === i"
-                >
-                  <!-- Logo -->
-                  <div class="logo-row">
-                    <img [src]="card.logo" class="logo" />
-                  </div>
-
-                  <!-- Title -->
-                  <div class="title-row">
-                    <span class="title">{{ card.title }}</span>
-                    <span class="date">| Auftrag vom {{ card.date }}</span>
-                  </div>
-
-                  <!-- Info -->
-                  <div class="info">
-                    <div class="info-item" *ngFor="let item of card.data">
-                      <!-- ICON -->
-                      <ng-container [ngSwitch]="normalizeIcon(item.icon)">
-                        <span *ngSwitchCase="'meter'" class="material-symbols-outlined icon">
-                          countertops
-                        </span>
-
-                        <span *ngSwitchCase="'home'" class="material-symbols-outlined icon">
-                          home
-                        </span>
-
-                        <span *ngSwitchCase="'current'" class="material-symbols-outlined icon">
-                          bolt
-                        </span>
-
-                        <span *ngSwitchCase="'doc'" class="material-symbols-outlined icon">
-                          description
-                        </span>
-                      </ng-container>
-                      <!-- LABEL -->
-                      <span class="label">{{ item.label }}</span>
-
-                      <!-- VALUE -->
-                      <span class="value">{{ item.value }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <button class="nav right" (click)="scrollRight()">&rsaquo;</button>
+            <div class="tab-text">
+              Falls sich Ihre Anfrage nicht auf einen speziellen Vertrag bezieht, wählen Sie bitte
+              „Allgemene Anfrage ohne Vertragszuordnung erstellen“ aus.
             </div>
-            <br />
-            <div class="tab-header">
-              Teilen Sie uns bitte Ihre Anfrage mit, die Sie an Ihren persönlichen Ansprechpartner
-              stellen möchten
-            </div>
+          </div>
+          <br />
+          <div class="scroll-wrapper">
+            <button class="nav service-left" (click)="scrollLeft()">‹</button>
 
-            <div style="display: flex; flex-direction: column; gap: 18px">
-              <div class="form-group label">
-                <div class="tab-heading">Titel</div>
-              </div>
-
-              <div class="form-group" style="width: 50%">
-                <div class="field-wrap" style="padding: 4px 12px 4px 12px">
-                  <!-- <span class="field-label">Titel</span> -->
-                  <input matInput [(ngModel)]="title" placeholder="Bitte Betreff eingeben" />
-                </div>
-                <div class="field-error-msg" *ngIf="fieldErrors['title']">
-                  {{ fieldErrors['title'] }}
-                </div>
-              </div>
-
-              <div class="form-group label">
-                <div class="tab-heading">Kategorie</div>
-              </div>
-
-              <div #dropdownContainer class="form-group" style="width: 50%">
-                <div class="field-wrap dropdown-wrap" (click)="toggleDropdown($event)">
-                  <!-- Selected value -->
-                  <input
-                    type="text"
-                    [value]="selectedCategory?.serviceName || ''"
-                    placeholder="Bitte wählen..."
-                    readonly
-                  />
-
-                  <!-- Custom Arrow -->
-                  <span class="arrow"></span>
-
-                  <!-- Dropdown -->
-                  <div class="dropdown" *ngIf="showDropdown">
-                    <div
-                      class="dropdown-item"
-                      *ngFor="let item of categories"
-                      (click)="selectCategory(item, $event)"
-                    >
-                      {{ item.serviceName }}
-                    </div>
-                  </div>
-                </div>
-                <div class="field-error-msg" *ngIf="fieldErrors['category']">
-                  {{ fieldErrors['category'] }}
-                </div>
-              </div>
-
-              <div class="form-group label">
-                <div class="tab-heading">Ihr Anfragetext</div>
-              </div>
-              <textarea
-                class="textarea"
-                rows="5"
-                [(ngModel)]="inquiryText"
-                placeholder="Wie können wir Ihnen weiterhelfen?"
-              ></textarea>
-              <div class="field-error-msg" *ngIf="fieldErrors['inquiryText']">
-                {{ fieldErrors['inquiryText'] }}
-              </div>
-
+            <div class="service-card-container" #scrollContainer>
+              <!-- Orange Card -->
               <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: flex-end;
-                  margin-top: 10px;
-                "
+                class="service-card add-service-card"
+                [class.inactive]="selectedIndex !== -1"
+                (click)="selectOrangeCard()"
               >
-                <!-- <button class="btn-primary" (click)="submitRequest()">
+                <div class="icon">
+                  <img
+                    [src]="
+                      selectedIndex === -1
+                        ? '/assets/icons/service_white.png'
+                        : '/assets/icons/service_orange.png'
+                    "
+                    class="logo"
+                    alt="logo"
+                  />
+                </div>
+
+                <div class="text">
+                  Allgemeine Anfrage ohne<br />
+                  Vertragszuordnung erstellen
+                </div>
+              </div>
+
+              <!-- Cards -->
+              <div
+                class="service-card contract-service-card"
+                *ngFor="let card of cards; let i = index"
+                (click)="selectCard(i, card.deliveryId)"
+                [class.active]="selectedIndex === i"
+              >
+                <!-- Logo -->
+                <div class="logo-row">
+                  <img [src]="card.logo" class="logo" />
+                </div>
+
+                <!-- Title -->
+                <div class="title-row">
+                  <span class="title">{{ card.title }}</span>
+                  <span class="date">| Auftrag vom {{ card.date }}</span>
+                </div>
+
+                <!-- Info -->
+                <div class="info">
+                  <div class="info-item" *ngFor="let item of card.data">
+                    <!-- ICON -->
+                    <ng-container [ngSwitch]="normalizeIcon(item.icon)">
+                      <span *ngSwitchCase="'meter'" class="material-symbols-outlined icon">
+                        countertops
+                      </span>
+
+                      <span *ngSwitchCase="'home'" class="material-symbols-outlined icon">
+                        home
+                      </span>
+
+                      <span *ngSwitchCase="'current'" class="material-symbols-outlined icon">
+                        bolt
+                      </span>
+
+                      <span *ngSwitchCase="'doc'" class="material-symbols-outlined icon">
+                        description
+                      </span>
+                    </ng-container>
+                    <!-- LABEL -->
+                    <span class="label">{{ item.label }}</span>
+
+                    <!-- VALUE -->
+                    <span class="value">{{ item.value }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="nav right" (click)="scrollRight()">&rsaquo;</button>
+          </div>
+          <br />
+          <div class="tab-header">
+            Teilen Sie uns bitte Ihre Anfrage mit, die Sie an Ihren persönlichen Ansprechpartner
+            stellen möchten
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 18px">
+            <div class="form-group label">
+              <div class="tab-heading">Titel</div>
+            </div>
+
+            <div class="form-group" style="width: 50%">
+              <div class="field-wrap" style="padding: 4px 12px 4px 12px">
+                <!-- <span class="field-label">Titel</span> -->
+                <input matInput [(ngModel)]="title" placeholder="Bitte Betreff eingeben" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['title']">
+                {{ fieldErrors['title'] }}
+              </div>
+            </div>
+
+            <div class="form-group label">
+              <div class="tab-heading">Kategorie</div>
+            </div>
+
+            <div #dropdownContainer class="form-group" style="width: 50%">
+              <div class="field-wrap dropdown-wrap" (click)="toggleDropdown($event)">
+                <!-- Selected value -->
+                <input
+                  type="text"
+                  [value]="selectedCategory?.serviceName || ''"
+                  placeholder="Bitte wählen..."
+                  readonly
+                />
+
+                <!-- Custom Arrow -->
+                <span class="arrow"></span>
+
+                <!-- Dropdown -->
+                <div class="dropdown" *ngIf="showDropdown">
+                  <div
+                    class="dropdown-item"
+                    *ngFor="let item of categories"
+                    (click)="selectCategory(item, $event)"
+                  >
+                    {{ item.serviceName }}
+                  </div>
+                </div>
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['category']">
+                {{ fieldErrors['category'] }}
+              </div>
+            </div>
+
+            <div class="form-group label">
+              <div class="tab-heading">Ihr Anfragetext</div>
+            </div>
+            <textarea
+              class="textarea"
+              rows="5"
+              [(ngModel)]="inquiryText"
+              placeholder="Wie können wir Ihnen weiterhelfen?"
+            ></textarea>
+            <div class="field-error-msg" *ngIf="fieldErrors['inquiryText']">
+              {{ fieldErrors['inquiryText'] }}
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                margin-top: 10px;
+              "
+            >
+              <!-- <button class="btn-primary" (click)="submitRequest()">
                   <span class="spinner"></span>
                   Anfrage abschicken
                 </button> -->
 
+              <button
+                type="button"
+                class="btn-primary"
+                [disabled]="isLoadingNewReq"
+                (click)="submitRequest()"
+              >
+                <span *ngIf="isLoadingNewReq; else normal">
+                  <span class="spinner"></span> Einreichen...
+                </span>
+
+                <ng-template #normal>
+                  <span> Anfrage abschicken</span>
+                </ng-template>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!--══════════ Open requests Section ══════════-->
+
+        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 2">
+          <div *ngIf="showList">
+            <div class="form-group">
+              <div class="tab-header">Ihre Anfrage wurde erfolgreich abgesendet!</div>
+              <div class="tab-text">
+                In der Übersicht können Sie Ihre Anfragen einsehen und verwalten
+              </div>
+            </div>
+            <div class="request-list no-padding-child">
+              <!-- Header Row -->
+              <div class="list-header">
+                <div>Status</div>
+                <div>erstellt am</div>
+                <div>Kategorie</div>
+                <div>Betreff</div>
+                <div>Details</div>
+              </div>
+
+              <div *ngIf="(openRequests?.length || 0) > 0; else noOpenReq">
+                <!-- Dynamic Rows -->
+                <div class="list-row" *ngFor="let req of openRequests">
+                  <div class="status">Warten auf Antwort vom Berater</div>
+
+                  <div>{{ formatDate(req.createdOn) }}</div>
+
+                  <div>{{ req.category }}</div>
+
+                  <div>{{ req.title }}</div>
+
+                  <div class="details">
+                    <span class="link" (click)="openDetails(req.serviceRequestId)"> anzeigen </span>
+
+                    <span
+                      class="material-symbols-outlined edit-icon"
+                      (click)="openDetails(req.serviceRequestId)"
+                    >
+                      edit_square
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty state -->
+              <ng-template #noOpenReq>
+                <div class="empty-state">Keine offenen Anfragen vorhanden</div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <!--══════════ In Progress Section ══════════-->
+        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 3">
+          <div *ngIf="showList">
+            <div class="form-group">
+              <div class="tab-header">
+                In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
+              </div>
+              <div class="tab-text">
+                Klicken Sie einfach die Anfrage an, die Sie einsehen möchten
+              </div>
+            </div>
+            <div class="request-list no-padding-child">
+              <!-- Header Row -->
+              <div class="list-header">
+                <div>Status</div>
+                <div>erstellt am</div>
+                <div>Kategorie</div>
+                <div>Betreff</div>
+                <div>Details</div>
+              </div>
+
+              <div *ngIf="(inProgressRequests?.length || 0) > 0; else noProgress">
+                <!-- Data Row -->
+                <div class="list-row" *ngFor="let req of inProgressRequests">
+                  <div class="status">Wird vom Berater bearbeitet</div>
+
+                  <div>{{ formatDate(req.createdOn) }}</div>
+
+                  <div>{{ req.category }}</div>
+
+                  <div>{{ req.title }}</div>
+
+                  <div class="details">
+                    <span class="link" (click)="openDetails(req.serviceRequestId)"> anzeigen </span>
+
+                    <span
+                      class="material-symbols-outlined edit-icon"
+                      (click)="openDetails(req.serviceRequestId)"
+                    >
+                      edit_square
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <!-- Empty state -->
+              <ng-template #noProgress>
+                <div class="empty-state">Keine Anfragen in Bearbeitung vorhanden</div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <!--══════════  Chat message Section ══════════ -->
+
+        <div *ngIf="showDetails" class="details-page">
+          <!-- Header (Open / Closed) -->
+          <ng-container *ngIf="!isClosed; else closedHeader">
+            <div class="form-group">
+              <div class="tab-header">Hilfe zu Ihren Offenen Anfragen</div>
+              <div class="tab-text">
+                Hier finden Sie eine offene Anfrage, die Sie ergänzen können.
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #closedHeader>
+            <div class="form-group">
+              <div class="tab-header">
+                In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
+              </div>
+              <div class="tab-text">
+                Sie können diese Nachrichten durch Anklicken auf „Anfrage wieder eröffnen“
+                bearbeiten.
+              </div>
+            </div>
+
+            <br />
+
+            <div class="attorney-berich no-padding-child">Ihr Nachrichtenverlauf im Überblick:</div>
+          </ng-template>
+
+          <div class="chat-history">
+            <div class="chat-meta" *ngIf="isClosed">
+              <div>
+                <strong>Datum:</strong>
+                {{ createdOn ? formatDateOnly(createdOn) : '' }}
+                -
+                {{ requestClosedOn ? formatDateOnly(requestClosedOn) : '' }}
+              </div>
+              <div><strong>Kategorie:</strong> {{ chatCategory }}</div>
+              <div><strong>Titel:</strong> {{ chatTitle }}</div>
+            </div>
+
+            <!-- Messages (COMMON) -->
+            <div class="message-container">
+              <div
+                class="message-card"
+                *ngFor="let msg of messages"
+                [ngClass]="msg.type === 'customer' ? 'right' : 'left'"
+              >
+                <div class="message-title">
+                  {{ msg.title }}
+                </div>
+                <div class="message-body" [innerHTML]="msg.message"></div>
+              </div>
+            </div>
+
+            <!-- Open state: input -->
+            <ng-container *ngIf="!isClosed">
+              <div class="new-message-section">
+                <div class="new-message-title">Neue Nachricht hinzufügen</div>
+
+                <textarea
+                  class="new-message-input"
+                  [(ngModel)]="newMessage"
+                  placeholder="Ihre Nachricht eingeben..."
+                ></textarea>
+              </div>
+
+              <div class="action-row">
                 <button
-                  type="button"
                   class="btn-primary"
-                  [disabled]="isLoadingNewReq"
-                  (click)="submitRequest()"
+                  (click)="sendMessage(currentServiceRequestId)"
+                  [disabled]="isLoadingNewMsg"
                 >
-                  <span *ngIf="isLoadingNewReq; else normal">
-                    <span class="spinner"></span> Einreichen...
-                  </span>
-
-                  <ng-template #normal>
-                    <span> Anfrage abschicken</span>
-                  </ng-template>
+                  <span *ngIf="isLoadingNewMsg" class="spinner"></span>
+                  Nachricht abschicken
                 </button>
-              </div>
-            </div>
-          </div>
-
-          <!--══════════ Open requests Section ══════════-->
-
-          <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 2">
-            <div *ngIf="showList">
-              <div class="form-group">
-                <div class="tab-header">Ihre Anfrage wurde erfolgreich abgesendet!</div>
-                <div class="tab-text">
-                  In der Übersicht können Sie Ihre Anfragen einsehen und verwalten
-                </div>
-              </div>
-              <div class="request-list no-padding-child">
-                <!-- Header Row -->
-                <div class="list-header">
-                  <div>Status</div>
-                  <div>erstellt am</div>
-                  <div>Kategorie</div>
-                  <div>Betreff</div>
-                  <div>Details</div>
-                </div>
-
-                <div *ngIf="(openRequests?.length || 0) > 0; else noOpenReq">
-                  <!-- Dynamic Rows -->
-                  <div class="list-row" *ngFor="let req of openRequests">
-                    <div class="status">Warten auf Antwort vom Berater</div>
-
-                    <div>{{ formatDate(req.createdOn) }}</div>
-
-                    <div>{{ req.category }}</div>
-
-                    <div>{{ req.title }}</div>
-
-                    <div class="details">
-                      <span class="link" (click)="openDetails(req.serviceRequestId)">
-                        anzeigen
-                      </span>
-
-                      <span
-                        class="material-symbols-outlined edit-icon"
-                        (click)="openDetails(req.serviceRequestId)"
-                      >
-                        edit_square
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Empty state -->
-                <ng-template #noOpenReq>
-                  <div class="empty-state">Keine offenen Anfragen vorhanden</div>
-                </ng-template>
-              </div>
-            </div>
-          </div>
-
-          <!--══════════ In Progress Section ══════════-->
-          <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 3">
-            <div *ngIf="showList">
-              <div class="form-group">
-                <div class="tab-header">
-                  In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
-                </div>
-                <div class="tab-text">
-                  Klicken Sie einfach die Anfrage an, die Sie einsehen möchten
-                </div>
-              </div>
-              <div class="request-list no-padding-child">
-                <!-- Header Row -->
-                <div class="list-header">
-                  <div>Status</div>
-                  <div>erstellt am</div>
-                  <div>Kategorie</div>
-                  <div>Betreff</div>
-                  <div>Details</div>
-                </div>
-
-                <div *ngIf="(inProgressRequests?.length || 0) > 0; else noProgress">
-                  <!-- Data Row -->
-                  <div class="list-row" *ngFor="let req of inProgressRequests">
-                    <div class="status">Wird vom Berater bearbeitet</div>
-
-                    <div>{{ formatDate(req.createdOn) }}</div>
-
-                    <div>{{ req.category }}</div>
-
-                    <div>{{ req.title }}</div>
-
-                    <div class="details">
-                      <span class="link" (click)="openDetails(req.serviceRequestId)">
-                        anzeigen
-                      </span>
-
-                      <span
-                        class="material-symbols-outlined edit-icon"
-                        (click)="openDetails(req.serviceRequestId)"
-                      >
-                        edit_square
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Empty state -->
-                <ng-template #noProgress>
-                  <div class="empty-state">Keine Anfragen in Bearbeitung vorhanden</div>
-                </ng-template>
-              </div>
-            </div>
-          </div>
-
-          <!--══════════  Chat message Section ══════════ -->
-
-          <div *ngIf="showDetails" class="details-page">
-            <!-- Header (Open / Closed) -->
-            <ng-container *ngIf="!isClosed; else closedHeader">
-              <div class="form-group">
-                <div class="tab-header">Hilfe zu Ihren Offenen Anfragen</div>
-                <div class="tab-text">
-                  Hier finden Sie eine offene Anfrage, die Sie ergänzen können.
-                </div>
               </div>
             </ng-container>
 
-            <ng-template #closedHeader>
-              <div class="form-group">
-                <div class="tab-header">
-                  In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
-                </div>
-                <div class="tab-text">
-                  Sie können diese Nachrichten durch Anklicken auf „Anfrage wieder eröffnen“
-                  bearbeiten.
-                </div>
+            <!-- Closed state: reopen button -->
+            <ng-container *ngIf="isClosed">
+              <div class="action-row">
+                <button class="btn-primary" (click)="confirmation(currentServiceRequestId)">
+                  Anfrage wieder eröffnen
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!--══════════ Closed Requests Section ══════════-->
+        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 4">
+          <!--══════ List Section ══════-->
+          <div *ngIf="showList">
+            <div class="form-group">
+              <div class="tab-header">
+                In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
+              </div>
+              <div class="tab-text">
+                Klicken Sie einfach die Nachricht an, die Sie wieder eröffnen wollen, diese wird
+                dann in „Offene Anfragen“ angezeigt.
+              </div>
+            </div>
+            <div class="request-list no-padding-child">
+              <!-- Header Row -->
+              <div class="list-header">
+                <div>Status</div>
+                <div>erstellt am</div>
+                <div>Kategorie</div>
+                <div>Betreff</div>
+                <div>Details</div>
               </div>
 
-              <br />
+              <div *ngIf="(closedRequests?.length || 0) > 0; else noClosed">
+                <!-- Data Row -->
+                <div class="list-row" *ngFor="let req of closedRequests">
+                  <div class="status">Abgeschlossen</div>
 
-              <div class="attorney-berich no-padding-child">
-                Ihr Nachrichtenverlauf im Überblick:
+                  <div>{{ formatDate(req.createdOn) }}</div>
+
+                  <div>{{ req.category }}</div>
+
+                  <div>{{ req.title }}</div>
+
+                  <div class="details">
+                    <span class="link" (click)="openDetails(req.serviceRequestId)"> anzeigen </span>
+
+                    <span
+                      class="material-symbols-outlined edit-icon"
+                      (click)="openDetails(req.serviceRequestId)"
+                    >
+                      edit_square
+                    </span>
+                  </div>
+                </div>
               </div>
-            </ng-template>
+              <!-- Empty state -->
+              <ng-template #noClosed>
+                <div class="empty-state">Es sind keine abgeschlossenen Anfragen vorhanden</div>
+              </ng-template>
+            </div>
+          </div>
 
+          <!--══════ Confirmation Section ══════-->
+          <div *ngIf="confirmationList" class="details-page">
+            <div class="form-group">
+              <div class="tab-header">
+                Sie können Ihre Anfragen nach Angabe Ihres Grundes wieder eröffnen.
+              </div>
+              <div class="tab-text">
+                Sie können diese Nachrichten durch anklicken auf „Nachricht abschicken und
+                Serviceanfrage wieder eröffnen“ bearbeiten
+              </div>
+            </div>
+            <br />
+            <div class="attorney-berich no-padding-child">Ihr Nachrichtenverlauf im Überblick:</div>
             <div class="chat-history">
-              <div class="chat-meta" *ngIf="isClosed">
+              <!-- Meta Info -->
+              <div style="padding: 10px 0px">
                 <div>
                   <strong>Datum:</strong>
                   {{ createdOn ? formatDateOnly(createdOn) : '' }}
@@ -617,1210 +738,1065 @@
                 <div><strong>Kategorie:</strong> {{ chatCategory }}</div>
                 <div><strong>Titel:</strong> {{ chatTitle }}</div>
               </div>
-
-              <!-- Messages (COMMON) -->
-              <div class="message-container">
-                <div
-                  class="message-card"
-                  *ngFor="let msg of messages"
-                  [ngClass]="msg.type === 'customer' ? 'right' : 'left'"
-                >
-                  <div class="message-title">
-                    {{ msg.title }}
-                  </div>
-                  <div class="message-body" [innerHTML]="msg.message"></div>
-                </div>
+              <div class="history-confirmation">
+                <strong> Wollen Sie die Serviceanfrage wirklich wieder eröffnen? </strong>
               </div>
-
-              <!-- Open state: input -->
-              <ng-container *ngIf="!isClosed">
-                <div class="new-message-section">
-                  <div class="new-message-title">Neue Nachricht hinzufügen</div>
-
-                  <textarea
-                    class="new-message-input"
-                    [(ngModel)]="newMessage"
-                    placeholder="Ihre Nachricht eingeben..."
-                  ></textarea>
-                </div>
-
-                <div class="action-row">
-                  <button
-                    class="btn-primary"
-                    (click)="sendMessage(currentServiceRequestId)"
-                    [disabled]="isLoadingNewMsg"
-                  >
-                    <span *ngIf="isLoadingNewMsg" class="spinner"></span>
-                    Nachricht abschicken
-                  </button>
-                </div>
-              </ng-container>
-
-              <!-- Closed state: reopen button -->
-              <ng-container *ngIf="isClosed">
-                <div class="action-row">
-                  <button class="btn-primary" (click)="confirmation(currentServiceRequestId)">
-                    Anfrage wieder eröffnen
-                  </button>
-                </div>
-              </ng-container>
-            </div>
-          </div>
-
-          <!--══════════ Closed Requests Section ══════════-->
-          <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 4">
-            <!--══════ List Section ══════-->
-            <div *ngIf="showList">
-              <div class="form-group">
-                <div class="tab-header">
-                  In der Übersicht können Sie Ihre Anfragen einsehen und verwalten.
-                </div>
-                <div class="tab-text">
-                  Klicken Sie einfach die Nachricht an, die Sie wieder eröffnen wollen, diese wird
-                  dann in „Offene Anfragen“ angezeigt.
-                </div>
+              <div class="history-confirmation">
+                <strong>
+                  Oder wollen sie stattdessen eine neue Anfrage zu einem anderen Thema stellen?
+                </strong>
               </div>
-              <div class="request-list no-padding-child">
-                <!-- Header Row -->
-                <div class="list-header">
-                  <div>Status</div>
-                  <div>erstellt am</div>
-                  <div>Kategorie</div>
-                  <div>Betreff</div>
-                  <div>Details</div>
-                </div>
-
-                <div *ngIf="(closedRequests?.length || 0) > 0; else noClosed">
-                  <!-- Data Row -->
-                  <div class="list-row" *ngFor="let req of closedRequests">
-                    <div class="status">Abgeschlossen</div>
-
-                    <div>{{ formatDate(req.createdOn) }}</div>
-
-                    <div>{{ req.category }}</div>
-
-                    <div>{{ req.title }}</div>
-
-                    <div class="details">
-                      <span class="link" (click)="openDetails(req.serviceRequestId)">
-                        anzeigen
-                      </span>
-
-                      <span
-                        class="material-symbols-outlined edit-icon"
-                        (click)="openDetails(req.serviceRequestId)"
-                      >
-                        edit_square
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Empty state -->
-                <ng-template #noClosed>
-                  <div class="empty-state">Es sind keine abgeschlossenen Anfragen vorhanden</div>
-                </ng-template>
-              </div>
-            </div>
-
-            <!--══════ Confirmation Section ══════-->
-            <div *ngIf="confirmationList" class="details-page">
-              <div class="form-group">
-                <div class="tab-header">
-                  Sie können Ihre Anfragen nach Angabe Ihres Grundes wieder eröffnen.
-                </div>
-                <div class="tab-text">
-                  Sie können diese Nachrichten durch anklicken auf „Nachricht abschicken und
-                  Serviceanfrage wieder eröffnen“ bearbeiten
-                </div>
+              <div class="history-confirmation">
+                <strong>
+                  Dann klicken Sie bitte unten auf den Button „Neue Anfrage stellen“.
+                </strong>
               </div>
               <br />
-              <div class="attorney-berich no-padding-child">
-                Ihr Nachrichtenverlauf im Überblick:
-              </div>
-              <div class="chat-history">
-                <!-- Meta Info -->
-                <div style="padding: 10px 0px">
-                  <div>
-                    <strong>Datum:</strong>
-                    {{ createdOn ? formatDateOnly(createdOn) : '' }}
-                    -
-                    {{ requestClosedOn ? formatDateOnly(requestClosedOn) : '' }}
+              <p>
+                <strong>
+                  Falls Sie die Serviceanfrage wieder eröffnen möchten, geben Sie uns bitte den
+                  Grund an:
+                </strong>
+              </p>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom: 10px">
+                  <div class="field-wrap">
+                    <span class="field-label">
+                      Bitte Grund angeben, z.B. neue Informationen zufügen
+                    </span>
+                    <input type="text" [(ngModel)]="reopenReason" />
                   </div>
-                  <div><strong>Kategorie:</strong> {{ chatCategory }}</div>
-                  <div><strong>Titel:</strong> {{ chatTitle }}</div>
-                </div>
-                <div class="history-confirmation">
-                  <strong> Wollen Sie die Serviceanfrage wirklich wieder eröffnen? </strong>
-                </div>
-                <div class="history-confirmation">
-                  <strong>
-                    Oder wollen sie stattdessen eine neue Anfrage zu einem anderen Thema stellen?
-                  </strong>
-                </div>
-                <div class="history-confirmation">
-                  <strong>
-                    Dann klicken Sie bitte unten auf den Button „Neue Anfrage stellen“.
-                  </strong>
-                </div>
-                <br />
-                <p>
-                  <strong>
-                    Falls Sie die Serviceanfrage wieder eröffnen möchten, geben Sie uns bitte den
-                    Grund an:
-                  </strong>
-                </p>
-                <div class="form-row">
-                  <div class="form-group" style="margin-bottom: 10px">
-                    <div class="field-wrap">
-                      <span class="field-label">
-                        Bitte Grund angeben, z.B. neue Informationen zufügen
-                      </span>
-                      <input type="text" [(ngModel)]="reopenReason" />
-                    </div>
-                    <div class="field-error-msg" *ngIf="fieldErrors['reopenReason']">
-                      {{ fieldErrors['reopenReason'] }}
-                    </div>
+                  <div class="field-error-msg" *ngIf="fieldErrors['reopenReason']">
+                    {{ fieldErrors['reopenReason'] }}
                   </div>
                 </div>
               </div>
-              <!-- Action Button -->
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: flex-end;
-                  margin-top: 10px;
-                  gap: 20px;
-                "
+            </div>
+            <!-- Action Button -->
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                margin-top: 10px;
+                gap: 20px;
+              "
+            >
+              <button
+                type="button"
+                class="btn-primary"
+                [disabled]="isLoadingReopen"
+                (click)="reOpenservice(currentServiceRequestId)"
               >
-                <button
-                  type="button"
-                  class="btn-primary"
-                  [disabled]="isLoadingReopen"
-                  (click)="reOpenservice(currentServiceRequestId)"
-                >
-                  <span *ngIf="isLoadingReopen; else normal">
-                    <span class="spinner"></span> Einreichen...
-                  </span>
+                <span *ngIf="isLoadingReopen; else normal">
+                  <span class="spinner"></span> Einreichen...
+                </span>
 
-                  <ng-template #normal>
-                    <span> Nachricht abschicken und Serviceanfrage wieder eröffnen</span>
-                  </ng-template>
-                </button>
+                <ng-template #normal>
+                  <span> Nachricht abschicken und Serviceanfrage wieder eröffnen</span>
+                </ng-template>
+              </button>
 
-                <button class="btn-primary" style="margin-left: inherit" (click)="toggleService(1)">
-                  <span class="spinner"></span>
-                  Neue Anfrage stellen
-                </button>
-              </div>
+              <button class="btn-primary" style="margin-left: inherit" (click)="toggleService(1)">
+                <span class="spinner"></span>
+                Neue Anfrage stellen
+              </button>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!--══════════ Service Request Section End ══════════-->
+    <!--══════════ Service Request Section End ══════════-->
 
-      <!--══════════ Power of Attorney Section Start (Tab - 5) ══════════-->
+    <!--══════════ Power of Attorney Section Start (Tab - 5) ══════════-->
 
-      <div class="container-login" *ngIf="activeTab === 5 && currentStep === 1">
-        <div class="attorney-berich">
-          {{
-            customerType === 'BUSINESS'
-              ? 'Beratervollmacht für Geschäftskunden'
-              : 'Beratervollmacht für Privatkunden'
-          }}
-        </div>
-
-        <div class="tab-row">
-          <div
-            class="success-box"
-            *ngIf="activeTab === 5 && approvalStatus === 'PENDING' && recordIsPresent"
-          >
-            <div class="success-content">
-              <div class="success-row">
-                <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
-
-                <div class="text-block">
-                  <div class="tab-header">Beratervollmacht erfolgreich erstellt!</div>
-                  <div class="tab-text">Erstellt am {{ attorneyCreatedOn }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="tab-header">Beratervollmacht</div>
-            <div class="tab-text">
-              Wir benötigen eine Beratervollmacht für Ihre Energieverträge, damit Sie einige unserer
-              Funktionen nutzen können und wir unseren Rundum-Service anbieten dürfen. Sie
-              ermöglichen uns damit u.a. Zählerstand melden, Rechnung anfordern, Umzug melden,
-              Kündigungsservice, Abschlag ändern, Zähleraustausch melden, Nachricht an
-              Energielieferanten senden, Rechnungen anfordern, uvm.
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="tab-header">E-Mail</div>
-            <div class="tab-text">
-              Nach anklicken des Buttons „Beratervollmacht erteilen“ erhalten Sie eine E-Mail mit
-              dem weiteren Vorgehen.
-            </div>
-          </div>
-
-          <div
-            style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
-          >
-            <button class="btn-primary" (click)="nextStep(2)">
-              <span class="spinner"></span>
-              {{
-                customerType === 'BUSINESS'
-                  ? 'Erteilung einer Vollmacht für Geschäftskunden'
-                  : 'Beratervollmacht für Privatkunden erteilen'
-              }}
-            </button>
-          </div>
-        </div>
+    <div class="customer-profile-box" *ngIf="activeTab === 5 && currentStep === 1">
+      <div class="attorney-berich">
+        {{
+          customerType === 'BUSINESS'
+            ? 'Beratervollmacht für Geschäftskunden'
+            : 'Beratervollmacht für Privatkunden'
+        }}
       </div>
 
-      <div class="container-login" *ngIf="activeTab === 5 && currentStep === 2">
-        <div class="attorney-berich">
-          {{
-            customerType === 'BUSINESS'
-              ? 'Beratervollmacht für Geschäftskunden'
-              : 'Beratervollmacht für Privatkunden'
-          }}
+      <div class="tab-row">
+        <div
+          class="success-box"
+          *ngIf="activeTab === 5 && approvalStatus === 'PENDING' && recordIsPresent"
+        >
+          <div class="success-content">
+            <div class="success-row">
+              <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
+
+              <div class="text-block">
+                <div class="tab-header">Beratervollmacht erfolgreich erstellt!</div>
+                <div class="tab-text">Erstellt am {{ attorneyCreatedOn }}</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="tab-row">
-          <div class="hint-box">
-            <div class="hint-content">
-              <div class="hint-title-row">
-                <img src="assets/icons/lamp.png" alt="hint" />
-                <div class="text-block">
-                  <p class="hint-title">Hinweis: Unterzeichnen am Smartphone / Tablet oder PC</p>
-
-                  <p>
-                    Wenn Sie die Beratervollmacht an Ihrem Smartphone / Tablet unterzeichnen wollen,
-                    scannen Sie bitte dafür den nebenstehenden QR-Code mit Ihrem Smartphone /
-                    Tablet, Sie werden dann zur digitalen Unterschriftsseite weitergeleitet
-                  </p>
-
-                  <p>
-                    Falls Sie lieber am PC oder Laptop unterzeichnen wollen, müssen Sie im unten
-                    angezeigten Feld die linke Maustaste gedrückt halten und mit der Maus
-                    unterschreiben.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-<div class="qr-section" *ngIf="isBrowser">
-  <qrcode
-    [qrdata]="'https://www.google.com'"
-    [width]="120">
-  </qrcode>
-</div>
+        <div class="form-group">
+          <div class="tab-header">Beratervollmacht</div>
+          <div class="tab-text">
+            Wir benötigen eine Beratervollmacht für Ihre Energieverträge, damit Sie einige unserer
+            Funktionen nutzen können und wir unseren Rundum-Service anbieten dürfen. Sie ermöglichen
+            uns damit u.a. Zählerstand melden, Rechnung anfordern, Umzug melden, Kündigungsservice,
+            Abschlag ändern, Zähleraustausch melden, Nachricht an Energielieferanten senden,
+            Rechnungen anfordern, uvm.
           </div>
+        </div>
 
-          <div class="form-group">
-            <div class="tab-header">
-              {{
-                customerType === 'BUSINESS'
-                  ? 'Vollmacht für Geschäftskunden'
-                  : 'Vollmacht für Privatkunden'
-              }}
-            </div>
-            <div class="tab-text">Hiermit bevollmächtigt</div>
+        <div class="form-group">
+          <div class="tab-header">E-Mail</div>
+          <div class="tab-text">
+            Nach anklicken des Buttons „Beratervollmacht erteilen“ erhalten Sie eine E-Mail mit dem
+            weiteren Vorgehen.
           </div>
-          <div class="container-readonly">
-            <div class="form-row">
-              <div class="form-group" *ngIf="customerType === 'BUSINESS'">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Firma</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.companyName"
-                    placeholder="Muelli Industries"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Anrede</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.salutation"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Titel</span>
-                  <input type="text" class="text-field" [(ngModel)]="customerData.title" readonly />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-            </div>
+        </div>
 
-            <div class="form-row" *ngIf="customerType === 'BUSINESS'">
-              <div class="form-group">
-                <div class="field-wrap">
-                  <span class="field-label">Vorname des gesetzlichen Vertreters</span>
-                  <input type="text" [(ngModel)]="legalFirstName" />
-                </div>
-                <div class="field-error-msg" *ngIf="fieldErrors['legalFirstName']">
-                  {{ fieldErrors['legalFirstName'] }}
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="field-wrap">
-                  <span class="field-label">Nachname des gesetzlichen Vertreters</span>
-                  <input type="text" [(ngModel)]="legalLastName" />
-                </div>
-                <div class="field-error-msg" *ngIf="fieldErrors['legalLastName']">
-                  {{ fieldErrors['legalLastName'] }}
-                </div>
-              </div>
-            </div>
+        <div
+          style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
+        >
+          <button class="btn-primary" (click)="nextStep(2)">
+            <span class="spinner"></span>
+            {{
+              customerType === 'BUSINESS'
+                ? 'Erteilung einer Vollmacht für Geschäftskunden'
+                : 'Beratervollmacht für Privatkunden erteilen'
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Vorname</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.firstName"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Nachname</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.lastName"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-            </div>
+    <div class="customer-profile-box" *ngIf="activeTab === 5 && currentStep === 2">
+      <div class="attorney-berich">
+        {{
+          customerType === 'BUSINESS'
+            ? 'Beratervollmacht für Geschäftskunden'
+            : 'Beratervollmacht für Privatkunden'
+        }}
+      </div>
 
-            <div class="form-row">
-              <div class="form-group" style="flex: 0 0 160px">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Ihre PLZ</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.address.zip"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Ort</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.address.city"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-            </div>
+      <div class="tab-row">
+        <div class="hint-box">
+          <div class="hint-content">
+            <div class="hint-title-row">
+              <img src="assets/icons/lamp.png" alt="hint" />
+              <div class="text-block">
+                <p class="hint-title">Hinweis: Unterzeichnen am Smartphone / Tablet oder PC</p>
 
-            <div class="form-row">
-              <div class="form-group">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Ihre Straße</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.address.street"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-              <div class="form-group" style="flex: 0 0 160px">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Hausnummer</span>
-                  <input
-                    type="text"
-                    class="text-field"
-                    [(ngModel)]="customerData.address.houseNumber"
-                    readonly
-                  />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
-              </div>
-            </div>
+                <p>
+                  Wenn Sie die Beratervollmacht an Ihrem Smartphone / Tablet unterzeichnen wollen,
+                  scannen Sie bitte dafür den nebenstehenden QR-Code mit Ihrem Smartphone / Tablet,
+                  Sie werden dann zur digitalen Unterschriftsseite weitergeleitet
+                </p>
 
-            <div class="form-row" style="align-items: center">
-              <div class="form-group">
-                <div class="field-wrap readonly">
-                  <span class="field-label">Kundennnummer</span>
-                  <input type="text" class="text-field" [(ngModel)]="customerData.phone" readonly />
-                  <span class="field-icon">
-                    <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
-                  </span>
-                </div>
+                <p>
+                  Falls Sie lieber am PC oder Laptop unterzeichnen wollen, müssen Sie im unten
+                  angezeigten Feld die linke Maustaste gedrückt halten und mit der Maus
+                  unterschreiben.
+                </p>
               </div>
-              <span class="info-base info-circ" style="flex-shrink: 0">i</span>
             </div>
           </div>
 
-          <div class="power-section">
-            <p><strong>- nachfolgend Kunde -</strong></p>
+          <div class="qr-section" *ngIf="isBrowser">
+            <qrcode [qrdata]="'https://www.google.com'" [width]="120"> </qrcode>
+          </div>
+        </div>
 
-            <p>
-              die<br />
-              Bavariaphone24 Vertrieb & Service GmbH<br />
-              c/o tarifvergleich-deutschland.de<br />
-              Bahnhofstraße 19<br />
-              87724 Ottobeuren
-            </p>
+        <div class="form-group">
+          <div class="tab-header">
+            {{
+              customerType === 'BUSINESS'
+                ? 'Vollmacht für Geschäftskunden'
+                : 'Vollmacht für Privatkunden'
+            }}
+          </div>
+          <div class="tab-text">Hiermit bevollmächtigt</div>
+        </div>
+        <div class="container-readonly">
+          <div class="form-row">
+            <div class="form-group" *ngIf="customerType === 'BUSINESS'">
+              <div class="field-wrap readonly">
+                <span class="field-label">Firma</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.companyName"
+                  placeholder="Muelli Industries"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-wrap readonly">
+                <span class="field-label">Anrede</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.salutation"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-wrap readonly">
+                <span class="field-label">Titel</span>
+                <input type="text" class="text-field" [(ngModel)]="customerData.title" readonly />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+          </div>
 
-            <p><strong>- nachfolgend „tarifvergleich-deutschland.de“ -</strong></p>
-
-            <p>
-              zur Vertretung in den nachfolgend genannten Angelegenheiten gegenüber Strom- und
-              Gasanbietern, sowie entsprechender Vermittlungsplattformen - nachfolgend
-              zusammengefasst „Gesellschaften“ genannt.
-            </p>
-
-            <p><strong>Diese Vollmacht umfasst insbesondere:</strong></p>
-
-            <ul class="check-list">
-              <li>
-                die uneingeschränkte aktive und passive Vertretung des Kunden gegenüber den
-                jeweiligen Gesellschaften, einschließlich der Abgabe aller die Verträge betreffenden
-                Willenserklärungen, die Kündigung und Änderung bestehender und den Abschluss neuer
-                Verträge sowie die Übernahme bestehender Verträge;
-              </li>
-
-              <li>die Einholung von Auskünften von den Gesellschaften im Namen des Kunden;</li>
-
-              <li>
-                die Entgegennahme der dem Kunden durch das jeweilige Unternehmen vor
-                Vertragserklärung zu übergebenden vertragsbezogenen Unterlagen (insbesondere
-                Allgemeine und Besondere Vertragsbedingungen, Produktinformationsblätter,
-                Verbraucherinformationen sowie gesetzlich vorgeschriebene vorvertraglich bereit zu
-                stellende Unterlagen);
-              </li>
-
-              <li>
-                die Geltendmachung von Ansprüchen aus den von tarifvergleich-deutschland.de
-                vermittelten oder in die Verwaltung durch tarifvergleich-deutschland.de übernommenen
-                Verträgen;
-              </li>
-
-              <li>
-                die Erteilung von Untervollmachten an Subunternehmer der
-                tarifvergleich-deutschland.de und Dritte, die von Berufswegen zur Verschwiegenheit
-                verpflichtet sind oder die datenschutzrechtlich zur Verschwiegenheit verpflichtet
-                wurden;
-              </li>
-
-              <li>
-                die Ermächtigung zur außergerichtlichen und gerichtlichen Geltendmachung der
-                Ansprüche des Kunden gegenüber den Gesellschaften zum jeweiligen Vertrag im Namen
-                des Kunden;
-              </li>
-
-              <li>
-                die Erteilung von SEPA-Lastschriftaufträgen zu Lasten des Kontos des Kunden
-                gegenüber Gesellschaften zur Abbuchung von Entgelten.
-              </li>
-            </ul>
-
-            <p>
-              Beim Abschluss von Verträgen mit Gesellschaften ist die tarifvergleich-deutschland.de
-              von den Beschränkungen des § 181 BGB befreit
-            </p>
-            <p>
-              Der Kunde erklärt sich explizit damit einverstanden, dass die
-              tarifvergleich-deutschland.de die Vollmacht im Rahmen Ihrer Tätigkeit für den Kunden
-              den Gesellschaften und sonstigen Dritten zum Nachweis der Vertretungsberechtigung
-              vorlegen darf.
-            </p>
-
-            <p>
-              Die vorliegend erteilte Vollmacht gilt auf unbestimmte Zeit, jedoch kann der Kunde die
-              Vollmacht unabhängig des bestehenden Rahmensvertrags jederzeit durch Erklärung in
-              Textform gegenüber der tarifvergleich-deutschland.de für die Zukunft widerrufen.
-            </p>
+          <div class="form-row" *ngIf="customerType === 'BUSINESS'">
+            <div class="form-group">
+              <div class="field-wrap">
+                <span class="field-label">Vorname des gesetzlichen Vertreters</span>
+                <input type="text" [(ngModel)]="legalFirstName" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['legalFirstName']">
+                {{ fieldErrors['legalFirstName'] }}
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-wrap">
+                <span class="field-label">Nachname des gesetzlichen Vertreters</span>
+                <input type="text" [(ngModel)]="legalLastName" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['legalLastName']">
+                {{ fieldErrors['legalLastName'] }}
+              </div>
+            </div>
           </div>
 
           <div class="form-row">
-            <!-- Ort, Datum -->
             <div class="form-group">
-              <div class="field-wrap">
-                <span class="field-label">Ort, Datum</span>
-                <input matInput [(ngModel)]="placeAndDate" placeholder="Musterhausen, 30.03.2026" />
-              </div>
-              <div class="field-error-msg" *ngIf="fieldErrors['placeAndDate']">
-                {{ fieldErrors['placeAndDate'] }}
+              <div class="field-wrap readonly">
+                <span class="field-label">Vorname</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.firstName"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
               </div>
             </div>
-
-            <!-- Signature -->
-            <div class="form-group signature-group">
-              <div class="field-wrap signature">
-                <span class="field-label">Unterschrift</span>
-
-                <canvas #canvas class="signature-canvas"></canvas>
-                <button class="clear-btn" (click)="clear()">Clear</button>
-              </div>
-              <div class="field-error-msg" *ngIf="fieldErrors['signature']">
-                {{ fieldErrors['signature'] }}
+            <div class="form-group">
+              <div class="field-wrap readonly">
+                <span class="field-label">Nachname</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.lastName"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
               </div>
             </div>
           </div>
 
-          <div
-            style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
+          <div class="form-row">
+            <div class="form-group" style="flex: 0 0 160px">
+              <div class="field-wrap readonly">
+                <span class="field-label">Ihre PLZ</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.address.zip"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-wrap readonly">
+                <span class="field-label">Ort</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.address.city"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-wrap readonly">
+                <span class="field-label">Ihre Straße</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.address.street"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+            <div class="form-group" style="flex: 0 0 160px">
+              <div class="field-wrap readonly">
+                <span class="field-label">Hausnummer</span>
+                <input
+                  type="text"
+                  class="text-field"
+                  [(ngModel)]="customerData.address.houseNumber"
+                  readonly
+                />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row" style="align-items: center">
+            <div class="form-group">
+              <div class="field-wrap readonly">
+                <span class="field-label">Kundennnummer</span>
+                <input type="text" class="text-field" [(ngModel)]="customerData.phone" readonly />
+                <span class="field-icon">
+                  <img src="assets/icons/Schloss.png" class="icon-schloss" alt="check" />
+                </span>
+              </div>
+            </div>
+            <span class="info-base info-circ" style="flex-shrink: 0">i</span>
+          </div>
+        </div>
+
+        <div class="power-section">
+          <p><strong>- nachfolgend Kunde -</strong></p>
+
+          <p>
+            die<br />
+            Bavariaphone24 Vertrieb & Service GmbH<br />
+            c/o tarifvergleich-deutschland.de<br />
+            Bahnhofstraße 19<br />
+            87724 Ottobeuren
+          </p>
+
+          <p><strong>- nachfolgend „tarifvergleich-deutschland.de“ -</strong></p>
+
+          <p>
+            zur Vertretung in den nachfolgend genannten Angelegenheiten gegenüber Strom- und
+            Gasanbietern, sowie entsprechender Vermittlungsplattformen - nachfolgend zusammengefasst
+            „Gesellschaften“ genannt.
+          </p>
+
+          <p><strong>Diese Vollmacht umfasst insbesondere:</strong></p>
+
+          <ul class="check-list">
+            <li>
+              die uneingeschränkte aktive und passive Vertretung des Kunden gegenüber den jeweiligen
+              Gesellschaften, einschließlich der Abgabe aller die Verträge betreffenden
+              Willenserklärungen, die Kündigung und Änderung bestehender und den Abschluss neuer
+              Verträge sowie die Übernahme bestehender Verträge;
+            </li>
+
+            <li>die Einholung von Auskünften von den Gesellschaften im Namen des Kunden;</li>
+
+            <li>
+              die Entgegennahme der dem Kunden durch das jeweilige Unternehmen vor Vertragserklärung
+              zu übergebenden vertragsbezogenen Unterlagen (insbesondere Allgemeine und Besondere
+              Vertragsbedingungen, Produktinformationsblätter, Verbraucherinformationen sowie
+              gesetzlich vorgeschriebene vorvertraglich bereit zu stellende Unterlagen);
+            </li>
+
+            <li>
+              die Geltendmachung von Ansprüchen aus den von tarifvergleich-deutschland.de
+              vermittelten oder in die Verwaltung durch tarifvergleich-deutschland.de übernommenen
+              Verträgen;
+            </li>
+
+            <li>
+              die Erteilung von Untervollmachten an Subunternehmer der tarifvergleich-deutschland.de
+              und Dritte, die von Berufswegen zur Verschwiegenheit verpflichtet sind oder die
+              datenschutzrechtlich zur Verschwiegenheit verpflichtet wurden;
+            </li>
+
+            <li>
+              die Ermächtigung zur außergerichtlichen und gerichtlichen Geltendmachung der Ansprüche
+              des Kunden gegenüber den Gesellschaften zum jeweiligen Vertrag im Namen des Kunden;
+            </li>
+
+            <li>
+              die Erteilung von SEPA-Lastschriftaufträgen zu Lasten des Kontos des Kunden gegenüber
+              Gesellschaften zur Abbuchung von Entgelten.
+            </li>
+          </ul>
+
+          <p>
+            Beim Abschluss von Verträgen mit Gesellschaften ist die tarifvergleich-deutschland.de
+            von den Beschränkungen des § 181 BGB befreit
+          </p>
+          <p>
+            Der Kunde erklärt sich explizit damit einverstanden, dass die
+            tarifvergleich-deutschland.de die Vollmacht im Rahmen Ihrer Tätigkeit für den Kunden den
+            Gesellschaften und sonstigen Dritten zum Nachweis der Vertretungsberechtigung vorlegen
+            darf.
+          </p>
+
+          <p>
+            Die vorliegend erteilte Vollmacht gilt auf unbestimmte Zeit, jedoch kann der Kunde die
+            Vollmacht unabhängig des bestehenden Rahmensvertrags jederzeit durch Erklärung in
+            Textform gegenüber der tarifvergleich-deutschland.de für die Zukunft widerrufen.
+          </p>
+        </div>
+
+        <div class="form-row">
+          <!-- Ort, Datum -->
+          <div class="form-group">
+            <div class="field-wrap">
+              <span class="field-label">Ort, Datum</span>
+              <input matInput [(ngModel)]="placeAndDate" placeholder="Musterhausen, 30.03.2026" />
+            </div>
+            <div class="field-error-msg" *ngIf="fieldErrors['placeAndDate']">
+              {{ fieldErrors['placeAndDate'] }}
+            </div>
+          </div>
+
+          <!-- Signature -->
+          <div class="form-group signature-group">
+            <div class="field-wrap signature">
+              <span class="field-label">Unterschrift</span>
+
+              <canvas #canvas class="signature-canvas"></canvas>
+              <button class="clear-btn" (click)="clear()">Clear</button>
+            </div>
+            <div class="field-error-msg" *ngIf="fieldErrors['signature']">
+              {{ fieldErrors['signature'] }}
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
+        >
+          <button
+            type="button"
+            class="btn-primary"
+            [disabled]="isLoading"
+            (click)="submitAttorney()"
           >
+            <span *ngIf="isLoading; else normal">
+              <span class="spinner"></span> Einreichen...
+            </span>
+
+            <ng-template #normal>
+              <span> Beratervollmacht für Privatkunden erteilen</span>
+            </ng-template>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="customer-profile-box"
+      *ngIf="
+        activeTab === 5 && currentStep === 3 && approvalStatus === 'PENDING' && recordIsPresent
+      "
+    >
+      <div class="attorney-berich-green">
+        {{
+          customerType === 'BUSINESS'
+            ? 'Beratervollmacht für Geschäftskunden'
+            : 'Beratervollmacht für Privatkunden'
+        }}
+      </div>
+      <div class="tab-row">
+        <div class="success-box">
+          <div class="success-content">
+            <div class="success-row">
+              <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
+
+              <div class="text-block">
+                <div class="tab-header">Beratervollmacht erfolgreich erstellt!</div>
+                <div class="tab-text">Erstellt am {{ attorneyCreatedOn }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="tab-header">Beratervollmacht widerrufen</div>
+          <div class="tab-text">
+            <strong>Hinweis:</strong> Wenn Sie die Beratervollmacht widerrufen, sind viele
+            Funktionen im Kundenbereich nicht mehr nutzbar.
+          </div>
+        </div>
+        <div
+          style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
+        >
+          <button class="btn-primary" (click)="revoke()">
+            <span class="spinner"></span>
+            Beratervollmacht widerrufen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="customer-profile-box"
+      *ngIf="activeTab === 5 && currentStep === 4 && approvalStatus === 'APPROVED'"
+    >
+      <div class="attorney-berich">
+        {{
+          customerType === 'BUSINESS'
+            ? 'Beratervollmacht für Geschäftskunden'
+            : 'Beratervollmacht für Privatkunden'
+        }}
+      </div>
+      <div class="tab-row">
+        <div class="failed-box">
+          <div class="success-content">
+            <div class="success-row">
+              <img src="assets/icons/cross.png" alt="failed" />
+
+              <div class="text-block">
+                <div class="tab-header">Der Link ist abgelaufen oder Sie haben uns bereits</div>
+                <div class="tab-header" style="margin-bottom: 0">
+                  Ihre Beratervollmacht erteilt.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ Power of Attorney End ══════════-->
+
+    <!--══════════ Document archive Section Start (Tab - 6) ══════════-->
+
+    <div class="customer-profile-box" *ngIf="activeTab === 6 && currentStep === 1">
+      <div class="login-berich">Dokumentarchiv - Übersicht</div>
+      <div *ngIf="activeTab === 6 && documentTab === 0">
+        <div class="tab-row">
+          <div class="form-group">
+            <div class="tab-header">
+              In der Übersicht können Sie Ihre Dokumente einsehen und downloaden.
+            </div>
+            <div class="tab-text">Klicken Sie einfach auf den entsprechenden Button.</div>
+          </div>
+          <div class="doc-buttons">
+            <button class="doc-btn" (click)="toggleDocument(1)">Auftragsdokumente</button>
+            <button class="doc-btn" (click)="toggleDocument(2)">Vollmachten</button>
+            <button class="doc-btn" (click)="toggleDocument(3)">Kündigungsbestätigungen</button>
+            <button class="doc-btn" (click)="toggleDocument(4)">Vertragsbestätigungen</button>
+            <button class="doc-btn" (click)="toggleDocument(5)">Sonstiges</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="activeTab === 6 && documentTab === 1">
+        <br />
+        <div class="attorney-berich">Auftragsdokumente zu aktiven Verträgen</div>
+        <div class="tab-row">
+          <div class="document-list">
+            <div class="document-item" *ngFor="let doc of orderDocuments">
+              <!-- BOX (border only here) -->
+              <div class="document-card">
+                <div class="document-top">
+                  <!-- LEFT SIDE -->
+                  <div class="document-left">
+                    <img [src]="doc.logo" class="document-logo" />
+                    <div class="document-title">{{ doc.title }}</div>
+                  </div>
+
+                  <!-- RIGHT SIDE -->
+                  <div class="document-right">
+                    <div class="document-details">
+                      Arbeitspreis: <strong>{{ doc.workPrice }} Ct./kWh</strong><br />
+                      Grundpreis: <strong>{{ doc.basePrice }} €/Monat</strong><br />
+                      Vertragsnummer: <strong>{{ doc.contractNumber }}</strong
+                      ><br />
+                      Abschlag geschätzt pro Monat:
+                      <strong>{{ doc.monthly }} €</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BUTTONS OUTSIDE -->
+              <div class="document-actions">
+                <button class="document-btn">Vertragsdetails ansehen</button>
+                <button class="document-btn" (click)="nextStep(2)">Vertrag downloaden</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="activeTab === 6 && documentTab === 2">
+        <br />
+        <div class="attorney-berich">Meine Vollmachten</div>
+        <div class="tab-row">
+          <div class="document-list">
+            <div class="document-item" *ngFor="let doc of attorneyDocuments">
+              <!-- BOX (border only here) -->
+              <div class="document-card">
+                <div class="document-top">
+                  <!-- LEFT SIDE -->
+                  <div class="document-left">
+                    <div class="document-title">{{ doc.title }}</div>
+                  </div>
+
+                  <!-- RIGHT SIDE -->
+                  <div class="document-right" style="margin-bottom: 20px">
+                    <div class="document-details">
+                      <strong>{{ doc.subtitle }}</strong>
+                      <br />
+                      <div style="padding-top: 10px">{{ doc.createdOn }}</div>
+                      <br />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BUTTONS OUTSIDE -->
+              <div class="document-actions">
+                <button class="document-btn">Vollmacht ansehen</button>
+                <button class="document-btn" (click)="nextStep(2)">Vollmacht downloaden</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="activeTab === 6 && documentTab === 3">
+        <br />
+        <div class="attorney-berich">Meine gekündigten Verträge</div>
+        <div class="tab-row">
+          <div class="document-list">
+            <div class="document-item" *ngFor="let doc of cancelDocuments">
+              <!-- BOX (border only here) -->
+              <div class="document-card">
+                <div class="document-top">
+                  <!-- LEFT SIDE -->
+                  <div class="document-left">
+                    <img [src]="doc.logo" class="document-logo" />
+                    <div class="document-title">{{ doc.title }}</div>
+                  </div>
+
+                  <!-- RIGHT SIDE -->
+                  <div class="document-right">
+                    <div class="document-details">
+                      Vertragsnummer: <strong>{{ doc.contractNumber }}</strong
+                      ><br />
+                      <strong>gekündigt am {{ doc.terminatedOn }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BUTTONS OUTSIDE -->
+              <div class="document-actions">
+                <button class="document-btn">Kündigungssdetails ansehen</button>
+                <button class="document-btn" (click)="nextStep(2)">Kündigung downloaden</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 6 && documentTab === 4">
+        <br />
+        <div class="attorney-berich">Vertragsdokumente zu aktiven Verträgen</div>
+        <div class="tab-row">
+          <div class="document-list">
+            <div class="document-item" *ngFor="let doc of contractDocuments">
+              <!-- BOX (border only here) -->
+              <div class="document-card">
+                <div class="document-top">
+                  <!-- LEFT SIDE -->
+                  <div class="document-left">
+                    <img [src]="doc.logo" class="document-logo" />
+                    <div class="document-title">{{ doc.title }}</div>
+                  </div>
+
+                  <!-- RIGHT SIDE -->
+                  <div class="document-right">
+                    <div class="document-details">
+                      Arbeitspreis: <strong>{{ doc.workPrice }} Ct./kWh</strong><br />
+                      Grundpreis: <strong>{{ doc.basePrice }} €/Monat</strong><br />
+                      Vertragsnummer: <strong>{{ doc.contractNumber }}</strong
+                      ><br />
+                      Abschlag geschätzt pro Monat:
+                      <strong>{{ doc.monthly }} €</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BUTTONS OUTSIDE -->
+              <div class="document-actions">
+                <button class="document-btn">Vertragsdetails ansehen</button>
+                <button class="document-btn" (click)="nextStep(2)">Vertrag downloaden</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 6 && documentTab === 5">
+        <br />
+        <div class="attorney-berich">Sonstige Dokumente</div>
+        <div class="tab-row">
+          <div class="document-list">
+            <div class="document-item" *ngFor="let doc of miscellaneousDocuments">
+              <!-- BOX (border only here) -->
+              <div class="document-card">
+                <div class="document-top" style="justify-content: normal">
+                  <!-- LEFT SIDE -->
+                  <div class="document-left">
+                    <div class="document-title">{{ doc.title }}</div>
+                  </div>
+
+                  <!-- RIGHT SIDE -->
+                  <div class="document-right" style="margin-bottom: 20px">
+                    <div class="document-details">
+                      <br />
+                      <div style="padding-top: 10px">{{ doc.createdOn }}</div>
+                      <br />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BUTTONS OUTSIDE -->
+              <div class="document-actions">
+                <button class="document-btn">{{ doc.viewBtn }}</button>
+                <button class="document-btn" (click)="nextStep(2)">{{ doc.downloadBtn }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="customer-profile-box" *ngIf="activeTab === 6 && currentStep === 2">
+      <div class="attorney-berich-green">Downloadbereich</div>
+      <div class="tab-row">
+        <div class="success-box">
+          <div class="success-content">
+            <div class="success-row">
+              <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
+
+              <div class="text-block">
+                <div class="tab-header">Download erfolgreich!</div>
+                <div class="tab-text">
+                  Wir haben das gewünschte Dokument an Ihre E-Mail-Adresse
+                  {{ customerData.email }} verschickt.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--══════════ Document archive Section End ══════════-->
+
+    <!-- ══════════ Reset Password Start (Tab - 7) ══════════-->
+
+    <div class="customer-profile-box" *ngIf="activeTab === 7 && currentStep === 1">
+      <div class="login-berich">Bitte geben Sie Ihr neues Passwort ein</div>
+      <div class="tab-row">
+        <div class="form-group">
+          <div class="login-text">Altes Passwort eingeben:</div>
+        </div>
+
+        <div class="form-group">
+          <div class="field-wrap">
+            <div>
+              <span class="field-label">Altes Passwort</span>
+              <input
+                #oldPwField
+                name="oldPassword"
+                [(ngModel)]="oldPassword"
+                [type]="showOldPw ? 'text' : 'password'"
+              />
+            </div>
+            <span class="material-symbols-outlined pw-toggle" (click)="showOldPw = !showOldPw">{{
+              showOldPw ? 'visibility' : 'visibility_off'
+            }}</span>
+          </div>
+          <div class="field-error-msg" *ngIf="fieldErrors['oldPassword']">
+            {{ fieldErrors['oldPassword'] }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="login-text">Neues Passwort eingeben:</div>
+        </div>
+
+        <div class="form-group">
+          <div class="field-wrap">
+            <div>
+              <span class="field-label">Passwort</span>
+              <input
+                #pwField
+                name="newPassword"
+                [type]="showPw ? 'text' : 'password'"
+                [value]="newPassword"
+                [(ngModel)]="newPassword"
+                [style.background-color]="passwordMismatch ? '#fff0f0' : 'white'"
+                (input)="
+                  newPassword = $any($event.target).value;
+                  validatePassword($any($event.target).value, repField.value)
+                "
+              />
+            </div>
+            <span class="material-symbols-outlined pw-toggle" (click)="showPw = !showPw">{{
+              showPw ? 'visibility' : 'visibility_off'
+            }}</span>
+          </div>
+          <div class="field-error-msg" *ngIf="fieldErrors['newPassword']">
+            {{ fieldErrors['newPassword'] }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="login-text">Passwort wiederholen:</div>
+        </div>
+
+        <div class="form-group">
+          <div class="field-wrap">
+            <div>
+              <span class="field-label">Passwort wiederholen</span>
+              <input
+                #repField
+                name="confirmPassword"
+                [type]="showRepPw ? 'text' : 'password'"
+                [style.background-color]="passwordMismatch ? '#fff0f0' : 'white'"
+                [(ngModel)]="confirmPassword"
+                (input)="validatePassword(pwField.value, $any($event.target).value)"
+              />
+            </div>
+            <span class="material-symbols-outlined pw-toggle" (click)="showRepPw = !showRepPw">{{
+              showRepPw ? 'visibility' : 'visibility_off'
+            }}</span>
+          </div>
+          <div class="login-text" style="color: #cc0000" *ngIf="passwordMismatch">
+            Die Passwörter stimmen nicht überein
+          </div>
+        </div>
+        <div class="error-msg" *ngIf="apiError">{{ apiError }}</div>
+
+        <div class="password-guidelines">
+          <div class="login-text" style="font-weight: 50; margin-bottom: 6px">
+            Grundsätzliches zu sicheren Passwörtern / Kennwortrichtlinien
+          </div>
+
+          <div class="guideline-row">
+            <span
+              class="guideline-icon"
+              [class.valid]="pw_length"
+              [class.invalid]="!pw_length"
+            ></span>
+            <span class="login-text" [style.color]="pw_length ? 'green' : '#666'">
+              Mindestens 8 und maximal 50 Zeichen
+            </span>
+          </div>
+
+          <div class="guideline-row">
+            <span class="guideline-icon" [class.valid]="pw_case" [class.invalid]="!pw_case"></span>
+            <span class="login-text" [style.color]="pw_case ? 'green' : '#666'">
+              Ein Groß- und ein Kleinbuchstabe
+            </span>
+          </div>
+
+          <div class="guideline-row">
+            <span
+              class="guideline-icon"
+              [class.valid]="pw_special"
+              [class.invalid]="!pw_special"
+            ></span>
+            <span class="login-text" [style.color]="pw_special ? 'green' : '#666'">
+              Mindestens ein Sonderzeichen (!, @, $, %, ^, &, *, +, #)
+            </span>
+          </div>
+
+          <div class="guideline-row">
+            <span
+              class="guideline-icon"
+              [class.valid]="pw_number"
+              [class.invalid]="!pw_number"
+            ></span>
+            <span class="login-text" [style.color]="pw_number ? 'green' : '#666'">
+              Mindestens eine Zahl
+            </span>
+          </div>
+
+          <div class="guideline-row">
+            <span
+              class="guideline-icon"
+              [class.valid]="pw_number"
+              [class.invalid]="!pw_number"
+            ></span>
+            <span class="login-text" [style.color]="pw_number ? 'green' : '#666'">
+              Ihr Passwort darf keine Ähnlichkeit mit ihrer E-Mail-Adresse haben
+            </span>
+          </div>
+        </div>
+
+        <!-- Back / Next -->
+        <div style="flex-direction: row; justify-content: space-between; margin-top: 10px">
+          <!-- <button class="btn-back">&lt; Zurück</button> -->
+          <div class="form-actions">
             <button
               type="button"
               class="btn-primary"
-              [disabled]="isLoading"
-              (click)="submitAttorney()"
+              [disabled]="isLoadingReset"
+              (click)="resetPassword()"
             >
-              <span *ngIf="isLoading; else normal">
+              <span *ngIf="isLoadingReset; else normal">
                 <span class="spinner"></span> Einreichen...
               </span>
 
               <ng-template #normal>
-                <span> Beratervollmacht für Privatkunden erteilen</span>
+                <span> Neues Passwort absenden</span>
               </ng-template>
             </button>
           </div>
         </div>
       </div>
+    </div>
 
-      <div
-        class="container-login"
-        *ngIf="
-          activeTab === 5 && currentStep === 3 && approvalStatus === 'PENDING' && recordIsPresent
-        "
-      >
-        <div class="attorney-berich-green">
-          {{
-            customerType === 'BUSINESS'
-              ? 'Beratervollmacht für Geschäftskunden'
-              : 'Beratervollmacht für Privatkunden'
-          }}
-        </div>
-        <div class="tab-row">
-          <div class="success-box">
-            <div class="success-content">
-              <div class="success-row">
-                <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
-
-                <div class="text-block">
-                  <div class="tab-header">Beratervollmacht erfolgreich erstellt!</div>
-                  <div class="tab-text">Erstellt am {{ attorneyCreatedOn }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="tab-header">Beratervollmacht widerrufen</div>
-            <div class="tab-text">
-              <strong>Hinweis:</strong> Wenn Sie die Beratervollmacht widerrufen, sind viele
-              Funktionen im Kundenbereich nicht mehr nutzbar.
-            </div>
-          </div>
-          <div
-            style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px"
-          >
-            <button class="btn-primary" (click)="revoke()">
-              <span class="spinner"></span>
-              Beratervollmacht widerrufen
-            </button>
-          </div>
-        </div>
+    <!-- OTP VERIFY  -->
+    <div class="customer-profile-box" *ngIf="activeTab === 7 && currentStep === 2">
+      <div class="login-berich">
+        {{ otpInvalid ? 'Bitte überprüfen Sie den Code' : 'Geben Sie den Code ein' }}
       </div>
 
-      <div
-        class="container-login"
-        *ngIf="activeTab === 5 && currentStep === 4 && approvalStatus === 'APPROVED'"
-      >
-        <div class="attorney-berich">
-          {{
-            customerType === 'BUSINESS'
-              ? 'Beratervollmacht für Geschäftskunden'
-              : 'Beratervollmacht für Privatkunden'
-          }}
-        </div>
-        <div class="tab-row">
-          <div class="failed-box">
-            <div class="success-content">
-              <div class="success-row">
-                <img src="assets/icons/cross.png" alt="failed" />
-
-                <div class="text-block">
-                  <div class="tab-header">Der Link ist abgelaufen oder Sie haben uns bereits</div>
-                  <div class="tab-header" style="margin-bottom: 0">
-                    Ihre Beratervollmacht erteilt.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ══════════ Power of Attorney End ══════════-->
-
-      <!--══════════ Document archive Section Start (Tab - 6) ══════════-->
-
-      <div class="container-login" *ngIf="activeTab === 6 && currentStep === 1">
-        <div class="login-berich">Dokumentarchiv - Übersicht</div>
-        <div *ngIf="activeTab === 6 && documentTab === 0">
-          <div class="tab-row">
-            <div class="form-group">
-              <div class="tab-header">
-                In der Übersicht können Sie Ihre Dokumente einsehen und downloaden.
-              </div>
-              <div class="tab-text">Klicken Sie einfach auf den entsprechenden Button.</div>
-            </div>
-            <div class="doc-buttons">
-              <button class="doc-btn" (click)="toggleDocument(1)">Auftragsdokumente</button>
-              <button class="doc-btn" (click)="toggleDocument(2)">Vollmachten</button>
-              <button class="doc-btn" (click)="toggleDocument(3)">Kündigungsbestätigungen</button>
-              <button class="doc-btn" (click)="toggleDocument(4)">Vertragsbestätigungen</button>
-              <button class="doc-btn" (click)="toggleDocument(5)">Sonstiges</button>
-            </div>
-          </div>
-        </div>
-        <div *ngIf="activeTab === 6 && documentTab === 1">
-          <br />
-          <div class="attorney-berich">Auftragsdokumente zu aktiven Verträgen</div>
-          <div class="tab-row">
-            <div class="document-list">
-              <div class="document-item" *ngFor="let doc of orderDocuments">
-                <!-- BOX (border only here) -->
-                <div class="document-card">
-                  <div class="document-top">
-                    <!-- LEFT SIDE -->
-                    <div class="document-left">
-                      <img [src]="doc.logo" class="document-logo" />
-                      <div class="document-title">{{ doc.title }}</div>
-                    </div>
-
-                    <!-- RIGHT SIDE -->
-                    <div class="document-right">
-                      <div class="document-details">
-                        Arbeitspreis: <strong>{{ doc.workPrice }} Ct./kWh</strong><br />
-                        Grundpreis: <strong>{{ doc.basePrice }} €/Monat</strong><br />
-                        Vertragsnummer: <strong>{{ doc.contractNumber }}</strong
-                        ><br />
-                        Abschlag geschätzt pro Monat:
-                        <strong>{{ doc.monthly }} €</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- BUTTONS OUTSIDE -->
-                <div class="document-actions">
-                  <button class="document-btn">Vertragsdetails ansehen</button>
-                  <button class="document-btn" (click)="nextStep(2)">Vertrag downloaden</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div *ngIf="activeTab === 6 && documentTab === 2">
-          <br />
-          <div class="attorney-berich">Meine Vollmachten</div>
-          <div class="tab-row">
-            <div class="document-list">
-              <div class="document-item" *ngFor="let doc of attorneyDocuments">
-                <!-- BOX (border only here) -->
-                <div class="document-card">
-                  <div class="document-top">
-                    <!-- LEFT SIDE -->
-                    <div class="document-left">
-                      <div class="document-title">{{ doc.title }}</div>
-                    </div>
-
-                    <!-- RIGHT SIDE -->
-                    <div class="document-right" style="margin-bottom: 20px">
-                      <div class="document-details">
-                        <strong>{{ doc.subtitle }}</strong>
-                        <br />
-                        <div style="padding-top: 10px">{{ doc.createdOn }}</div>
-                        <br />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- BUTTONS OUTSIDE -->
-                <div class="document-actions">
-                  <button class="document-btn">Vollmacht ansehen</button>
-                  <button class="document-btn" (click)="nextStep(2)">Vollmacht downloaden</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div *ngIf="activeTab === 6 && documentTab === 3">
-          <br />
-          <div class="attorney-berich">Meine gekündigten Verträge</div>
-          <div class="tab-row">
-            <div class="document-list">
-              <div class="document-item" *ngFor="let doc of cancelDocuments">
-                <!-- BOX (border only here) -->
-                <div class="document-card">
-                  <div class="document-top">
-                    <!-- LEFT SIDE -->
-                    <div class="document-left">
-                      <img [src]="doc.logo" class="document-logo" />
-                      <div class="document-title">{{ doc.title }}</div>
-                    </div>
-
-                    <!-- RIGHT SIDE -->
-                    <div class="document-right">
-                      <div class="document-details">
-                        Vertragsnummer: <strong>{{ doc.contractNumber }}</strong
-                        ><br />
-                        <strong>gekündigt am {{ doc.terminatedOn }}</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- BUTTONS OUTSIDE -->
-                <div class="document-actions">
-                  <button class="document-btn">Kündigungssdetails ansehen</button>
-                  <button class="document-btn" (click)="nextStep(2)">Kündigung downloaden</button>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="login-row">
+        <div class="login-text" *ngIf="otpInvalid" style="font-size: 15px">
+          <strong>
+            Der eingegebene Code stimmt leider nicht mit dem gesendeten Code überein
+          </strong>
         </div>
 
-        <div *ngIf="activeTab === 6 && documentTab === 4">
-          <br />
-          <div class="attorney-berich">Vertragsdokumente zu aktiven Verträgen</div>
-          <div class="tab-row">
-            <div class="document-list">
-              <div class="document-item" *ngFor="let doc of contractDocuments">
-                <!-- BOX (border only here) -->
-                <div class="document-card">
-                  <div class="document-top">
-                    <!-- LEFT SIDE -->
-                    <div class="document-left">
-                      <img [src]="doc.logo" class="document-logo" />
-                      <div class="document-title">{{ doc.title }}</div>
-                    </div>
-
-                    <!-- RIGHT SIDE -->
-                    <div class="document-right">
-                      <div class="document-details">
-                        Arbeitspreis: <strong>{{ doc.workPrice }} Ct./kWh</strong><br />
-                        Grundpreis: <strong>{{ doc.basePrice }} €/Monat</strong><br />
-                        Vertragsnummer: <strong>{{ doc.contractNumber }}</strong
-                        ><br />
-                        Abschlag geschätzt pro Monat:
-                        <strong>{{ doc.monthly }} €</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- BUTTONS OUTSIDE -->
-                <div class="document-actions">
-                  <button class="document-btn">Vertragsdetails ansehen</button>
-                  <button class="document-btn" (click)="nextStep(2)">Vertrag downloaden</button>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="login-text" *ngIf="newOtp" style="font-size: 14px">
+          Wir haben bereits einen neuen Code an Ihre E-Mail-Adresse gesendet.
         </div>
 
-        <div *ngIf="activeTab === 6 && documentTab === 5">
-          <br />
-          <div class="attorney-berich">Sonstige Dokumente</div>
-          <div class="tab-row">
-            <div class="document-list">
-              <div class="document-item" *ngFor="let doc of miscellaneousDocuments">
-                <!-- BOX (border only here) -->
-                <div class="document-card">
-                  <div class="document-top" style="justify-content: normal">
-                    <!-- LEFT SIDE -->
-                    <div class="document-left">
-                      <div class="document-title">{{ doc.title }}</div>
-                    </div>
-
-                    <!-- RIGHT SIDE -->
-                    <div class="document-right" style="margin-bottom: 20px">
-                      <div class="document-details">
-                        <br />
-                        <div style="padding-top: 10px">{{ doc.createdOn }}</div>
-                        <br />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- BUTTONS OUTSIDE -->
-                <div class="document-actions">
-                  <button class="document-btn">{{ doc.viewBtn }}</button>
-                  <button class="document-btn" (click)="nextStep(2)">{{ doc.downloadBtn }}</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="container-login" *ngIf="activeTab === 6 && currentStep === 2">
-        <div class="attorney-berich-green">Downloadbereich</div>
-        <div class="tab-row">
-          <div class="success-box">
-            <div class="success-content">
-              <div class="success-row">
-                <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
-
-                <div class="text-block">
-                  <div class="tab-header">Download erfolgreich!</div>
-                  <div class="tab-text">
-                    Wir haben das gewünschte Dokument an Ihre E-Mail-Adresse
-                    {{ customerData.email }} verschickt.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!--══════════ Document archive Section End ══════════-->
-
-      <!-- ══════════ Reset Password Start (Tab - 7) ══════════-->
-
-      <div class="container-login" *ngIf="activeTab === 7 && currentStep === 1">
-        <div class="login-berich">Bitte geben Sie Ihr neues Passwort ein</div>
-        <div class="tab-row">
-          <div class="form-group">
-            <div class="login-text">Altes Passwort eingeben:</div>
-          </div>
-
-          <div class="form-group">
-            <div class="field-wrap">
-              <div>
-                <span class="field-label">Altes Passwort</span>
-                <input
-                  #oldPwField
-                  name="oldPassword"
-                  [(ngModel)]="oldPassword"
-                  [type]="showOldPw ? 'text' : 'password'"
-                />
-              </div>
-              <span class="material-symbols-outlined pw-toggle" (click)="showOldPw = !showOldPw">{{
-                showOldPw ? 'visibility' : 'visibility_off'
-              }}</span>
-            </div>
-            <div class="field-error-msg" *ngIf="fieldErrors['oldPassword']">
-              {{ fieldErrors['oldPassword'] }}
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="login-text">Neues Passwort eingeben:</div>
-          </div>
-
-          <div class="form-group">
-            <div class="field-wrap">
-              <div>
-                <span class="field-label">Passwort</span>
-                <input
-                  #pwField
-                  name="newPassword"
-                  [type]="showPw ? 'text' : 'password'"
-                  [value]="newPassword"
-                  [(ngModel)]="newPassword"
-                  [style.background-color]="passwordMismatch ? '#fff0f0' : 'white'"
-                  (input)="
-                    newPassword = $any($event.target).value;
-                    validatePassword($any($event.target).value, repField.value)
-                  "
-                />
-              </div>
-              <span class="material-symbols-outlined pw-toggle" (click)="showPw = !showPw">{{
-                showPw ? 'visibility' : 'visibility_off'
-              }}</span>
-            </div>
-            <div class="field-error-msg" *ngIf="fieldErrors['newPassword']">
-              {{ fieldErrors['newPassword'] }}
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="login-text">Passwort wiederholen:</div>
-          </div>
-
-          <div class="form-group">
-            <div class="field-wrap">
-              <div>
-                <span class="field-label">Passwort wiederholen</span>
-                <input
-                  #repField
-                  name="confirmPassword"
-                  [type]="showRepPw ? 'text' : 'password'"
-                  [style.background-color]="passwordMismatch ? '#fff0f0' : 'white'"
-                  [(ngModel)]="confirmPassword"
-                  (input)="validatePassword(pwField.value, $any($event.target).value)"
-                />
-              </div>
-              <span class="material-symbols-outlined pw-toggle" (click)="showRepPw = !showRepPw">{{
-                showRepPw ? 'visibility' : 'visibility_off'
-              }}</span>
-            </div>
-            <div class="login-text" style="color: #cc0000" *ngIf="passwordMismatch">
-              Die Passwörter stimmen nicht überein
-            </div>
-          </div>
-          <div class="error-msg" *ngIf="apiError">{{ apiError }}</div>
-
-          <div class="password-guidelines">
-            <div class="login-text" style="font-weight: 50; margin-bottom: 6px">
-              Grundsätzliches zu sicheren Passwörtern / Kennwortrichtlinien
-            </div>
-
-            <div class="guideline-row">
-              <span
-                class="guideline-icon"
-                [class.valid]="pw_length"
-                [class.invalid]="!pw_length"
-              ></span>
-              <span class="login-text" [style.color]="pw_length ? 'green' : '#666'">
-                Mindestens 8 und maximal 50 Zeichen
-              </span>
-            </div>
-
-            <div class="guideline-row">
-              <span
-                class="guideline-icon"
-                [class.valid]="pw_case"
-                [class.invalid]="!pw_case"
-              ></span>
-              <span class="login-text" [style.color]="pw_case ? 'green' : '#666'">
-                Ein Groß- und ein Kleinbuchstabe
-              </span>
-            </div>
-
-            <div class="guideline-row">
-              <span
-                class="guideline-icon"
-                [class.valid]="pw_special"
-                [class.invalid]="!pw_special"
-              ></span>
-              <span class="login-text" [style.color]="pw_special ? 'green' : '#666'">
-                Mindestens ein Sonderzeichen (!, @, $, %, ^, &, *, +, #)
-              </span>
-            </div>
-
-            <div class="guideline-row">
-              <span
-                class="guideline-icon"
-                [class.valid]="pw_number"
-                [class.invalid]="!pw_number"
-              ></span>
-              <span class="login-text" [style.color]="pw_number ? 'green' : '#666'">
-                Mindestens eine Zahl
-              </span>
-            </div>
-
-            <div class="guideline-row">
-              <span
-                class="guideline-icon"
-                [class.valid]="pw_number"
-                [class.invalid]="!pw_number"
-              ></span>
-              <span class="login-text" [style.color]="pw_number ? 'green' : '#666'">
-                Ihr Passwort darf keine Ähnlichkeit mit ihrer E-Mail-Adresse haben
-              </span>
-            </div>
-          </div>
-
-          <!-- Back / Next -->
-          <div style="flex-direction: row; justify-content: space-between; margin-top: 10px">
-            <!-- <button class="btn-back">&lt; Zurück</button> -->
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn-primary"
-                [disabled]="isLoadingReset"
-                (click)="resetPassword()"
-              >
-                <span *ngIf="isLoadingReset; else normal">
-                  <span class="spinner"></span> Einreichen...
-                </span>
-
-                <ng-template #normal>
-                  <span> Neues Passwort absenden</span>
-                </ng-template>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- OTP VERIFY  -->
-      <div class="container-login" *ngIf="activeTab === 7 && currentStep === 2">
-        <div class="login-berich">
-          {{ otpInvalid ? 'Bitte überprüfen Sie den Code' : 'Geben Sie den Code ein' }}
-        </div>
-
-        <div class="login-row">
-          <div class="login-text" *ngIf="otpInvalid" style="font-size: 15px">
-            <strong>
-              Der eingegebene Code stimmt leider nicht mit dem gesendeten Code überein
-            </strong>
-          </div>
-
-          <div class="login-text" *ngIf="newOtp" style="font-size: 14px">
-            Wir haben bereits einen neuen Code an Ihre E-Mail-Adresse gesendet.
-          </div>
-
-          <div class="login-text">Ihre E-Mail-Adresse:</div>
-          <div class="email-field">
-            <div class="input-field" style="flex: 1; background-color: #afadad; border: none">
-              <span class="material-symbols-outlined" style="color: black">account_circle</span>
-              <input
-                name="email"
-                type="email"
-                [value]="customerData.email"
-                style="background-color: #afadad"
-                readonly
-              />
-            </div>
-            <span style="display: flex; align-items: center; padding-left: 20px"
-              ><img src="assets/icons/Schloss.png" class="icon-schloss" alt="check"
-            /></span>
-          </div>
-          <div class="login-text">
-            {{
-              otpInvalid || newOtp
-                ? 'Bitte geben Sie den Code erneut ein, den wir an '
-                : 'Bitte geben Sie den Code ein, den wir an '
-            }}
-
-            <strong>{{ customerData.email }}</strong> gesendet haben.
-          </div>
-          <div class="login-text">Code aus E-Mail eingeben</div>
-          <div class="code-inputs" [class.code-error]="otpError">
+        <div class="login-text">Ihre E-Mail-Adresse:</div>
+        <div class="email-field">
+          <div class="input-field" style="flex: 1; background-color: #afadad; border: none">
+            <span class="material-symbols-outlined" style="color: black">account_circle</span>
             <input
-              *ngFor="let i of [0, 1, 2, 3, 4, 5]"
-              type="text"
-              maxlength="1"
-              [id]="'otp-' + i"
-              (input)="onOtpInput($event, i)"
-              (keydown)="onOtpKeydown($event, i)"
-              (paste)="onOtpPaste($event)"
+              name="email"
+              type="email"
+              [value]="customerData.email"
+              style="background-color: #afadad"
+              readonly
             />
           </div>
+          <span style="display: flex; align-items: center; padding-left: 20px"
+            ><img src="assets/icons/Schloss.png" class="icon-schloss" alt="check"
+          /></span>
+        </div>
+        <div class="login-text">
+          {{
+            otpInvalid || newOtp
+              ? 'Bitte geben Sie den Code erneut ein, den wir an '
+              : 'Bitte geben Sie den Code ein, den wir an '
+          }}
 
-          <div class="error-msg" *ngIf="otpError">{{ otpError }}</div>
+          <strong>{{ customerData.email }}</strong> gesendet haben.
+        </div>
+        <div class="login-text">Code aus E-Mail eingeben</div>
+        <div class="code-inputs" [class.code-error]="otpError">
+          <input
+            *ngFor="let i of [0, 1, 2, 3, 4, 5]"
+            type="text"
+            maxlength="1"
+            [id]="'otp-' + i"
+            (input)="onOtpInput($event, i)"
+            (keydown)="onOtpKeydown($event, i)"
+            (paste)="onOtpPaste($event)"
+          />
+        </div>
 
-          <div class="login-text">
-            Keinen Code erhalten? Bitte prüfen Sie auch Ihren Spam-Ordner.
+        <div class="error-msg" *ngIf="otpError">{{ otpError }}</div>
 
-            <span
-              [style.color]="isResendDisabled ? '#999' : '#0085e0'"
-              [style.pointerEvents]="isResendDisabled ? 'none' : 'auto'"
-              (click)="resendOtp()"
-            >
-              <span *ngIf="isResendDisabled">
-                Code erneut senden&nbsp;
-                <countdown #countdown [config]="config" (event)="handleEvent($event)"></countdown>
-              </span>
+        <div class="login-text">
+          Keinen Code erhalten? Bitte prüfen Sie auch Ihren Spam-Ordner.
 
-              <span *ngIf="!isResendDisabled"> Code erneut senden </span>
+          <span
+            [style.color]="isResendDisabled ? '#999' : '#0085e0'"
+            [style.pointerEvents]="isResendDisabled ? 'none' : 'auto'"
+            (click)="resendOtp()"
+          >
+            <span *ngIf="isResendDisabled">
+              Code erneut senden&nbsp;
+              <countdown #countdown [config]="config" (event)="handleEvent($event)"></countdown>
             </span>
-            <!-- <span *ngIf="resendSuccess" style="color: green; margin-left: 8px"
+
+            <span *ngIf="!isResendDisabled"> Code erneut senden </span>
+          </span>
+          <!-- <span *ngIf="resendSuccess" style="color: green; margin-left: 8px"
               >✓ Code gesendet</span
             > -->
-          </div>
+        </div>
 
-          <div style="display: flex; flex-direction: row; justify-content: space-between">
-            <button class="btn-back" (click)="nextStep(1)" style="cursor: pointer">
-              &lt; Zurück
+        <div style="display: flex; flex-direction: row; justify-content: space-between">
+          <button class="btn-back" (click)="nextStep(1)" style="cursor: pointer">
+            &lt; Zurück
+          </button>
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn-primary"
+              [disabled]="isLoading || otpValue.length < 6"
+              (click)="verifyOtp()"
+            >
+              <span *ngIf="isLoading; else normal"> <span class="spinner"></span> Senden... </span>
+
+              <ng-template #normal>
+                <span> {{ otpInvalid || newOtp ? 'Code erneut prüfen' : 'Code prüfen' }}</span>
+              </ng-template>
             </button>
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn-primary"
-                [disabled]="isLoading || otpValue.length < 6"
-                (click)="verifyOtp()"
-              >
-                <span *ngIf="isLoading; else normal">
-                  <span class="spinner"></span> Senden...
-                </span>
-
-                <ng-template #normal>
-                  <span> {{ otpInvalid || newOtp ? 'Code erneut prüfen' : 'Code prüfen' }}</span>
-                </ng-template>
-              </button>
-            </div>
           </div>
         </div>
       </div>
-
-      <div class="container-login" *ngIf="activeTab === 7 && currentStep === 3">
-        <div class="attorney-berich-green">Passwort erfolgreich zurückgesetzt!</div>
-        <div class="tab-row">
-          <div class="form-group">
-            <div class="tab-header">
-              Sie können sich beim nächsten Login mit Ihrem neuen Passwort anmelden.
-            </div>
-            <div class="tab-text">
-              Ein Bestätigungsmail zur Passwortänderung wurde an Ihre E-Mail-Adresse
-              {{ customerData.email }} gesendet.
-            </div>
-          </div>
-        </div>
-      </div>
-      <!--══════════ Reset Password End ══════════-->
     </div>
+
+    <div class="customer-profile-box" *ngIf="activeTab === 7 && currentStep === 3">
+      <div class="attorney-berich-green">Passwort erfolgreich zurückgesetzt!</div>
+      <div class="tab-row">
+        <div class="form-group">
+          <div class="tab-header">
+            Sie können sich beim nächsten Login mit Ihrem neuen Passwort anmelden.
+          </div>
+          <div class="tab-text">
+            Ein Bestätigungsmail zur Passwortänderung wurde an Ihre E-Mail-Adresse
+            {{ customerData.email }} gesendet.
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--══════════ Reset Password End ══════════-->
   </div>
 </div>

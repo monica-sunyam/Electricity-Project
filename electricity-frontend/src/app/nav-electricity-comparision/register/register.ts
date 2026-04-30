@@ -904,6 +904,7 @@ AUTH MODE
 
             console.log('Login successful');
             this.authService.clearDeliveryId();
+            this.cdr.detectChanges();
 
             // Redirect
             this.router.navigate([this.mainStepRoutes[2]]);

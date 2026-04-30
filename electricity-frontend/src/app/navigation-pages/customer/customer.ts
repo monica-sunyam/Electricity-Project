@@ -20,7 +20,6 @@ import { Inject, PLATFORM_ID } from '@angular/core';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { isPlatformBrowser } from '@angular/common';
 
-
 const API_BASE = 'http://192.168.0.155:8080';
 interface Card {
   logo: string;
@@ -43,20 +42,20 @@ interface Card {
     MatIconModule,
     FormsModule,
     CountdownModule,
-  QRCodeComponent
+    QRCodeComponent,
   ],
   templateUrl: './customer.html',
   styleUrl: './customer.css',
 })
 export class Customer {
-   isBrowser = false;
+  isBrowser = false;
 
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private eRef: ElementRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -229,52 +228,52 @@ export class Customer {
   }
 
   /* ════════════════════════════════════════════════════════════════════════════════════════════════*/
-  selection: string = 'no';
-    selectOption(value: string): void {
-    this.selection = value;
-    if (value !== 'yes') {
-      
-    }
-    if (value !== 'no') {
-     
-    }
-  }
 
+  /*── Reminder Section Start ──*/
+  selection: string = 'yes';
+  selectOption(value: string): void {
+    this.selection = value;
+  }
 
   contracts = [
-  {
-    logo: 'assets/icons/Icons_energyprovider/eon.png',
-       title: 'E.ON ÖkoStrom Extra 12',
-    type: 'Strom | Hausstrom',
-    meter: 'ZKH-31259147-122',
-    name: 'Marie Mustermann',
-    address: 'Musterstraße 29, 12345 Musterhausen',
-    contractNumber: '0215/123456789',
-    duration: '12 Monate',
-    startDate: '19.04.2025',
-    renewal: '19.04.2026',
-    price: '26,80 Ct./kWh',
-    basePrice: '14,90 €/Monat',
-    monthly: '68,40 €',
-    cancelDate: '18.04.2026'
-  },
-  {
-     logo: 'assets/icons/Icons_energyprovider/vattenfall.png',
-     title: 'Easy12 Gas',
-    type: 'Gas',
-    meter: 'ZKH-31259147-122',
-    name: 'Marie Mustermann',
-    address: 'Musterstraße 29, 12345 Musterhausen',
-    contractNumber: '012455-64564564k1245',
-    duration: '12 Monate',
-    startDate: '28.03.2025',
-    renewal: '28.03.2026',
-    price: '11,72 Ct./kWh',
-    basePrice: '21,90 €/Monat',
-    monthly: '151,40 €',
-    cancelDate: '27.04.2026'
-  }
-];
+    {
+      logo: 'assets/icons/Icons_energyprovider/eon.png',
+      title: 'E.ON ÖkoStrom Extra 12',
+      icon: 'assets/icons/65bd2fa8-bd0e-497e-a781-a3c434fe6176_Stromvergleich.png',
+      type: 'Strom | Hausstrom',
+      meter: 'ZKH-31259147-122',
+      name: 'Marie Mustermann',
+      address: 'Musterstraße 29, 12345 Musterhausen',
+      contractNumber: '0215/123456789',
+      duration: '12 Monate',
+      startDate: '19.04.2025',
+      renewal: '19.04.2026',
+      price: '26,80 Ct./kWh',
+      basePrice: '14,90 €/Monat',
+      monthly: '68,40 €',
+      cancelDate: '18.04.2026',
+    },
+    {
+      logo: 'assets/icons/Icons_energyprovider/vattenfall.png',
+      title: 'Easy12 Gas',
+      icon: 'assets/icons/1a9ebeaf-78b8-48a3-9514-94f57aa1de2c_Gasvergleich.png',
+      type: 'Gas',
+      meter: 'ZKH-31259147-122',
+      name: 'Marie Mustermann',
+      address: 'Musterstraße 29, 12345 Musterhausen',
+      contractNumber: '012455-64564564k1245',
+      duration: '12 Monate',
+      startDate: '28.03.2025',
+      renewal: '28.03.2026',
+      price: '11,72 Ct./kWh',
+      basePrice: '21,90 €/Monat',
+      monthly: '151,40 €',
+      cancelDate: '27.04.2026',
+    },
+  ];
+
+  /*── Reminder Section End ──*/
+  /* ════════════════════════════════════════════════════════════════════════════════════════════════*/
 
   /*── Service Section Start ──*/
 
@@ -735,8 +734,8 @@ export class Customer {
             title: item?.provider?.rateName || '',
             deliveryId: item?.deliveryId || 0,
 
-            date: item?.deliveryDate
-              ? new Date(item.deliveryDate * 1000).toLocaleDateString('de-DE')
+            date: item?.orderPlacedOn
+              ? new Date(item.orderPlacedOn * 1000).toLocaleDateString('de-DE')
               : '',
 
             data: [
