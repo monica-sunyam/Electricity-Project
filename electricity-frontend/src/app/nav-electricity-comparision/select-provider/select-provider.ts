@@ -776,6 +776,16 @@ export class SelectProvider implements OnInit {
     return this.priceDisplayMonthly ? rate.totalPriceMonth : rate.totalPrice;
   }
 
+  getBasePrice(rate: Rate): number {
+    if (!rate) return 0;
+
+    const yearlyTotal = rate.basePriceYear + (this.consum * rate.workPrice) / 100;
+
+    return this.priceDisplayMonthly
+      ? yearlyTotal / 12 // monthly
+      : yearlyTotal; // yearly
+  }
+
   getDisplayPriceSuffix(): string {
     return this.priceDisplayMonthly ? 'Ø pro Monat' : 'pro Jahr';
   }
@@ -820,6 +830,27 @@ export class SelectProvider implements OnInit {
     this.isInfoOpen = !this.isInfoOpen;
   }
 
+  isModalOpen = false;
+
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  apply() {
+    this.closeModal();
+  }
+  showEditSection = false;
+
+  toggleEditSection() {
+    this.showEditSection = !this.showEditSection;
+  }
+
+  activeTab: 'price' | 'abschlag' = 'price';
+  
   @ViewChild('cityDropdown') cityDropdown!: ElementRef;
   @ViewChild('streetDropdown') streetDropdown!: ElementRef;
 

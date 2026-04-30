@@ -127,7 +127,6 @@ export class DeliveryAddress implements OnInit, OnDestroy {
   private initForm(): void {
     this.resetFields();
     this.applyLocalStorageAddress();
-    this.providerDetails = this.authService.getSelectedProvider();
 
     this.authService
       .getAuthState()
@@ -195,6 +194,10 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       this.deliveryStreet = storedAddress.street || '';
       this.deliveryHouseNumber = storedAddress.houseNumber || '';
     }
+    this.providerDetails = {
+      ...this.authService.getSelectedProvider(),
+      consumption: storedAddress?.consumption || null,
+    };
   }
 
   fetchFormData(id: string, deliveryId: string): void {
