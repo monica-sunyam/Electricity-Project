@@ -87,7 +87,7 @@
   <!-- /sidebar -->
 
   <!-- ══════════ MAIN CONTENT ══════════ -->
-  <div class="main-content" *ngIf="customerData">
+  <div class="main-content" style="min-width: 0;" *ngIf="customerData">
     <div class="progress-card">
       <div class="progress-header">Mein Konto</div>
 
@@ -881,7 +881,7 @@
       </div>
 
       <div class="tab-row">
-        <div class="hint-box">
+        <div class="hint-box" *ngIf="isDesktop">
           <div class="hint-content">
             <div class="hint-title-row">
               <img src="assets/icons/lamp.png" alt="hint" />

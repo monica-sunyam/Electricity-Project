@@ -389,6 +389,7 @@ export class SelectProvider implements OnInit {
   }
 
   searchApply() {
+    console.log('Search Apply');
     this.isEditMode = false;
     this.addressForm.get('consum')?.setValue(this.consum);
     if (this.addressForm.invalid) {
@@ -397,10 +398,13 @@ export class SelectProvider implements OnInit {
       return;
     }
 
-    const selectedCityId = this.addressForm.value.city;
+    const selectedCityId = this.addressForm.value.city || this.lastValidCity?.city_id;
+    console.log('Selected City ID:', selectedCityId);
 
-    const selectedCityObj = this.cityOptions.find((c) => c.city_id === selectedCityId);
+    const selectedCityObj =
+      this.cityOptions.find((c) => c.city_id === selectedCityId) || this.lastValidCity;
     if (!selectedCityObj) {
+      console.error('Selected city not found');
       return; // or show error
     }
 
@@ -421,6 +425,8 @@ export class SelectProvider implements OnInit {
 
     this.authService.setAddressData(data);
     this.hasAddress = true;
+    this.cdr.detectChanges();
+    console.log('Address Data Set:', data);
     // this.fetchRates();
     // this.isOpen = true;
   }
@@ -732,10 +738,41 @@ export class SelectProvider implements OnInit {
   }
 
   openPage(selectedRate: Rate): void {
-    this.authService.setSelectedProvider(selectedRate);
-    this.router.navigate(['register'], { relativeTo: this.route });
-  }
+    const customerId = this.authService.getUserId() || 0;
 
+    const body = {
+      zip: this.zip,
+      city: this.city,
+      street: this.street,
+      houseNumber: this.houseNumber,
+      deliveryType: this.branch == 'electric' ? 'electricity' : this.branch,
+      customerId: Number(customerId),
+      adminId: 1,
+    };
+
+    this.http
+      .post<RatesResponse>('http://192.168.0.155:8080/customer/check-booking', body)
+      .subscribe({
+        next: (res) => {
+          if (res?.res === true) {
+            this.authService.setSelectedProvider(selectedRate);
+            this.router.navigate(['register'], { relativeTo: this.route });
+          } else {
+            alert('Für diese Adresse besteht bereits ein aktiver Stromvertrag.');
+          }
+
+          this.cdr.detectChanges();
+        },
+
+        error: (err) => {
+          console.error('API Error:', err);
+          this.isLoading = false;
+          this.hasLoadedRates = true;
+
+          // alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+        },
+      });
+  }
   toggleDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
@@ -850,7 +887,7 @@ export class SelectProvider implements OnInit {
   }
 
   activeTab: 'price' | 'abschlag' = 'price';
-  
+
   @ViewChild('cityDropdown') cityDropdown!: ElementRef;
   @ViewChild('streetDropdown') streetDropdown!: ElementRef;
 

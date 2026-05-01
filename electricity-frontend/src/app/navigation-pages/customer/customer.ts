@@ -105,6 +105,8 @@ export class Customer {
   isLoadingNewMsg: boolean = false;
   isLoadingReopen: boolean = false;
 
+  isDesktop: boolean = true;
+
   setActiveTab(index: number) {
     this.activeTab = index;
     this.currentStep = 1;
@@ -162,6 +164,7 @@ export class Customer {
   }
 
   ngOnInit(): void {
+    this.checkDevice();
     this.fetchAllRequests();
     this.fetchServiceCount();
     this.fetchCustomer();
@@ -169,6 +172,10 @@ export class Customer {
     this.fetchCategories('general');
 
     this.checkAttorneyStatus();
+  }
+
+  checkDevice(): void {
+    this.isDesktop = window.innerWidth >= 1024;
   }
 
   /*── Fetch customer details ──*/
@@ -1020,7 +1027,10 @@ export class Customer {
         if (res) {
           console.log('Success:', message);
           console.log('Created On:', createdOn);
-
+          this.placeAndDate = '';
+          this.legalFirstName = '';
+          this.legalLastName = '';
+          this.signaturePad.clear();
           this.nextStep(3);
           this.cdr.detectChanges();
         }

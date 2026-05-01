@@ -625,6 +625,7 @@ AUTH MODE
         data?: { id: number; firstName: string; lastName: string; email: string; adminId: 1 };
         page?: string;
         message?: string;
+        isAcknowledge?: boolean;
       }>(`${API_BASE}/auth/signup`, payload)
       .subscribe({
         next: (res) => {
@@ -634,20 +635,18 @@ AUTH MODE
             this.authService.setTempUid(res.data.id.toString());
 
             if (res.page === 'login') {
-              this.signupError = 'E-Mail bereits registriert. Bitte einloggen.';
-              console.log(this.signupError);
-              // setTimeout(() => {
-              // this.setAuthMode('login');
-              // this.currentStep = 5;
-              // }, 2000);
-
-              // return;
-            } else {
-              this.currentStep = 2;
-              this.apiError = '';
+              if (res.isAcknowledge === false) {
+                this.currentStep = 3;
+              } else if (res.isAcknowledge === true) {
+                this.signupError = 'E-Mail bereits registriert. Bitte einloggen.';
+                console.log(this.signupError);
+              } else {
+                this.currentStep = 2;
+                this.apiError = '';
+              }
+              this.cdr.detectChanges();
+              console.log('UI update triggered for step:', this.currentStep);
             }
-            this.cdr.detectChanges();
-            console.log('UI update triggered for step:', this.currentStep);
           }
         },
         error: (err) => {
@@ -774,7 +773,7 @@ AUTH MODE
             this.currentStep = 3;
             this.otpInvalid = false;
 
-            this.authService.finalizeUser(this.authService.getTempUid()!);
+            // this.authService.finalizeUser(this.authService.getTempUid()!);
 
             this.cdr.detectChanges();
             console.log('Step changed to 3. UI should update now.');
@@ -797,7 +796,7 @@ AUTH MODE
   ══════════════════════════════════════════════════════════════════ */
 
   completRegistration() {
-    const userId = this.authService.getUserId();
+    const userId = this.authService.getTempUid();
 
     if (!userId) {
       this.apiError = 'Sitzung abgelaufen. Bitte neu registrieren.';
@@ -812,10 +811,13 @@ AUTH MODE
         this.isLoading = false;
         if (res.res) {
           this.currentStep = 4;
-          console.log('Registration fully completed');
 
-          this.cdr.detectChanges();
+          console.log('Registration fully completed');
+        } else {
+          this.apiError =
+            'Ihre Registrierung ist noch nicht bestätigt. Bitte prüfen Sie Ihre E-Mails und klicken Sie auf den Bestätigungslink.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
@@ -830,7 +832,7 @@ AUTH MODE
   ══════════════════════════════════════════════════════════════════ */
 
   redirectToAccount() {
-    const userId = this.authService.getUserId();
+    const userId = this.authService.getTempUid();
 
     if (!userId) {
       this.apiError = 'Sitzung abgelaufen. Bitte neu registrieren.';
@@ -845,6 +847,8 @@ AUTH MODE
         this.isLoading = false;
         if (res.res) {
           if (res.res && res.data) {
+            this.authService.finalizeUser(this.authService.getTempUid()!);
+
             /* 🔥 Store user WITHOUT token */
             this.authService.login({
               user_id: res.data.id.toString(),

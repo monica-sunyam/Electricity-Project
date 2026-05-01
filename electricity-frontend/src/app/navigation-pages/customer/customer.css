@@ -204,6 +204,7 @@
   font-size: 13px;
   cursor: pointer;
   white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 /* Active (light selected) */
@@ -235,6 +236,7 @@
   flex-wrap: nowrap;
 }
 
+
 /* re */
 .customer-profile-box {
   border-radius: 0px 0 8px 8px;
@@ -242,11 +244,11 @@
   border-top: none;
 }
 .customer-profile-box::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
-  left: 20px;   /* gap start */
-  right: 20px;  /* gap end */
+  left: 20px; /* gap start */
+  right: 20px; /* gap end */
   height: 1px;
   background: #0085e0;
 }

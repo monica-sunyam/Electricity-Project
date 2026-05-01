@@ -413,6 +413,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
         city: this.deliveryOrt,
         street: this.deliveryStreet,
         houseNumber: this.deliveryHouseNumber,
+        deliveryType: 'electricity',
       },
       billingAddress: {
         different: this.hasDifferentBilling,

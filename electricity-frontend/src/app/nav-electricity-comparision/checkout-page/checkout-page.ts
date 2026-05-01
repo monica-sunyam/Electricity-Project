@@ -99,6 +99,7 @@ export class CheckoutPage implements OnInit {
   isScheduleLoading = false;
   scheduleErrorMessage = '';
   scheduleSuccessMessage = '';
+  overrideStartDay: string | null = null;
 
   readonly daysOfWeek = [
     { label: 'Montag', value: 'MONDAY' },
@@ -260,20 +261,24 @@ export class CheckoutPage implements OnInit {
 
   get enabledDays(): Set<string> {
     const now = new Date();
-    let todayJs = now.getDay(); // 0=Sun, 1=Mon … 6=Sat
 
-    // Sunday → treat as Monday
-    if (todayJs === 0) {
-      todayJs = 1;
+    let todayJs: number;
+
+    if (this.overrideStartDay) {
+      todayJs = this.dayValueToJsDay[this.overrideStartDay];
+    } else {
+      todayJs = now.getDay();
+      if (todayJs === 0) todayJs = 1;
     }
 
     const enabled = new Set<string>();
 
     for (let i = 0; i < 3; i++) {
-      const day = todayJs + i;
+      let day = todayJs + i;
 
-      // Stop if beyond Saturday
-      if (day > 6) break;
+      if (day > 6) {
+        day = day - 6;
+      }
 
       const entry = Object.entries(this.dayValueToJsDay).find(([, v]) => v === day);
 
@@ -286,7 +291,34 @@ export class CheckoutPage implements OnInit {
   }
 
   get filteredDays() {
-    return this.daysOfWeek.filter((d) => this.isDayEnabled(d.value));
+    const now = new Date();
+
+    let todayJs: number;
+
+    if (this.overrideStartDay) {
+      todayJs = this.dayValueToJsDay[this.overrideStartDay];
+    } else {
+      todayJs = now.getDay();
+      if (todayJs === 0) todayJs = 1;
+    }
+
+    const result: any[] = [];
+
+    for (let i = 0; i < 3; i++) {
+      let day = todayJs + i;
+
+      if (day > 6) {
+        day = day - 6;
+      }
+
+      const found = this.daysOfWeek.find((d) => this.dayValueToJsDay[d.value] === day);
+
+      if (found) {
+        result.push(found);
+      }
+    }
+
+    return result;
   }
 
   isDayEnabled(dayValue: string): boolean {
@@ -317,12 +349,12 @@ export class CheckoutPage implements OnInit {
   // }
 
   getSlotTime(slotValue: string): { start: number; end: number } | null {
-    const parts = slotValue.split('_'); // ["MORNING","08","11"]
+    const parts = slotValue.split('-');
 
-    if (parts.length < 3) return null;
+    if (parts.length !== 2) return null;
 
-    const start = parseInt(parts[1], 10);
-    const end = parseInt(parts[2], 10);
+    const start = parseInt(parts[0], 10);
+    const end = parseInt(parts[1], 10);
 
     return { start, end };
   }
@@ -330,7 +362,6 @@ export class CheckoutPage implements OnInit {
   isTimeSlotEnabled(slotValue: string): boolean {
     if (!this.selectedDay) return true;
 
-    // Get German time
     const now = new Date();
     const germanNow = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
 
@@ -348,12 +379,13 @@ export class CheckoutPage implements OnInit {
 
     if (currentHour >= slot.end) return false;
 
-    if (currentHour >= slot.start && currentHour < slot.end) return false;
+    const remainingTime = slot.end - currentHour;
 
-    if (slot.end - currentHour <= 2) return false;
+    if (remainingTime < 2) return false;
 
     return true;
   }
+
   getDateFromDay(dayValue: string): string {
     const now = new Date();
 
@@ -390,6 +422,8 @@ export class CheckoutPage implements OnInit {
   }
 
   submitSchedule(): void {
+    this.scheduleErrorMessage = '';
+    this.cdr.detectChanges();
     console.log('select day:', this.selectedDay);
     console.log('select time slot:', this.selectedTimeSlot);
     if (!this.selectedDay || !this.selectedTimeSlot) {
@@ -435,11 +469,25 @@ export class CheckoutPage implements OnInit {
           this.startSuccessRedirect('Ihre Anfrage wurde erfolgreich übermittelt.');
           this.authService.clearCheckoutFlowData();
           this.cdr.detectChanges();
+        } else if (res?.res === false && res?.holidayDated?.length) {
+          this.isScheduleLoading = false;
+          this.overrideStartDay = res.nextDay;
+          this.selectedDay = '';
+
+          const holidayDates = res.holidayDated.map((d: string) => this.formatDateDE(d)).join(', ');
+
+          const nextDate = this.formatDateDE(res.nextDate);
+          const nextDay = this.getDayLabel(res.nextDay);
+
+          this.scheduleErrorMessage =
+            `Der ausgewählte Termin ist ein Urlaubstag. ` +
+            `Die folgenden Tage sind ebenfalls nicht verfügbar: ${holidayDates}. ` +
+            `Bitte wählen Sie einen Termin ab dem ${nextDate} (${nextDay}).`;
+          this.cdr.detectChanges();
         } else {
           this.isScheduleLoading = false;
           this.scheduleErrorMessage =
-            res.errMessage || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
-          console.error('Add-schedule API error:', res.errMessage);
+            res.errorMessage || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
           this.cdr.detectChanges();
         }
       },
@@ -465,6 +513,16 @@ export class CheckoutPage implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  formatDateDE(dateStr: string): string {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('de-DE'); // 01.05.2026
+  }
+
+  getDayLabel(dayValue: string): string {
+    const found = this.daysOfWeek.find((d) => d.value === dayValue);
+    return found ? found.label : dayValue;
   }
 
   skipSchedule(): void {
