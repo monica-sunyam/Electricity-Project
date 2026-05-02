@@ -354,10 +354,12 @@ public class CustomerAuthService {
 							customer.getLastName(), "email", customer.getEmail()));
 		} else if (!customer.getIsVerified())
 			return Map.of("res", false, "message", "Account is not verified");
-		else if (customer.getPassword().equals(password))
-			return Map.of("res", false, "message", "Incomplete profile");
-		else
+		else if (!customer.getIsAcknowledged())
+			return Map.of("res", false, "message", "Account is not marked acknowledged, please signup again");
+		else if (!customer.getPassword().equals(password))
 			return Map.of("res", false, "message", "Incorrect password");
+		else
+			return Map.of("res", false, "message", "Incomplete profile");
 	}
 
 	@Transactional
@@ -390,6 +392,8 @@ public class CustomerAuthService {
 
 		if (!customer.getIsVerified())
 			throw new InternalServerException("Account is not verified", HttpStatus.OK);
+		if (!customer.getIsAcknowledged())
+			return Map.of("res", false, "message", "Account is not marked acknowledged, please signup again");
 
 		String otp = helper.generateOtp();
 		customer.setOtp(otp);

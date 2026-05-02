@@ -11,6 +11,7 @@ import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto;
 import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto.OrderListResponse;
 import com.tarifvergleich.electricity.dto.BaseProviderResponse;
 import com.tarifvergleich.electricity.dto.CheckIbanResponseDto;
+import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonDocumentDto;
 import com.tarifvergleich.electricity.dto.EnergyApiResponse;
 import com.tarifvergleich.electricity.exception.EnergyApiUnavailableException;
 
@@ -87,7 +88,7 @@ public class EnergyService {
 				}).body(CheckIbanResponseDto.class);
 	}
 
-	public OrderListResponse placeOrde(AdminCreateOrderEgonDto requestPayload) {
+	public OrderListResponse placeOrder(AdminCreateOrderEgonDto requestPayload) {
 		if (requestPayload == null)
 			return null;
 
@@ -101,5 +102,10 @@ public class EnergyService {
 					throw new EnergyApiUnavailableException("Order cannot be placed", body);
 				}).body(OrderListResponse.class);
 	}
-
+	
+	public EgonDocumentDto createBookingPdf() {
+		return null;
+	}
+	
+	
 }

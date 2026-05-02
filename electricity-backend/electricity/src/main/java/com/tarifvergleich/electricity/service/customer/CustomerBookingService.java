@@ -37,6 +37,8 @@ import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
 import com.tarifvergleich.electricity.repository.CustomerRepository;
 import com.tarifvergleich.electricity.repository.ListOfHolidaysRepository;
 import com.tarifvergleich.electricity.service.ElectricityComparisonService;
+import com.tarifvergleich.electricity.service.MailService;
+import com.tarifvergleich.electricity.util.FileServiceCustomer;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.transaction.Transactional;
@@ -54,6 +56,8 @@ public class CustomerBookingService {
 	private final Helper helper;
 	private final ObjectMapper objectMapper;
 	private final ElectricityComparisonService electricityComparisonService;
+	private final FileServiceCustomer fileServiceCustomer;
+	private final MailService mailService;
 
 	@Transactional
 	public Map<String, Object> saveDelivery(Integer customerId, Integer deliveryId, CustomerDeliveryDto deliveryDto,
@@ -105,7 +109,7 @@ public class CustomerBookingService {
 
 		if (deliveryDto.getDeliveryType() == null || deliveryDto.getDeliveryType().isEmpty()
 				|| (!deliveryDto.getDeliveryType().equalsIgnoreCase("Electricity")
-				&& !deliveryDto.getDeliveryType().equalsIgnoreCase("GS")))
+						&& !deliveryDto.getDeliveryType().equalsIgnoreCase("GS")))
 			throw new InternalServerException("Delivery type missing", HttpStatus.OK);
 
 		LocalDate todayInBerlin = LocalDate.now(ZoneId.of("Europe/Berlin"));
@@ -185,8 +189,8 @@ public class CustomerBookingService {
 					.firstName(deliveryDto.getFirstName()).lastName(deliveryDto.getLastName()).address(address)
 					.billingAddress(billingAddress).salutation(deliveryDto.getSalutation())
 					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone())
-					.deliveryType(deliveryDto.getDeliveryType().toUpperCase())
-					.customerProvider(selectedProvider).dob(helper.toGermamUnixTimestamp(deliveryDto.getDob())).build();
+					.deliveryType(deliveryDto.getDeliveryType().toUpperCase()).customerProvider(selectedProvider)
+					.dob(helper.toGermamUnixTimestamp(deliveryDto.getDob())).build();
 
 			delivery.setUserAdmin(customer.getAdmin());
 
@@ -482,6 +486,29 @@ public class CustomerBookingService {
 				.orElseThrow(() -> new InternalServerException("Customer not found", HttpStatus.OK));
 
 		return Map.of("res", true, "data", customerResponseMapper.toResponseDto(customer));
+	}
+
+	public Map<String, Object> sendUnsignedDocumentByEmail(Integer adminId, Integer customerId) {
+
+		if (adminId == null || customerId <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (customerId == null || customerId <= 0)
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
+
+		Customer customer = customerRepo.findByCustomerIdAndAdminAdminId(customerId, adminId).orElseThrow(
+				() -> new InternalServerException("Customer not found with this credentials", HttpStatus.OK));
+
+		String to = customer.getEmail();
+		String body = "Please find your signed contract attached.";
+		String subject = "Signed pdf";
+
+		String relativePath = "customer-unsigned-documents/file-sample_150kB.pdf";
+
+		String absolutePath = fileServiceCustomer.getAbsolutePath(relativePath);
+		
+		mailService.sendMailWithAttachment(to, subject, body, absolutePath);
+
+		return Map.of("res", true, "message", "Mail sended successfully");
 	}
 
 }

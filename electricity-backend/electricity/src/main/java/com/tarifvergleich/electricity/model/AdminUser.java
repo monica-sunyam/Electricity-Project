@@ -103,6 +103,10 @@ public class AdminUser {
 	@JsonIgnoreProperties("admin")
 	private List<ListOfHolidays> holidays;
 	
+	@OneToMany(mappedBy = "admin", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
+	@JsonIgnoreProperties("admin")
+	private List<CustomerBookingDocument> customerBookingDocuments;
+	
 	@PrePersist
 	protected void onCreate() {
 	    this.createdOn = Helper.getCurrentTimeBerlin();
@@ -190,5 +194,12 @@ public class AdminUser {
 			holidays = new LinkedList<ListOfHolidays>();
 		holiday.setAdmin(this);
 		holidays.add(holiday);
+	}
+	
+	public void addCustomerBookingDocuments(CustomerBookingDocument document) {
+		if(this.customerBookingDocuments == null)
+			customerBookingDocuments = new LinkedList<CustomerBookingDocument>();
+		document.setAdmin(this);
+		customerBookingDocuments.add(document);
 	}
 }

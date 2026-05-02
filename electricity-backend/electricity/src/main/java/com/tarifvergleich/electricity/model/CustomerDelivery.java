@@ -103,6 +103,10 @@ public class CustomerDelivery {
 	@JoinColumn(name = "customer_selected_provider_id")
 	private CustomerSelectedProvider customerProvider;
 	
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name = "customer_booking_document_id")
+	private CustomerBookingDocument customerBookingDocument;
+	
 	@OneToMany(mappedBy = "customerDelivery")
 	@JsonIgnoreProperties("customerDelivery")
 	private List<CustomerServiceRequest> customerServiceRequests;

@@ -369,7 +369,7 @@ public class AdminCustomerManagementService {
 
 		AdminCreateOrderEgonDto placeOrderRequest = AdminCreateOrderEgonDto.mapToEgonRequest(delivery, "new");
 
-		OrderListResponse placeOrderResponse = energyService.placeOrde(placeOrderRequest);
+		OrderListResponse placeOrderResponse = energyService.placeOrder(placeOrderRequest);
 
 		Long orderNo = placeOrderResponse.orders().getFirst().orderNo();
 

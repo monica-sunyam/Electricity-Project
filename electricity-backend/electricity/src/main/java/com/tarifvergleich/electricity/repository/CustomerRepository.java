@@ -22,6 +22,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 	Page<Customer> findAll(Pageable pageable);
 
 	Page<Customer> findAllByAdminAdminId(Integer adminId, Pageable pageable);
+	
+	Optional<Customer> findByCustomerIdAndAdminAdminId(Integer customerId, Integer adminId);
 
 	List<Customer> findAllByAdminAdminIdOrderByJoinedOnDesc(Integer adminId);
 

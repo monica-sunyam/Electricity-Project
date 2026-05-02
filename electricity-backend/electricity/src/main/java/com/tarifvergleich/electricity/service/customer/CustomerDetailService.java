@@ -188,6 +188,26 @@ public class CustomerDetailService {
 		return Map.of("res", true, "customer", customerResponse, "delivery", deliveryResponse);
 	}
 
+	public Map<String, Object> fetchAllCustomerDeliveriesByGroup(Integer adminId, Integer customerId) {
+
+		if (adminId == null || adminId <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (customerId == null || customerId <= 0)
+			throw new InternalServerException("Customer id Missing", HttpStatus.OK);
+
+		List<CustomerDelivery> customerDeliveries = customerDeliveryRepo
+				.findAllByAdminAdminIdAndCustomerIdCustomerIdAndOrderPlacedOrderByOrderPlacedOnDesc(adminId, customerId,
+						true);
+
+		Map<String, List<CustomerDeliveryResponseAll>> deliveryResponse = customerDeliveries.stream()
+				.map(CustomerDeliveryResponseDto::getDeliveryResponse).collect(Collectors.groupingBy(deliver -> {
+					return deliver.getCustomerAddress().getZip() + " " + deliver.getCustomerAddress().getCity() + " "
+							+ deliver.getCustomerAddress().getStreet();
+				}));
+
+		return Map.of("res", true, "data", deliveryResponse);
+	}
+
 	public Map<String, Object> fetchCustomerServices(Integer adminId, String serviceType) {
 
 		if (adminId == null || adminId <= 0)
@@ -478,7 +498,6 @@ public class CustomerDetailService {
 
 		List<Integer> addressIds = customerAddresses.stream().filter(addr -> addr != null).map(CustomerAddress::getId)
 				.toList();
-		
 
 		List<CustomerDelivery> deliveries = customerDeliveryRepo
 				.findAllByCustomerIdCustomerIdAndIsExpiredAndIsCancelledAndDeliveryTypeAndOrderPlacedAndAddressIdIn(

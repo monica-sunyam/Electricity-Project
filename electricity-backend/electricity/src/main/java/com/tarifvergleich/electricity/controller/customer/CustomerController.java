@@ -146,4 +146,10 @@ public class CustomerController {
 		return ResponseEntity.ok(customerDetailService.checkForBookings(addressDto));
 	}
 
+	@PostMapping("/send-attachment-mail")
+	public ResponseEntity<?> sendAttachmentMail(@RequestBody CustomerDto customerDto) {
+		return ResponseEntity
+				.ok(customerBookingService.sendUnsignedDocumentByEmail(customerDto.getAdminId(), customerDto.getId()));
+	}
+
 }
