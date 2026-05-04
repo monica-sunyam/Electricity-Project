@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-const API_BASE = 'http://192.168.0.155:8080';
+const API_BASE = 'http://localhost:8080';
 
 interface CustomerPayment {
   paymentMethod?: string | null;

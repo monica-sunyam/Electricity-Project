@@ -13,7 +13,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, computed } from '@angu
 import { Subscription } from 'rxjs';
 import { take, filter } from 'rxjs/operators';
 
-const API_BASE = 'http://192.168.0.155:8080';
+const API_BASE = 'http://localhost:8080';
 
 @Component({
   selector: 'app-delivery-address',

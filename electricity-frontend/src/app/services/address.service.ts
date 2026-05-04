@@ -67,10 +67,10 @@ export class AddressService {
     );
   }
 
-  getStreetsByCity(placeId: string): Observable<{ street: string; street_id: string }[]> {
+  getStreetsByCity(zip: string, city: string): Observable<{ street: string; street_id: string }[]> {
     const url = `/api/streets-by-zip`;
 
-    return this.http.post<StreetResponse>(this.baseUrl + url, { placeId }).pipe(
+    return this.http.post<StreetResponse>(this.baseUrl + url, { zip, city }).pipe(
       map((res) => {
         if (res && res.res && Array.isArray(res.data)) {
           return res.data.map((item: Street) => ({

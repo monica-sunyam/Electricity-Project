@@ -441,7 +441,7 @@ export class AuthService {
     const body = { id: Number(customerId) };
 
     this.http
-      .post<any>('http://192.168.0.155:8080/customer/fetch-customer-detail', body)
+      .post<any>('http://localhost:8080/customer/fetch-customer-detail', body)
       .subscribe({
         next: (res) => {
           console.log('API RESPONSE:', res);

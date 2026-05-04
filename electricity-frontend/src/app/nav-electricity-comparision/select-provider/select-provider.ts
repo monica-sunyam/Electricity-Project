@@ -292,7 +292,7 @@ export class SelectProvider implements OnInit {
         this.isStreetLoading = true;
         this.addressForm.get('street')?.enable();
 
-        this.addressService.getStreetsByCity(matchedCity.city_id).subscribe((streets) => {
+        this.addressService.getStreetsByCity(saved.zip, matchedCity.city_id).subscribe((streets) => {
           this.streetOptions = streets;
           this.filteredStreetOptions = [...streets];
 
@@ -545,7 +545,7 @@ export class SelectProvider implements OnInit {
 
         this.addressForm.get('street')?.enable();
 
-        this.addressService.getStreetsByCity(placeId).subscribe((streets) => {
+        this.addressService.getStreetsByCity(zip, city).subscribe((streets) => {
           this.ngZone.run(() => {
             this.streetOptions = streets;
 

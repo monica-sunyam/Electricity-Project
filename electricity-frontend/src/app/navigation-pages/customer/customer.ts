@@ -181,6 +181,7 @@ export class Customer {
     this.fetchAllRequests();
     this.fetchServiceCount();
     this.fetchCustomer();
+    this.fetchDeliveryByAddress();
     this.fetchCards();
     this.fetchCategories('general');
 
@@ -313,6 +314,37 @@ export class Customer {
       cancelDate: '27.04.2026',
     },
   ];
+
+  
+  private fetchDeliveryByAddress(): void {
+    const customerId = this.authService.getUserId() || 0;
+
+    const body = {
+      id: customerId,
+      adminId: 1,
+    };
+
+    this.http.post<any>(`${API_BASE}/customer/fetch-customer-delivery-group`, body).subscribe({
+      next: (res) => {
+        if (!res?.res || !res?.data) {
+          console.error('Invalid response');
+          // this.isLoading = false;
+          return;
+        }
+
+        const data = res.data;
+
+        console.log('customerData delivery:', data);
+
+        this.cdr.detectChanges();
+        // this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+        // this.isLoading = false;
+      },
+    });
+  }
 
   /*── Reminder Section End ──*/
   /* ════════════════════════════════════════════════════════════════════════════════════════════════*/

@@ -21,7 +21,7 @@ describe('CheckoutPage', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === 'http://192.168.0.155:8080/customer/fetch-form',
+      (request) => request.url === 'http://localhost:8080/customer/fetch-form',
     );
     req.flush({ res: true, data: null });
   });

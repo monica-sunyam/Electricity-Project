@@ -327,7 +327,7 @@ export class Electricity implements OnInit {
         this.isStreetLoading = true;
 
         this.addressForm.get('street')?.enable();
-        this.addressService.getStreetsByCity(placeId).subscribe((streets) => {
+        this.addressService.getStreetsByCity(zip, city).subscribe((streets) => {
           const currentZip = this.addressForm.get('postalCode')?.value;
           if (!/^\d{5}$/.test(currentZip)) {
             return;

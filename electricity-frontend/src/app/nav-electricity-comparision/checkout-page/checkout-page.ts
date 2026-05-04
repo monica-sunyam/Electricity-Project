@@ -81,7 +81,7 @@ interface FetchFormResponse {
 })
 export class CheckoutPage implements OnInit {
   private API_BASE: string;
-  private readonly LOCAL_API_BASE = 'http://192.168.0.155:8080';
+  private readonly LOCAL_API_BASE = 'http://localhost:8080';
   private redirectTimeoutId: ReturnType<typeof setTimeout> | null = null;
   showConfirmation = false;
   isLoading = false;
