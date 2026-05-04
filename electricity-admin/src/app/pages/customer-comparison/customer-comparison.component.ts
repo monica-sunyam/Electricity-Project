@@ -1,5 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { Subject, Subscription } from "rxjs";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { ApiService } from "../../shared/services/api.service";
 import { AuthService } from "../../shared/services/auth.service";
 
@@ -93,11 +97,11 @@ export type ComparisonEntry = {
 @Component({
   selector: "app-comparison-list",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: "./customer-comparison.component.html",
   styleUrl: "./customer-comparison.component.css",
 })
-export class ComparisonListComponent implements OnInit {
+export class ComparisonListComponent implements OnInit, OnDestroy {
   comparisons: ComparisonEntry[] = [];
   isLoading = false;
   errorMessage = "";
@@ -105,24 +109,56 @@ export class ComparisonListComponent implements OnInit {
   isSidebarOpen = false;
   activeRateTab: "base" | "results" = "results";
 
+  // ── Pagination ──────────────────────────────────────────────
   hasMoreData = true;
   currentPage = 1;
+  totalCount = 0;      // total records from API
+  totalPages = 1;      // computed from totalCount / PAGE_LIMIT
   private readonly PAGE_LIMIT = 20;
+
+  // ── Search ──────────────────────────────────────────────────
+  searchTerm = "";
+  private searchTerm$ = new Subject<string>();
+  private searchSub!: Subscription;
 
   constructor(
     private api: ApiService,
     private authService: AuthService,
-  ) {}
+    private router: Router,
+  ) { }
 
   ngOnInit(): void {
+    // Debounce search input: wait 350 ms after last keystroke, skip unchanged values
+    this.searchSub = this.searchTerm$
+      .pipe(debounceTime(350), distinctUntilChanged())
+      .subscribe(() => this.fetchComparisons(1));
+
     this.fetchComparisons();
   }
+
+  ngOnDestroy(): void {
+    this.searchSub?.unsubscribe();
+  }
+
+  onSearchInput(value: string): void {
+    this.searchTerm = value;
+    this.searchTerm$.next(value);
+  }
+
+  clearSearch(): void {
+    this.searchTerm = "";
+    this.searchTerm$.next("");
+  }
+
+  // ── Data fetching ────────────────────────────────────────────
 
   fetchComparisons(page: number = 1): void {
     this.currentPage = page;
     const payload = {
       adminId: this.authService.getUserId(),
       page: this.currentPage,
+      limit: this.PAGE_LIMIT,
+      search: this.searchTerm.trim() || undefined,
     };
     this.isLoading = true;
     this.errorMessage = "";
@@ -134,6 +170,19 @@ export class ComparisonListComponent implements OnInit {
         const newData = this.extractList(res);
         this.comparisons = newData;
         this.hasMoreData = newData.length === this.PAGE_LIMIT;
+
+        // Prefer explicit total from API; fall back to estimating from current page
+        if (typeof res?.total === "number") {
+          this.totalCount = res.total;
+        } else if (typeof res?.data?.total === "number") {
+          this.totalCount = res.data.total;
+        } else {
+          // Conservative fallback: known pages so far
+          this.totalCount = this.hasMoreData
+            ? this.currentPage * this.PAGE_LIMIT + 1   // at least one more page
+            : (this.currentPage - 1) * this.PAGE_LIMIT + newData.length;
+        }
+        this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.PAGE_LIMIT));
       },
       error: (err) => {
         this.isLoading = false;
@@ -150,6 +199,20 @@ export class ComparisonListComponent implements OnInit {
   prevPage(): void {
     if (this.currentPage > 1) this.fetchComparisons(this.currentPage - 1);
   }
+
+  // ── Pagination display helpers ───────────────────────────────
+
+  /** First record number on current page, e.g. 21 */
+  get pageRangeFrom(): number {
+    return (this.currentPage - 1) * this.PAGE_LIMIT + 1;
+  }
+
+  /** Last record number on current page, e.g. 40 */
+  get pageRangeTo(): number {
+    return Math.min(this.currentPage * this.PAGE_LIMIT, this.totalCount);
+  }
+
+  // ── Sidebar ──────────────────────────────────────────────────
 
   openSidebar(entry: ComparisonEntry): void {
     if (this.selectedEntry?.id === entry.id) {
@@ -174,7 +237,26 @@ export class ComparisonListComponent implements OnInit {
     this.activeRateTab = tab;
   }
 
-  // ── Customer helpers ────────────────────────────────────────
+  // ── Admin: continue contract ─────────────────────────────────
+
+  /**
+   * Opens the tariff/order flow pre-filled with the data from this comparison,
+   * acting on behalf of the customer (or as admin for a guest).
+   *
+   * Adjust the route and query-param names to match your actual order flow.
+   */
+  continueAsAdmin(entry: ComparisonEntry): void {
+    if (!entry.id) return;
+    this.router.navigate(["/admin/order/new"], {
+      queryParams: {
+        comparisonId: entry.id,
+        customerId: entry.customer?.id ?? null,
+        adminMode: true,
+      },
+    });
+  }
+
+  // ── Customer helpers ─────────────────────────────────────────
 
   isLoggedIn(entry: ComparisonEntry): boolean {
     return !!entry.customer?.id && entry.customer.id !== 0;
@@ -192,15 +274,14 @@ export class ComparisonListComponent implements OnInit {
     return (f + l).toUpperCase() || "G";
   }
 
-  // ── Device / IP helpers ─────────────────────────────────────
+  // ── Device / IP helpers ──────────────────────────────────────
 
   parseDevice(raw?: string | null): string {
     if (!raw) return "—";
-    // Format: "{os=Windows, device=Other, browser=Chrome}"
     return raw.replace(/[{}]/g, "").split(",").map(p => p.split("=")[1]?.trim()).filter(Boolean).join(" · ");
   }
 
-  // ── Address helpers ─────────────────────────────────────────
+  // ── Address helpers ──────────────────────────────────────────
 
   formatAddress(entry: ComparisonEntry): string {
     const parts = [
@@ -210,7 +291,7 @@ export class ComparisonListComponent implements OnInit {
     return parts.join(", ") || "—";
   }
 
-  // ── Provider helpers ────────────────────────────────────────
+  // ── Provider helpers ─────────────────────────────────────────
 
   baseProviders(entry: ComparisonEntry): BaseProvider[] {
     return entry.baseProviderResponse?.result ?? [];
@@ -236,7 +317,7 @@ export class ComparisonListComponent implements OnInit {
     return types.map(t => map[t] ?? t).join(", ");
   }
 
-  // ── Date helpers ────────────────────────────────────────────
+  // ── Date helpers ─────────────────────────────────────────────
 
   formatDate(value?: number | string | null): string {
     if (value === null || value === undefined || value === "") return "—";

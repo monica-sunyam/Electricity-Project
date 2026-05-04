@@ -63,7 +63,7 @@ export class Customer {
   }
   tabs: string[] = [
     'Persönliche Daten / Verträge',
-    'Mein Haushalt',
+    'Zähler & Verträge',
     'Zählerstand melden',
     'Wechselinnerung',
     'Serviceanfragen',

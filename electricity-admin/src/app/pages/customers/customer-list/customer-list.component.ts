@@ -39,7 +39,6 @@ export interface Attorney {
   revokedOn: number | null;
   customerSignaturePath: string | null;
   placeAndDate: string | null;
-  // UI state flag
   isProcessing?: boolean;
 }
 
@@ -62,10 +61,12 @@ export type AdminCustomer = {
   status: boolean;
   changePasswordHistory: PasswordHistory[];
   address: {
+    id?: number;
     zip?: string;
     city?: string;
     street?: string;
     houseNumber?: string;
+    customerId?: number | null;
   } | null;
   attornies: Attorney[];
 };
@@ -82,6 +83,14 @@ export class CustomerListComponent implements OnInit {
   isLoading = false;
   errorMessage = "";
 
+  isNoteModalOpen = false;
+  noteCustomer: AdminCustomer | null = null;
+  noteText = "";
+  isSavingNote = false;
+
+  /** Stores one admin note per customer id */
+  customerNotes: Record<string | number, string> = {};
+
   /** Currently selected customer shown in the sidebar */
   selectedCustomer: AdminCustomer | null = null;
 
@@ -94,10 +103,22 @@ export class CustomerListComponent implements OnInit {
   selectedUserType: string = "";
   selectedVerifiedStatus: string = "";
 
+  /**
+   * Tracks GDPR contact status per customer id.
+   * Key: customer.id — Value: boolean (true = GDPR contact enabled)
+   */
+  gdprContactStatus: Record<string | number, boolean> = {};
+
+  /**
+   * Tracks in-flight GDPR API calls per customer id
+   * to prevent double-clicks.
+   */
+  gdprLoading: Record<string | number, boolean> = {};
+
   constructor(
     private api: ApiService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchCustomers();
@@ -116,6 +137,49 @@ export class CustomerListComponent implements OnInit {
   /** Close the sidebar */
   closeSidebar(): void {
     this.selectedCustomer = null;
+  }
+
+  /** Open note modal for a customer */
+  openNoteModal(event: Event, customer: AdminCustomer): void {
+    event.stopPropagation();
+    this.noteCustomer = customer;
+    this.noteText = this.customerNotes[customer.id] ?? "";
+    this.isNoteModalOpen = true;
+  }
+
+  /** Close note modal and reset form state */
+  closeNoteModal(): void {
+    this.isNoteModalOpen = false;
+    this.noteCustomer = null;
+    this.noteText = "";
+    this.isSavingNote = false;
+  }
+
+  /** Save note for current customer */
+  saveCustomerNote(): void {
+    if (!this.noteCustomer || this.isSavingNote) return;
+
+    const trimmedNote = this.noteText.trim();
+    if (!trimmedNote) return;
+
+    this.isSavingNote = true;
+
+    const payload = {
+      adminId: this.authService.getUserId(),
+      customerId: this.noteCustomer.id,
+      note: trimmedNote,
+    };
+
+    this.api.post("admin/add-customer-note", payload).subscribe({
+      next: () => {
+        this.customerNotes[this.noteCustomer!.id] = trimmedNote;
+        this.closeNoteModal();
+      },
+      error: () => {
+        // Keep modal open so admin can retry without losing note text.
+        this.isSavingNote = false;
+      },
+    });
   }
 
   fetchCustomers(page: number = 1): void {
@@ -139,6 +203,17 @@ export class CustomerListComponent implements OnInit {
         this.customers = newData;
         this.hasMoreData = newData.length === this.PAGE_LIMIT;
         this.totalPage = res?.totalPage ?? null;
+
+        // Initialise GDPR state for any new customers (preserve existing toggles)
+        newData.forEach((c) => {
+          if (!(c.id in this.gdprContactStatus)) {
+            this.gdprContactStatus[c.id] = false;
+          }
+
+          if (!(c.id in this.customerNotes)) {
+            this.customerNotes[c.id] = "";
+          }
+        });
       },
       error: () => {
         this.isLoading = false;
@@ -157,6 +232,37 @@ export class CustomerListComponent implements OnInit {
     if (this.currentPage > 1) {
       this.fetchCustomers(this.currentPage - 1);
     }
+  }
+
+  /**
+   * Toggle GDPR contact permission for a customer.
+   * Calls the mock endpoint admin/update-gdpr-contact-status.
+   * Stops row-click propagation so the sidebar does not open/close.
+   */
+  toggleGdprContact(event: Event, customer: AdminCustomer): void {
+    event.stopPropagation();
+
+    if (this.gdprLoading[customer.id]) return;
+
+    const newStatus = !this.gdprContactStatus[customer.id];
+    this.gdprLoading[customer.id] = true;
+
+    const payload = {
+      adminId: this.authService.getUserId(),
+      customerId: customer.id,
+      gdprContactAllowed: newStatus,
+    };
+
+    this.api.post("admin/update-gdpr-contact-status", payload).subscribe({
+      next: () => {
+        this.gdprContactStatus[customer.id] = newStatus;
+        this.gdprLoading[customer.id] = false;
+      },
+      error: () => {
+        // Revert optimistic update on error
+        this.gdprLoading[customer.id] = false;
+      },
+    });
   }
 
   /** Approve an attorney */
@@ -207,9 +313,7 @@ export class CustomerListComponent implements OnInit {
     });
   }
 
-  /**
-   * Helper to safely construct full name
-   */
+  /** Safely construct full name */
   fullName(customer: AdminCustomer): string {
     const first = (customer.firstName || "").trim();
     const last = (customer.lastName || "").trim();
@@ -217,9 +321,7 @@ export class CustomerListComponent implements OnInit {
     return value || "Keine Angabe";
   }
 
-  /**
-   * Private mapper to ensure the UI data structure is consistent
-   */
+  /** Private mapper to ensure the UI data structure is consistent */
   private extractList(response: any): AdminCustomer[] {
     const list = Array.isArray(response?.data) ? response.data : [];
 

@@ -56,6 +56,7 @@
               <th class="px-4 py-3 font-medium">Telefon</th>
               <th class="px-4 py-3 font-medium">Verifiziert</th>
               <th class="px-4 py-3 font-medium">Status</th>
+              <th class="px-4 py-3 font-medium">GDPR Kontakt</th>
               <th class="px-4 py-3 text-right rounded-tr-xl font-medium">Aktion</th>
             </tr>
           </thead>
@@ -64,62 +65,129 @@
             <tr
               class="border-t border-gray-100 dark:border-gray-700/60 hover:bg-brand-50/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
               [class.bg-brand-50]="selectedCustomer?.id === customer.id"
-              [class.dark:bg-gray-800]="selectedCustomer?.id === customer.id"
-              (click)="selectCustomer(customer)">
+              [class.dark:bg-gray-800]="selectedCustomer?.id === customer.id" (click)="selectCustomer(customer)">
 
-              <td class="px-4 py-3.5 text-gray-400 text-xs font-mono">#{{ customer.uniqueCustomerId }}</td>
+              <!-- ID -->
+              <td class="px-4 py-3.5">
+                <span class="text-gray-400 text-xs font-mono">#{{ customer.uniqueCustomerId }}</span>
+                <div class="text-[10px] text-gray-300 dark:text-gray-600 mt-0.5">ID: {{ customer.id }}</div>
+              </td>
 
+              <!-- Name -->
               <td class="px-4 py-3.5">
                 <div class="font-medium text-gray-900 dark:text-white">
                   {{ customer.title }} {{ customer.firstName }} {{ customer.lastName }}
                 </div>
                 <div class="text-xs text-gray-400 mt-0.5">
+                  {{ customer.salutation }} ·
                   {{ customer.userType === 'BUSINESS' ? 'Geschäftlich' : 'Privat' }}
                   @if (customer.companyName) { · {{ customer.companyName }} }
                 </div>
               </td>
 
-              <td class="px-4 py-3.5 text-gray-600 dark:text-gray-400 text-xs">{{ customer.email }}</td>
+              <!-- Email -->
+              <td class="px-4 py-3.5 text-gray-600 dark:text-gray-400 text-xs">{{ customer.email || '—' }}</td>
 
+              <!-- Mobile -->
               <td class="px-4 py-3.5 text-gray-600 dark:text-gray-400 text-xs">
-                {{ customer.mobileNumber || "—" }}
+                {{ customer.mobileNumber || '—' }}
               </td>
 
+              <!-- Verified -->
               <td class="px-4 py-3.5">
                 @if (customer.isVerified) {
                 <span class="inline-flex items-center gap-1 text-xs text-green-700 dark:text-green-400">
                   <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd" />
                   </svg>
                   Ja
                 </span>
                 } @else {
                 <span class="inline-flex items-center gap-1 text-xs text-red-500 dark:text-red-400">
                   <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd" />
                   </svg>
                   Nein
                 </span>
                 }
               </td>
 
+              <!-- Account status -->
               <td class="px-4 py-3.5">
-                <span class="px-2 py-0.5 rounded-full text-xs font-medium"
-                  [class.bg-green-100]="customer.status" [class.text-green-700]="customer.status"
-                  [class.bg-red-100]="!customer.status" [class.text-red-700]="!customer.status">
-                  {{ customer.status ? "Aktiv" : "Inaktiv" }}
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium" [class.bg-green-100]="customer.status"
+                  [class.text-green-700]="customer.status" [class.bg-red-100]="!customer.status"
+                  [class.text-red-700]="!customer.status">
+                  {{ customer.status ? 'Aktiv' : 'Inaktiv' }}
                 </span>
               </td>
 
-              <td class="px-4 py-3.5 text-right">
-                <button class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-500 hover:text-brand-700 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20">
-                  <span>Details</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200"
-                    [class.rotate-90]="selectedCustomer?.id === customer.id"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <!-- GDPR Contact Button -->
+              <td class="px-4 py-3.5" (click)="$event.stopPropagation()">
+                <button (click)="toggleGdprContact($event, customer)" [disabled]="gdprLoading[customer.id]"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                  [class.bg-teal-50]="gdprContactStatus[customer.id]"
+                  [class.text-teal-700]="gdprContactStatus[customer.id]"
+                  [class.border-teal-300]="gdprContactStatus[customer.id]"
+                  [class.hover:bg-teal-100]="gdprContactStatus[customer.id]"
+                  [class.dark:bg-teal-900/20]="gdprContactStatus[customer.id]"
+                  [class.dark:text-teal-400]="gdprContactStatus[customer.id]"
+                  [class.dark:border-teal-700]="gdprContactStatus[customer.id]"
+                  [class.bg-red-50]="!gdprContactStatus[customer.id]"
+                  [class.text-red-600]="!gdprContactStatus[customer.id]"
+                  [class.border-red-300]="!gdprContactStatus[customer.id]"
+                  [class.hover:bg-red-100]="!gdprContactStatus[customer.id]"
+                  [class.dark:bg-red-900/20]="!gdprContactStatus[customer.id]"
+                  [class.dark:text-red-400]="!gdprContactStatus[customer.id]"
+                  [class.dark:border-red-800]="!gdprContactStatus[customer.id]">
+
+                  <!-- Spinner while loading -->
+                  @if (gdprLoading[customer.id]) {
+                  <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></div>
+                  <span>Wird gespeichert...</span>
+                  } @else if (gdprContactStatus[customer.id]) {
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd" />
                   </svg>
+                  <span>GDPR: Aktiv</span>
+                  } @else {
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  <span>GDPR: Inaktiv</span>
+                  }
                 </button>
+              </td>
+
+              <!-- Details action -->
+              <td class="px-4 py-3.5 text-right">
+                <div class="inline-flex items-center gap-2" (click)="$event.stopPropagation()">
+                  <button (click)="openNoteModal($event, customer)"
+                    class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors px-2.5 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/60">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.586 2.586a2 2 0 112.828 2.828L12 14.828l-4 1 1-4 9.586-9.414z" />
+                    </svg>
+                    <span>{{ customerNotes[customer.id] ? 'Notiz bearbeiten' : 'Notiz' }}</span>
+                  </button>
+
+                  <button
+                    class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-500 hover:text-brand-700 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20">
+                    <span>Details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200"
+                      [class.rotate-90]="selectedCustomer?.id === customer.id" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
               </td>
             </tr>
             }
@@ -167,39 +235,52 @@
 
     <!-- ===================== DETAIL SIDEBAR ===================== -->
     @if (selectedCustomer) {
-    <div class="w-[420px] shrink-0 flex flex-col gap-0 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 overflow-hidden shadow-lg animate-slide-in">
+    <div
+      class="w-[420px] shrink-0 flex flex-col gap-0 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 overflow-hidden shadow-lg animate-slide-in">
 
       <!-- Sidebar Header -->
-      <div class="flex items-start justify-between px-5 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div
+        class="flex items-start justify-between px-5 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <div>
           <p class="text-xs text-gray-400 font-mono mb-0.5">#{{ selectedCustomer.uniqueCustomerId }}</p>
           <h3 class="text-base font-semibold text-gray-900 dark:text-white leading-tight">
-            {{ selectedCustomer.salutation }} {{ selectedCustomer.title }} {{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}
+            {{ selectedCustomer.salutation }} {{ selectedCustomer.title }}
+            {{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}
           </h3>
           <p class="text-xs text-gray-500 mt-0.5">{{ selectedCustomer.email }}</p>
         </div>
         <button (click)="closeSidebar()"
           class="ml-4 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition shrink-0">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
       <!-- Status Badges Row -->
-      <div class="flex items-center gap-2 px-5 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-wrap">
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium"
-          [class.bg-green-100]="selectedCustomer.status" [class.text-green-700]="selectedCustomer.status"
-          [class.bg-red-100]="!selectedCustomer.status" [class.text-red-700]="!selectedCustomer.status">
+      <div
+        class="flex items-center gap-2 px-5 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-wrap">
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium" [class.bg-green-100]="selectedCustomer.status"
+          [class.text-green-700]="selectedCustomer.status" [class.bg-red-100]="!selectedCustomer.status"
+          [class.text-red-700]="!selectedCustomer.status">
           {{ selectedCustomer.status ? '● Aktiv' : '● Inaktiv' }}
         </span>
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium"
-          [class.bg-blue-100]="selectedCustomer.isVerified" [class.text-blue-700]="selectedCustomer.isVerified"
-          [class.bg-orange-100]="!selectedCustomer.isVerified" [class.text-orange-600]="!selectedCustomer.isVerified">
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium" [class.bg-blue-100]="selectedCustomer.isVerified"
+          [class.text-blue-700]="selectedCustomer.isVerified" [class.bg-orange-100]="!selectedCustomer.isVerified"
+          [class.text-orange-600]="!selectedCustomer.isVerified">
           {{ selectedCustomer.isVerified ? '✓ E-Mail verifiziert' : '⚠ Unverifiziert' }}
         </span>
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-          {{ selectedCustomer.userType === 'BUSINESS' ? '🏢 Geschäftlich' : '👤 Privat' }}
+        <span
+          class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+          {{ selectedCustomer.userType === 'BUSINESS' ? 'Geschäftlich' : 'Privat' }}
+        </span>
+        <!-- GDPR badge in sidebar -->
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium"
+          [class.bg-teal-100]="gdprContactStatus[selectedCustomer.id]"
+          [class.text-teal-700]="gdprContactStatus[selectedCustomer.id]"
+          [class.bg-red-100]="!gdprContactStatus[selectedCustomer.id]"
+          [class.text-red-600]="!gdprContactStatus[selectedCustomer.id]">
+          {{ gdprContactStatus[selectedCustomer.id] ? '✓ GDPR Kontakt aktiv' : '✗ GDPR Kontakt inaktiv' }}
         </span>
       </div>
 
@@ -211,12 +292,42 @@
           <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-3">Kundenprofil</p>
           <div class="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
             <div>
+              <p class="text-xs text-gray-400">Interne ID</p>
+              <p class="text-gray-800 dark:text-gray-200 font-medium font-mono text-xs">{{ selectedCustomer.id }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">Kunden-Nr.</p>
+              <p class="text-gray-800 dark:text-gray-200 font-medium font-mono text-xs">#{{
+                selectedCustomer.uniqueCustomerId }}</p>
+            </div>
+            <div>
               <p class="text-xs text-gray-400">Anrede</p>
               <p class="text-gray-800 dark:text-gray-200 font-medium">{{ selectedCustomer.salutation || '—' }}</p>
             </div>
             <div>
               <p class="text-xs text-gray-400">Titel</p>
               <p class="text-gray-800 dark:text-gray-200 font-medium">{{ selectedCustomer.title || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">Vorname</p>
+              <p class="text-gray-800 dark:text-gray-200 font-medium">{{ selectedCustomer.firstName || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">Nachname</p>
+              <p class="text-gray-800 dark:text-gray-200 font-medium">{{ selectedCustomer.lastName || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">Nutzertyp</p>
+              <p class="text-gray-800 dark:text-gray-200 font-medium">
+                {{ selectedCustomer.userType === 'BUSINESS' ? 'Geschäftlich' : 'Privat' }}
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">Kontostatus</p>
+              <p class="font-medium" [class.text-green-600]="selectedCustomer.status"
+                [class.text-red-500]="!selectedCustomer.status">
+                {{ selectedCustomer.status ? 'Aktiv' : 'Inaktiv' }}
+              </p>
             </div>
             <div>
               <p class="text-xs text-gray-400">Mobilnummer</p>
@@ -234,20 +345,77 @@
             }
             <div>
               <p class="text-xs text-gray-400">AGB</p>
-              <p class="font-medium" [class.text-green-600]="selectedCustomer.isAcknowledged" [class.text-orange-500]="!selectedCustomer.isAcknowledged">
+              <p class="font-medium" [class.text-green-600]="selectedCustomer.isAcknowledged"
+                [class.text-orange-500]="!selectedCustomer.isAcknowledged">
                 {{ selectedCustomer.isAcknowledged ? 'Akzeptiert' : 'Ausstehend' }}
               </p>
             </div>
             <div>
               <p class="text-xs text-gray-400">Beigetreten</p>
-              <p class="text-gray-800 dark:text-gray-200 font-medium">{{ (selectedCustomer.joinedOn * 1000) | date:'dd.MM.yyyy' }}</p>
+              <p class="text-gray-800 dark:text-gray-200 font-medium">
+                {{ (selectedCustomer.joinedOn * 1000) | date:'dd.MM.yyyy HH:mm' }}
+              </p>
             </div>
             @if (selectedCustomer.isVerified && selectedCustomer.verifiedOn) {
             <div class="col-span-2">
               <p class="text-xs text-gray-400">Verifiziert am</p>
-              <p class="text-green-600 font-medium">{{ (selectedCustomer.verifiedOn * 1000) | date:'dd.MM.yyyy HH:mm' }}</p>
+              <p class="text-green-600 font-medium">
+                {{ (selectedCustomer.verifiedOn * 1000) | date:'dd.MM.yyyy HH:mm' }}
+              </p>
             </div>
             }
+          </div>
+        </div>
+
+        <!-- === SECTION: GDPR Kontakt === -->
+        <div class="px-5 py-4">
+          <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-3">GDPR Kontakt</p>
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <p class="text-sm font-medium text-gray-800 dark:text-gray-200 mb-0.5">
+                Kontakterlaubnis (DSGVO)
+              </p>
+              <p class="text-xs text-gray-400">
+                {{ gdprContactStatus[selectedCustomer.id]
+                ? 'Kontakt mit diesem Kunden ist gestattet.'
+                : 'Kontakt mit diesem Kunden ist nicht gestattet.' }}
+              </p>
+            </div>
+            <button (click)="toggleGdprContact($event, selectedCustomer)" [disabled]="gdprLoading[selectedCustomer.id]"
+              class="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+              [class.bg-teal-50]="gdprContactStatus[selectedCustomer.id]"
+              [class.text-teal-700]="gdprContactStatus[selectedCustomer.id]"
+              [class.border-teal-300]="gdprContactStatus[selectedCustomer.id]"
+              [class.hover:bg-teal-100]="gdprContactStatus[selectedCustomer.id]"
+              [class.dark:bg-teal-900/20]="gdprContactStatus[selectedCustomer.id]"
+              [class.dark:text-teal-400]="gdprContactStatus[selectedCustomer.id]"
+              [class.dark:border-teal-700]="gdprContactStatus[selectedCustomer.id]"
+              [class.bg-red-50]="!gdprContactStatus[selectedCustomer.id]"
+              [class.text-red-600]="!gdprContactStatus[selectedCustomer.id]"
+              [class.border-red-300]="!gdprContactStatus[selectedCustomer.id]"
+              [class.hover:bg-red-100]="!gdprContactStatus[selectedCustomer.id]"
+              [class.dark:bg-red-900/20]="!gdprContactStatus[selectedCustomer.id]"
+              [class.dark:text-red-400]="!gdprContactStatus[selectedCustomer.id]"
+              [class.dark:border-red-800]="!gdprContactStatus[selectedCustomer.id]">
+              @if (gdprLoading[selectedCustomer.id]) {
+              <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></div>
+              Wird gespeichert...
+              } @else if (gdprContactStatus[selectedCustomer.id]) {
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
+              </svg>
+              GDPR Kontakt: Aktiv
+              } @else {
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd" />
+              </svg>
+              GDPR Kontakt: Inaktiv
+              }
+            </button>
           </div>
         </div>
 
@@ -258,13 +426,22 @@
           <div class="flex items-start gap-3">
             <div class="mt-0.5 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg shrink-0">
               <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
             <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              <p class="font-medium">{{ selectedCustomer.address.street }} {{ selectedCustomer.address.houseNumber }}</p>
+              <p class="font-medium">{{ selectedCustomer.address.street }} {{ selectedCustomer.address.houseNumber }}
+              </p>
               <p class="text-gray-500">{{ selectedCustomer.address.zip }} {{ selectedCustomer.address.city }}</p>
+              @if (selectedCustomer.address['id']) {
+              <p class="text-[10px] text-gray-400 font-mono mt-1">
+                Adress-ID: {{ selectedCustomer.address['id'] }}
+                · Kunden-FK: {{ selectedCustomer.address['customerId'] ?? 'null' }}
+              </p>
+              }
             </div>
           </div>
           } @else {
@@ -273,17 +450,21 @@
         </div>
 
         <!-- === SECTION: Vollmachten (Attorneys) === -->
-        @if (selectedCustomer.attornies && selectedCustomer.attornies.length > 0) {
         <div class="px-5 py-4">
           <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-3">
             Vollmachten
-            <span class="ml-1.5 bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full px-1.5 py-0.5 text-[9px]">
+            <span
+              class="ml-1.5 bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full px-1.5 py-0.5 text-[9px]">
               {{ selectedCustomer.attornies.length }}
             </span>
           </p>
+          @if (selectedCustomer.attornies.length === 0) {
+          <p class="text-sm text-gray-400 italic">Keine Vollmachten vorhanden</p>
+          }
           <div class="flex flex-col gap-3">
             @for (attorney of selectedCustomer.attornies; track attorney.attornyId) {
-            <div class="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 overflow-hidden">
+            <div
+              class="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 overflow-hidden">
               <!-- Attorney Header -->
               <div class="px-4 py-3 flex items-center justify-between gap-3">
                 <div class="min-w-0">
@@ -292,7 +473,6 @@
                   </p>
                   <p class="text-xs text-gray-400 font-mono mt-0.5">#{{ attorney.uniqueAttornyId }}</p>
                 </div>
-                <!-- Attorney Status Badge -->
                 <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold"
                   [class.bg-yellow-100]="attorney.approvalStatus === 0 && !attorney.isRevoked"
                   [class.text-yellow-700]="attorney.approvalStatus === 0 && !attorney.isRevoked"
@@ -307,8 +487,13 @@
                 </span>
               </div>
 
-              <!-- Attorney Details -->
-              <div class="px-4 pb-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs border-t border-gray-100 dark:border-gray-700 pt-3">
+              <!-- Attorney Details — all fields -->
+              <div
+                class="px-4 pb-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs border-t border-gray-100 dark:border-gray-700 pt-3">
+                <div>
+                  <p class="text-gray-400">Vollmacht-ID</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-medium font-mono">{{ attorney.attornyId }}</p>
+                </div>
                 <div>
                   <p class="text-gray-400">Typ</p>
                   <p class="text-gray-700 dark:text-gray-300 font-medium">
@@ -316,19 +501,59 @@
                   </p>
                 </div>
                 <div>
+                  <p class="text-gray-400">Anrede</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-medium">{{ attorney.salutation || '—' }}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400">Titel</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-medium">{{ attorney.title || '—' }}</p>
+                </div>
+                @if (attorney.companyName) {
+                <div class="col-span-2">
+                  <p class="text-gray-400">Firma</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-medium">{{ attorney.companyName }}</p>
+                </div>
+                }
+                @if (attorney.legalRepresentativeFirstName || attorney.legalRepresentativeLastName) {
+                <div class="col-span-2">
+                  <p class="text-gray-400">Gesetzl. Vertreter</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-medium">
+                    {{ attorney.legalRepresentativeFirstName }} {{ attorney.legalRepresentativeLastName }}
+                  </p>
+                </div>
+                }
+                <div>
                   <p class="text-gray-400">Eingereicht am</p>
-                  <p class="text-gray-700 dark:text-gray-300 font-medium">{{ (attorney.submittedOn * 1000) | date:'dd.MM.yy' }}</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-medium">
+                    {{ (attorney.submittedOn * 1000) | date:'dd.MM.yy HH:mm' }}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-gray-400">Widerrufen</p>
+                  <p class="font-medium" [class.text-red-500]="attorney.isRevoked"
+                    [class.text-gray-500]="!attorney.isRevoked">
+                    {{ attorney.isRevoked ? 'Ja' : 'Nein' }}
+                  </p>
                 </div>
                 @if (attorney.city) {
                 <div class="col-span-2">
                   <p class="text-gray-400">Adresse</p>
-                  <p class="text-gray-700 dark:text-gray-300 font-medium">{{ attorney.street }} {{ attorney.houseNumber }}, {{ attorney.zip }} {{ attorney.city }}</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-medium">
+                    {{ attorney.street }} {{ attorney.houseNumber }}, {{ attorney.zip }} {{ attorney.city }}
+                  </p>
                 </div>
                 }
                 @if (attorney.placeAndDate) {
                 <div class="col-span-2">
-                  <p class="text-gray-400">Ort & Datum</p>
+                  <p class="text-gray-400">Ort &amp; Datum</p>
                   <p class="text-gray-700 dark:text-gray-300 font-medium">{{ attorney.placeAndDate }}</p>
+                </div>
+                }
+                @if (attorney.customerSignaturePath) {
+                <div class="col-span-2">
+                  <p class="text-gray-400">Signaturpfad</p>
+                  <p class="text-gray-700 dark:text-gray-300 font-mono text-[10px] break-all">{{
+                    attorney.customerSignaturePath }}</p>
                 </div>
                 }
                 @if (attorney.approvedOn) {
@@ -344,14 +569,14 @@
                 </div>
                 }
                 @if (attorney.isRevoked && attorney.revokedOn) {
-                <div>
+                <div class="col-span-2">
                   <p class="text-gray-400">Widerrufen am</p>
                   <p class="text-red-500 font-medium">{{ (attorney.revokedOn * 1000) | date:'dd.MM.yy HH:mm' }}</p>
                 </div>
                 }
               </div>
 
-              <!-- Approve / Reject Buttons — only show if pending and not revoked -->
+              <!-- Approve / Reject Buttons -->
               @if (attorney.approvalStatus === 0 && !attorney.isRevoked) {
               <div class="flex gap-2 px-4 pb-4 pt-1">
                 <button (click)="approveAttorney(selectedCustomer, attorney); $event.stopPropagation()"
@@ -361,7 +586,7 @@
                   <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
                   } @else {
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                   </svg>
                   }
                   Genehmigen
@@ -373,7 +598,7 @@
                   <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
                   } @else {
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                   }
                   Ablehnen
@@ -384,31 +609,29 @@
             }
           </div>
         </div>
-        }
 
         <!-- === SECTION: Passwort-Historie === -->
-        @if (selectedCustomer.changePasswordHistory && selectedCustomer.changePasswordHistory.length > 0) {
         <div class="px-5 py-4">
           <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-3">
             Passwort-Historie
-            <span class="ml-1.5 bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full px-1.5 py-0.5 text-[9px]">
+            <span
+              class="ml-1.5 bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full px-1.5 py-0.5 text-[9px]">
               {{ selectedCustomer.changePasswordHistory.length }}
             </span>
           </p>
+          @if (selectedCustomer.changePasswordHistory.length === 0) {
+          <p class="text-sm text-gray-400 italic">Keine Passwortänderungen vorhanden</p>
+          }
           <div class="flex flex-col gap-2">
             @for (history of selectedCustomer.changePasswordHistory; track history.changeRequestSubmittedOn) {
-            <div class="rounded-lg border px-3 py-2.5 text-xs"
-              [class.border-green-200]="history.passwordChangedOn"
-              [class.bg-green-50]="history.passwordChangedOn"
-              [class.dark:border-green-800]="history.passwordChangedOn"
+            <div class="rounded-lg border px-3 py-2.5 text-xs" [class.border-green-200]="history.passwordChangedOn"
+              [class.bg-green-50]="history.passwordChangedOn" [class.dark:border-green-800]="history.passwordChangedOn"
               [class.dark:bg-green-900/10]="history.passwordChangedOn"
-              [class.border-gray-200]="!history.passwordChangedOn"
-              [class.bg-white]="!history.passwordChangedOn"
+              [class.border-gray-200]="!history.passwordChangedOn" [class.bg-white]="!history.passwordChangedOn"
               [class.dark:border-gray-700]="!history.passwordChangedOn"
               [class.dark:bg-gray-900]="!history.passwordChangedOn">
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="font-semibold"
-                  [class.text-green-700]="history.passwordChangedOn"
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold" [class.text-green-700]="history.passwordChangedOn"
                   [class.text-gray-500]="!history.passwordChangedOn">
                   {{ history.passwordChangedOn ? '✓ Erfolgreich' : '✗ Fehlgeschlagen / Offen' }}
                 </span>
@@ -416,21 +639,58 @@
                   {{ history.adminId ? 'Admin #' + history.adminId : 'System' }}
                 </span>
               </div>
-              <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-gray-500 dark:text-gray-400">
+              <div class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-gray-500 dark:text-gray-400">
+                <div class="col-span-2">
+                  <span class="text-gray-400">E-Mail:</span>
+                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">{{ history.email }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-400">Kunden-ID:</span>
+                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300 font-mono">{{ history.customerId
+                    }}</span>
+                </div>
                 <div>
                   <span class="text-gray-400">Angefragt:</span>
-                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">{{ (history.changeRequestSubmittedOn * 1000) | date:'dd.MM.yy HH:mm' }}</span>
+                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">
+                    {{ (history.changeRequestSubmittedOn * 1000) | date:'dd.MM.yy HH:mm' }}
+                  </span>
                 </div>
+                @if (history.codeSendOn) {
+                <div>
+                  <span class="text-gray-400">Code gesendet:</span>
+                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">
+                    {{ (history.codeSendOn * 1000) | date:'dd.MM.yy HH:mm' }}
+                  </span>
+                </div>
+                }
                 @if (history.codeVerifiedOn) {
                 <div>
                   <span class="text-gray-400">Code ok:</span>
-                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">{{ (history.codeVerifiedOn * 1000) | date:'dd.MM.yy HH:mm' }}</span>
+                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">
+                    {{ (history.codeVerifiedOn * 1000) | date:'dd.MM.yy HH:mm' }}
+                  </span>
                 </div>
                 }
                 @if (history.passwordChangedOn) {
                 <div class="col-span-2">
                   <span class="text-gray-400">Geändert:</span>
-                  <span class="ml-1 font-medium text-green-600">{{ (history.passwordChangedOn * 1000) | date:'dd.MM.yy HH:mm' }}</span>
+                  <span class="ml-1 font-medium text-green-600">
+                    {{ (history.passwordChangedOn * 1000) | date:'dd.MM.yy HH:mm' }}
+                  </span>
+                </div>
+                }
+                @if (history.confirmationSendOn) {
+                <div class="col-span-2">
+                  <span class="text-gray-400">Bestätigung gesendet:</span>
+                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">
+                    {{ (history.confirmationSendOn * 1000) | date:'dd.MM.yy HH:mm' }}
+                  </span>
+                </div>
+                }
+                @if (history.otp !== null) {
+                <div class="col-span-2">
+                  <span class="text-gray-400">OTP:</span>
+                  <span class="ml-1 font-medium text-gray-700 dark:text-gray-300 font-mono">{{ history.otp }}</span>
                 </div>
                 }
               </div>
@@ -438,7 +698,6 @@
             }
           </div>
         </div>
-        }
 
       </div>
       <!-- End scrollable content -->
@@ -450,3 +709,55 @@
   <!-- End main layout -->
 
 </div>
+
+@if (isNoteModalOpen && noteCustomer) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/50" (click)="closeNoteModal()"></div>
+
+  <div
+    class="relative w-full max-w-lg rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl overflow-hidden">
+    <div class="flex items-start justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div>
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white">Kundennotiz</h3>
+        <p class="text-xs text-gray-500 mt-0.5">
+          {{ noteCustomer.firstName || '—' }} {{ noteCustomer.lastName || '—' }} · #{{ noteCustomer.uniqueCustomerId }}
+        </p>
+      </div>
+      <button (click)="closeNoteModal()"
+        class="ml-3 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="px-5 py-4">
+      <label for="customer-note" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Notiz eingeben
+      </label>
+      <textarea id="customer-note" [(ngModel)]="noteText" rows="6" placeholder="Notiz fur diesen Kunden eingeben..."
+        class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-500 resize-y"></textarea>
+      <p class="text-[11px] text-gray-400 mt-2">
+        Diese Notiz wird dem gewahlten Kundenprofil zugeordnet.
+      </p>
+    </div>
+
+    <div
+      class="flex items-center justify-end gap-2 px-5 py-4 bg-gray-50 dark:bg-gray-800/60 border-t border-gray-200 dark:border-gray-700">
+      <button (click)="closeNoteModal()"
+        class="px-3.5 py-2 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        Abbrechen
+      </button>
+      <button (click)="saveCustomerNote()" [disabled]="isSavingNote || !noteText.trim()"
+        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium bg-brand-500 hover:bg-brand-600 text-white disabled:opacity-60 disabled:cursor-not-allowed transition">
+        @if (isSavingNote) {
+        <div class="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white"></div>
+        <span>Speichert...</span>
+        } @else {
+        <span>Notiz speichern</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
