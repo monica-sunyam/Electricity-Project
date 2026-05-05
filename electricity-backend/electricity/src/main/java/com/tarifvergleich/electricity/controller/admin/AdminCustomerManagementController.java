@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tarifvergleich.electricity.dto.CustomerAttornyDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
 import com.tarifvergleich.electricity.dto.CustomerDto;
+import com.tarifvergleich.electricity.dto.CustomerNoteDto;
 import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerServicesDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryRequestWrapper.AdminEditCustomerDeliveryRelated;
@@ -112,5 +113,15 @@ public class AdminCustomerManagementController {
 	public ResponseEntity<?> toggleCustomerNotification(@RequestBody CustomerDto customerDto) {
 		return ResponseEntity.ok(adminCustomerManagementService.toggleNotificationOfCustomer(customerDto.getAdminId(),
 				customerDto.getId()));
+	}
+
+	@PostMapping("/add-customer")
+	public ResponseEntity<?> addNewCustomer(@RequestBody CustomerDto customerDto) {
+		return ResponseEntity.ok(adminCustomerManagementService.createNewCustomer(customerDto));
+	}
+
+	@PostMapping("/add-note")
+	public ResponseEntity<?> addNote(@RequestBody CustomerNoteDto noteDto) {
+		return ResponseEntity.ok(adminCustomerManagementService.addCustomerNoteByAdmin(noteDto));
 	}
 }

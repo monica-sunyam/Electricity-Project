@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tarifvergleich.electricity.dto.CustomerBillingRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerConnectionRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryRequestWrapper.AdminEditCustomerDeliveryRelated;
@@ -21,6 +22,7 @@ import com.tarifvergleich.electricity.model.CustomerPayment;
 import com.tarifvergleich.electricity.model.CustomerSelectedProvider;
 import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
 import com.tarifvergleich.electricity.service.ElectricityComparisonService;
+import com.tarifvergleich.electricity.service.customer.CustomerBookingService;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.transaction.Transactional;
@@ -34,6 +36,7 @@ public class AdminCustomerDeliveryManagementService {
 	private final Helper helper;
 	private final ElectricityComparisonService electricityComparisonService;
 	private final ObjectMapper objectMapper;
+	private final CustomerBookingService customerBookingService;
 
 	@Transactional
 	public Map<String, Object> editDeliveryDetailsByAdmin(AdminEditCustomerDeliveryRelated deliveryDetails) {
@@ -222,6 +225,49 @@ public class AdminCustomerDeliveryManagementService {
 		customerDeliveryRepo.save(customerDelivery);
 
 		return Map.of("res", true, "message", "Customer booking updated successfully");
+	}
+
+	@Transactional
+	public Map<String, Object> addNewDeliveryByAdmin(AdminEditCustomerDeliveryRelated deliveryDetails) {
+
+		if (deliveryDetails == null)
+			throw new InternalServerException("No details found for edit", HttpStatus.OK);
+		if (deliveryDetails.getAdminId() == null || deliveryDetails.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (deliveryDetails.getCustomerId() == null || deliveryDetails.getCustomerId() <= 0)
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
+
+		Integer customerId = deliveryDetails.getCustomerId();
+		Integer adminId = deliveryDetails.getAdminId();
+		CustomerDeliveryDto newDeliveryDetails = deliveryDetails.getDelivery();
+		CustomerBillingRequestDto billingAddress = deliveryDetails.getBillingAddress();
+		CustomerConnectionRequestDto newCustomerConnection = deliveryDetails.getConnection();
+		CustomerPaymentRequestDto newCustomerPayment = deliveryDetails.getPaymentDetails();
+		EnergyRateDto newCustomerSelectedProvider = deliveryDetails.getProvider();
+
+		Map<String, Object> deliveryResponse = customerBookingService.saveDelivery(customerId, adminId,
+				newDeliveryDetails, billingAddress, newCustomerSelectedProvider);
+
+		if (!deliveryResponse.containsKey("deliveryId") || !(Boolean) deliveryResponse.get("res"))
+			throw new RuntimeException();
+
+		Integer deliveryId = (Integer) deliveryResponse.get("deliveryId");
+
+		Map<String, Object> connectionResponse = customerBookingService.saveConnection(customerId, deliveryId,
+				newCustomerConnection);
+
+		if (!(Boolean) connectionResponse.get("res"))
+			throw new RuntimeException();
+
+		newCustomerPayment.setDeliveryId(deliveryId);
+		newCustomerPayment.setCustomerId(customerId);
+
+		Map<String, Object> paymentResponse = customerBookingService.savePayment(newCustomerPayment);
+
+		if (!(Boolean) paymentResponse.get("res"))
+			throw new RuntimeException();
+
+		return Map.of("res", true, "deliveryId", deliveryId);
 	}
 
 }

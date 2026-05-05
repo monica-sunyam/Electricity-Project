@@ -114,7 +114,6 @@ public class AddressService {
 					Map<String, Object> body = objectMapper.readValue(response.getBody(),
 							new TypeReference<Map<String, Object>>() {
 							});
-					body.put("message", (Object) "Incorrent iban id");
 					body.put("code", (Object) 200);
 					throw new EnergyApiUnavailableException("Invalid Iban id", body);
 				}).body(EgonAddressFetchingDto.class);
@@ -139,7 +138,6 @@ public class AddressService {
 					Map<String, Object> body = objectMapper.readValue(response.getBody(),
 							new TypeReference<Map<String, Object>>() {
 							});
-					body.put("message", (Object) "Incorrent iban id");
 					body.put("code", (Object) 200);
 					throw new EnergyApiUnavailableException("Invalid Iban id", body);
 				}).body(EgonAddressfetchStreet.class);

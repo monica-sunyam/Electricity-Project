@@ -1,5 +1,6 @@
 package com.tarifvergleich.electricity.service.admin;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +13,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto;
 import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto.OrderListResponse;
 import com.tarifvergleich.electricity.dto.CustomerAttornyDto;
@@ -22,6 +26,7 @@ import com.tarifvergleich.electricity.dto.CustomerDeliveryResponseDto.CustomerDe
 import com.tarifvergleich.electricity.dto.CustomerDto;
 import com.tarifvergleich.electricity.dto.CustomerDto.AdminCustomerResponse;
 import com.tarifvergleich.electricity.dto.CustomerDto.SingleCustomerResponseDelivery;
+import com.tarifvergleich.electricity.dto.CustomerNoteDto;
 import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto.CustomerServiceRequestResDtoForAdmin;
 import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto.CustomerServiceRequestResDtoForListing;
@@ -32,6 +37,7 @@ import com.tarifvergleich.electricity.model.Customer;
 import com.tarifvergleich.electricity.model.CustomerAttorny;
 import com.tarifvergleich.electricity.model.CustomerComparingEnergy;
 import com.tarifvergleich.electricity.model.CustomerDelivery;
+import com.tarifvergleich.electricity.model.CustomerNote;
 import com.tarifvergleich.electricity.model.CustomerServiceRequest;
 import com.tarifvergleich.electricity.model.CustomerServiceRequestMessages;
 import com.tarifvergleich.electricity.repository.CustomerAttornyRepository;
@@ -40,6 +46,7 @@ import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
 import com.tarifvergleich.electricity.repository.CustomerRepository;
 import com.tarifvergleich.electricity.repository.CustomerServiceRequestRepository;
 import com.tarifvergleich.electricity.service.EnergyService;
+import com.tarifvergleich.electricity.service.customer.CustomerAuthService;
 import com.tarifvergleich.electricity.util.EmailTemplate;
 import com.tarifvergleich.electricity.util.Helper;
 
@@ -58,6 +65,8 @@ public class AdminCustomerManagementService {
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailTemplate emailTemplate;
 	private final EnergyService energyService;
+	private final CustomerAuthService customerAuthService;
+	private final ObjectMapper objectMapper;
 
 	public Map<String, Object> getCustomers(CustomerDto customerReq) {
 
@@ -390,11 +399,76 @@ public class AdminCustomerManagementService {
 
 		Customer customer = customerRepo.findByCustomerIdAndAdminAdminId(customerId, adminId).orElseThrow(
 				() -> new InternalServerException("Customer not found wiyth this credential", HttpStatus.OK));
-		
+
 		customer.setIsNotificationEnabled(!customer.getIsNotificationEnabled());
-		
+
 		customerRepo.save(customer);
 
 		return Map.of("res", true, "message", "Customer notification updated");
+	}
+
+	@Transactional
+	public Map<String, Object> createNewCustomer(CustomerDto customerDto) {
+		customerDto.setIsVerified(true);
+		Map<String, Object> createResponse = new HashMap<>(customerAuthService.customerSignUp(customerDto));
+		if (createResponse.containsKey("page"))
+			createResponse.remove("page");
+
+		if (createResponse.containsKey("isAcknowledge"))
+			createResponse.remove("isAcknowledge");
+
+		if (createResponse.containsKey("data")) {
+
+			Map<String, Object> responseData;
+			try {
+				String dataJson = objectMapper.writeValueAsString(createResponse.get("data"));
+				responseData = objectMapper.readValue(dataJson, new TypeReference<Map<String, Object>>() {
+				});
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+				throw new InternalServerException("Internal Server Error", HttpStatus.OK);
+			}
+
+			if (responseData != null && responseData.containsKey("id")) {
+				Integer customerId = (Integer) responseData.get("id");
+				Customer customer = customerRepo.findById(customerId).orElseThrow(() -> new RuntimeException());
+
+				customer.setIsVerified(true);
+				customer.setVerifiedOn(Helper.getCurrentTimeBerlin());
+				customer.setIsAcknowledged(true);
+			}
+
+			return createResponse;
+
+		}
+
+		throw new InternalServerException("Internal Server Error", HttpStatus.OK);
+	}
+
+	@Transactional
+	public Map<String, Object> addCustomerNoteByAdmin(CustomerNoteDto noteDto) {
+		if (noteDto == null)
+			throw new InternalServerException("All required data missing", HttpStatus.OK);
+		if (noteDto.getAdminId() == null || noteDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (noteDto.getCustomerId() == null || noteDto.getCustomerId() <= 0)
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
+
+		Customer customer = customerRepo.findByCustomerIdAndAdminAdminId(noteDto.getCustomerId(), noteDto.getAdminId())
+				.orElseThrow(
+						() -> new InternalServerException("Customer not found with this credential", HttpStatus.OK));
+
+		CustomerNote note = CustomerNote.builder().note(noteDto.getNote()).build();
+
+		customer.addCustomerNote(note);
+
+		customerRepo.save(customer);
+
+		return Map.of("res", true, "message", "Note added successfully");
+	}
+
+	@Transactional
+	public Map<String, Object> createCustomerDelivery() {
+		return Map.of();
 	}
 }

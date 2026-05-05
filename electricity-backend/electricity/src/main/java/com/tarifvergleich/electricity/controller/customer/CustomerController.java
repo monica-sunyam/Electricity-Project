@@ -157,5 +157,11 @@ public class CustomerController {
 		return ResponseEntity.ok(
 				customerDetailService.fetchAllCustomerDeliveriesByGroup(customerDto.getAdminId(), customerDto.getId()));
 	}
+	
+	@PostMapping("/toggle-customer-notification")
+	public ResponseEntity<?> toggleCustomerNotification(@RequestBody CustomerDto customerDto) {
+		return ResponseEntity.ok(customerDetailService.toggleNotificationOfCustomer(customerDto.getAdminId(),
+				customerDto.getId(), customerDto.getIsNotificationEnabled()));
+	}
 
 }

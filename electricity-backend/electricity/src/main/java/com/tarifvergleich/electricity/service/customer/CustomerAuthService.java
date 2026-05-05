@@ -152,7 +152,8 @@ public class CustomerAuthService {
 				String subject = "Verify Your Account - Tarifvergleich Electricity";
 				String body = emailTemplate.createOtpEmailBody(customer.getFirstName(), otp);
 
-				mailService.sendMail(customer.getEmail(), subject, body);
+				if (customerDto.getIsVerified() == null || !customerDto.getIsVerified())
+					mailService.sendMail(customer.getEmail(), subject, body);
 
 				customerRepo.save(customer);
 				return Map.of("res", true, "data", Map.of("id", customer.getCustomerId(), "firstName",
@@ -189,7 +190,8 @@ public class CustomerAuthService {
 		String subject = "Verify Your Account - Tarifvergleich Electricity";
 		String body = emailTemplate.createOtpEmailBody(savedCustomer.getFirstName(), otp);
 
-		mailService.sendMail(savedCustomer.getEmail(), subject, body);
+		if (customerDto.getIsVerified() == null || !customerDto.getIsVerified())
+			mailService.sendMail(savedCustomer.getEmail(), subject, body);
 
 		return Map
 				.of("res", true, "data",

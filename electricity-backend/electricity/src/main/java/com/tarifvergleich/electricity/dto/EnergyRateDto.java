@@ -34,7 +34,7 @@ public class EnergyRateDto {
     private double savingPerYear;
     private double workPriceNt;
     private double optBonus;
-    
+        
     // Contract Details
     private int partialPayment;
     private String optGuarantee;
@@ -66,6 +66,10 @@ public class EnergyRateDto {
     			.providerSVG(provider.getProviderSVGPath())
     			.providerName(provider.getProviderName())
     			.rateId(provider.getRateId())
+    			.basePriceMonth(Double.valueOf(provider.getRaw().get("basePriceMonth").toPrettyString()))
+    			.basePriceYear(provider.getBasePriceYear())
+    			.optTerm(provider.getRaw().get("optTerm").asText())
+    			.workPrice(provider.getWorkPrice())
     			.rateName(provider.getRateName())
     			.totalPrice(provider.getTotalPrice())
     			.totalPriceMonth(provider.getTotalPriceMonth())

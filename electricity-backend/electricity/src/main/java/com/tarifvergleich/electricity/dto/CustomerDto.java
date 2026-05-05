@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.tarifvergleich.electricity.dto.CustomerAttornyDto.CustomerAttornyForAdminCustomerList;
 import com.tarifvergleich.electricity.dto.CustomerChangePasswordHistoryDto.CustomerChangePasswordHistoryResDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryResponseDto.CustomerAddressRes;
+import com.tarifvergleich.electricity.dto.CustomerNoteDto.CustomerNoteResponseDto;
 import com.tarifvergleich.electricity.model.Customer;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,6 +41,7 @@ public class CustomerDto {
 	private Boolean isAcknowledged;
 	private List<CustomerDeliveryResponseDto> deliveryDetails;
 	private CustomerAddressDto address;
+	private Boolean isNotificationEnabled;
 
 	private String zip;
 	private String city;
@@ -68,7 +70,7 @@ public class CustomerDto {
 		private String firstName;
 		@Schema(description = "Customer's family name", example = "Das")
 		private String lastName;
-		@Schema(description = "Type of user account", allowableValues = {"PRIVATE", "BUSINESS"}, example = "PRIVATE")
+		@Schema(description = "Type of user account", allowableValues = { "PRIVATE", "BUSINESS" }, example = "PRIVATE")
 		private String userType;
 		@Schema(description = "Academic or professional title", example = "Dr.")
 		private String title;
@@ -85,17 +87,19 @@ public class CustomerDto {
 		@Schema(description = "Unix timestamp of when the user registered", example = "1714295000")
 		private BigInteger joinedOn;
 		@Schema(description = "Indicates if the user has accepted terms and conditions", example = "true")
-	    private Boolean isAcknowledged;
-	    @Schema(description = "Nested address details of the customer")
-	    private CustomerAddressDto address;
-	    @Schema(description = "History of password update events")
-	    private List<CustomerChangePasswordHistoryResDto> changePasswordHistory;
-	    @Schema(description = "Unique public-facing customer identifier", example = "CUST-2026-X99")
-	    private String uniqueCustomerId;
-	    @Schema(description = "Account status (active/inactive)", example = "true")
-	    private Boolean status;
-	    @Schema(description = "List of power of attorney documents linked to this customer")
-	    private List<CustomerAttornyForAdminCustomerList> attornies;
+		private Boolean isAcknowledged;
+		@Schema(description = "Nested address details of the customer")
+		private CustomerAddressDto address;
+		@Schema(description = "History of password update events")
+		private List<CustomerChangePasswordHistoryResDto> changePasswordHistory;
+		@Schema(description = "Unique public-facing customer identifier", example = "CUST-2026-X99")
+		private String uniqueCustomerId;
+		@Schema(description = "Account status (active/inactive)", example = "true")
+		private Boolean status;
+		@Schema(description = "List of notes added to the customer by admin")
+		private List<CustomerNoteResponseDto> notes;
+		@Schema(description = "List of power of attorney documents linked to this customer")
+		private List<CustomerAttornyForAdminCustomerList> attornies;
 	}
 
 	@Data
@@ -118,6 +122,7 @@ public class CustomerDto {
 		private Boolean isAcknowledged;
 		private CustomerAddressRes address;
 		private Boolean status;
+		private Boolean isNotificationEnabled;
 		private List<CustomerDeliveryResponseDto> deliveryDetails;
 	}
 
@@ -152,8 +157,9 @@ public class CustomerDto {
 		return SingleCustomerResponseDelivery.builder().id(customer.getCustomerId()).email(customer.getEmail())
 				.firstName(customer.getFirstName()).lastName(customer.getLastName())
 				.salutation(customer.getSalutation()).title(customer.getTitle()).userType(customer.getUserType())
-				.companyName(customer.getCompanyName()).mobileNumber(customer.getMobileNumber())
-				.status(customer.getStatus()).isVerified(customer.getIsVerified()).joinedOn(customer.getJoinedOn())
+				.isNotificationEnabled(customer.getIsNotificationEnabled()).companyName(customer.getCompanyName())
+				.mobileNumber(customer.getMobileNumber()).status(customer.getStatus())
+				.isVerified(customer.getIsVerified()).joinedOn(customer.getJoinedOn())
 				.isAcknowledged(customer.getIsAcknowledged())
 				.address(CustomerAddressRes.builder().zip(customer.getZip()).city(customer.getCity())
 						.street(customer.getStreet()).houseNumber(customer.getHouseNumber()).build())
@@ -179,6 +185,8 @@ public class CustomerDto {
 						.toList())
 				.attornies(Optional.ofNullable(customer.getCustomerAttorny()).orElse(Collections.emptyList()).stream()
 						.map(CustomerAttornyDto::customerAttornyForAdminCustomerList).toList())
+				.notes(Optional.ofNullable(customer.getCustomerNotes()).orElse(Collections.emptyList()).stream()
+						.map(CustomerNoteDto::mapNoteResponse).toList())
 				.build();
 	}
 
