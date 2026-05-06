@@ -124,4 +124,16 @@ public class AdminCustomerManagementController {
 	public ResponseEntity<?> addNote(@RequestBody CustomerNoteDto noteDto) {
 		return ResponseEntity.ok(adminCustomerManagementService.addCustomerNoteByAdmin(noteDto));
 	}
+
+	@PostMapping("/add-new-delivery")
+	public ResponseEntity<?> addNewDeliveryByAdmin(
+			@RequestBody AdminEditCustomerDeliveryRelated newDeliveryBookingDto) {
+		return ResponseEntity.ok(adminCustomerDeliveryManagementService.addNewDeliveryByAdmin(newDeliveryBookingDto));
+	}
+
+	@PostMapping("/fetch-customer-names")
+	public ResponseEntity<?> fetchCustomerSelectiveFields(@RequestBody CustomerDto customerDto) {
+		return ResponseEntity
+				.ok(adminCustomerManagementService.fetchCustomerByNameEmailAndId(customerDto.getAdminId()));
+	}
 }

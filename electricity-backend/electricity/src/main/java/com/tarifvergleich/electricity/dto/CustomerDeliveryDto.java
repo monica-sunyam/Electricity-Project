@@ -30,6 +30,8 @@ public class CustomerDeliveryDto {
 	private String telephone;
 	@JsonFormat(pattern = "dd.MM.yyyy")
 	private LocalDate dob;
+	private Integer persons;
+	private Integer consumption;
 	private String zip;
 	private String city;
 	private String street;

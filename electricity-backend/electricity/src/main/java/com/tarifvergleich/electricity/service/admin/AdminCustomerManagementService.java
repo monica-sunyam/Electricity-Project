@@ -160,6 +160,16 @@ public class AdminCustomerManagementService {
 		return Map.of("res", true, "data", customerDeliveryResponse);
 	}
 
+	public Map<String, Object> fetchCustomerByNameEmailAndId(Integer adminId) {
+
+		if (adminId == null || adminId <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+
+		List<Map<String, Object>> selectiveResults = customerRepo.findSelectiveCustomerDetailsAsMap(adminId);
+
+		return Map.of("res", true, "data", selectiveResults);
+	}
+
 	public Map<String, Object> getAllComparison(Integer adminId, Integer page, Integer size) {
 
 		if (adminId == null || adminId <= 0)
@@ -436,6 +446,7 @@ public class AdminCustomerManagementService {
 				customer.setIsVerified(true);
 				customer.setVerifiedOn(Helper.getCurrentTimeBerlin());
 				customer.setIsAcknowledged(true);
+				customerRepo.save(customer);
 			}
 
 			return createResponse;

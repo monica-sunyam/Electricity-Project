@@ -106,6 +106,11 @@ public class CustomerBookingService {
 
 		if (deliveryDto.getDob() == null)
 			throw new InternalServerException("DOB missing", HttpStatus.OK);
+		
+		if(deliveryDto.getPersons() == null || deliveryDto.getPersons() <= 0)
+			throw new InternalServerException("Total number of person missing", HttpStatus.OK);
+		if(deliveryDto.getConsumption() == null || deliveryDto.getConsumption() <= 0)
+			throw new InternalServerException("Consumption missing", HttpStatus.OK);
 
 		if (deliveryDto.getDeliveryType() == null || deliveryDto.getDeliveryType().isEmpty()
 				|| (!deliveryDto.getDeliveryType().equalsIgnoreCase("Electricity")
@@ -191,6 +196,8 @@ public class CustomerBookingService {
 					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone())
 					.deliveryType(deliveryDto.getDeliveryType().toUpperCase()).customerProvider(selectedProvider)
 					.expiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()))
+					.numberOfPerson(deliveryDto.getPersons())
+					.totalConsumption(deliveryDto.getConsumption())
 					.dob(helper.toGermamUnixTimestamp(deliveryDto.getDob())).build();
 
 			delivery.setUserAdmin(customer.getAdmin());
@@ -208,6 +215,8 @@ public class CustomerBookingService {
 			editDelivery.setDob(helper.toGermamUnixTimestamp(deliveryDto.getDob()));
 			editDelivery.setBillingAddress(billingAddress);
 			editDelivery.setExpiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()));
+			editDelivery.setNumberOfPerson(deliveryDto.getPersons());
+			editDelivery.setTotalConsumption(deliveryDto.getConsumption());
 
 			editDelivery.setAddress(address);
 			customerDeliveryRepo.save(editDelivery);

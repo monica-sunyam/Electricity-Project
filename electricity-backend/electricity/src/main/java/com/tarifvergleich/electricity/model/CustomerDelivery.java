@@ -61,6 +61,12 @@ public class CustomerDelivery {
 	@Column(name = "dob")
 	private BigInteger dob;
 	
+	@Column(name = "no_of_person")
+	private Integer numberOfPerson;
+	
+	@Column(name = "total_consumption")
+	private Integer totalConsumption;
+	
 	@Column(name = "order_placed_on")
 	private BigInteger orderPlacedOn;
 	
