@@ -186,6 +186,8 @@ export class DeliveryAddress implements OnInit, OnDestroy {
     this.errorMessage = '';
   }
 
+  persons: number = 2;
+  consumption: number = 2500;
   private applyLocalStorageAddress(): void {
     const storedAddress = this.authService.getAddressData();
     if (storedAddress) {
@@ -193,6 +195,8 @@ export class DeliveryAddress implements OnInit, OnDestroy {
       this.deliveryOrt = storedAddress.city || '';
       this.deliveryStreet = storedAddress.street || '';
       this.deliveryHouseNumber = storedAddress.houseNumber || '';
+      this.consumption = storedAddress.consumption || 0;
+      this.persons = storedAddress.persons || 0;
     }
     this.providerDetails = {
       ...this.authService.getSelectedProvider(),
@@ -414,6 +418,8 @@ export class DeliveryAddress implements OnInit, OnDestroy {
         street: this.deliveryStreet,
         houseNumber: this.deliveryHouseNumber,
         deliveryType: 'electricity',
+        persons: this.persons,
+        consumption: this.consumption,
       },
       billingAddress: {
         different: this.hasDifferentBilling,

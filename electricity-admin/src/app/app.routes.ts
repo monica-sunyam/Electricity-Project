@@ -21,6 +21,7 @@ import { CustomerQueriesComponent } from "./pages/customer-query/customer-querie
 import { HolidayMarkerComponent } from "./pages/customers/holiday-markers/holiday-markers.component";
 import { ChangeBookingProviderComponent } from "./pages/bookings/change-booking-provider/change-booking-provider.component";
 import { CreateCustomerComponent } from "./pages/customers/create-customer/create-customer.component";
+import { CreateBookingComponent } from "./pages/bookings/create-booking/create-booking.component";
 
 export const routes: Routes = [
   {
@@ -144,6 +145,11 @@ export const routes: Routes = [
         path: "customers/new",
         component: CreateCustomerComponent,
         title: "Neuen Kunden anlegen",
+      },
+      {
+        path: "booking/new",
+        component: CreateBookingComponent,
+        title: "Neue Buchung erstellen",
       }
     ],
   },
