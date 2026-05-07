@@ -24,11 +24,11 @@ export class CreateBookingComponent implements OnInit {
   bookingForm!: FormGroup;
 
   customers: any[] = [];
+  providersList: string[] = [];
   rates: any[] = [];
   selectedRate: any = null;
   baseProvider: any = null;
-  selectedCustomerId: number | null = 0;
-
+  selectedCustomerId: number | null = null;
   isLoading = false;
   isLoadingRates = false;
 
@@ -59,11 +59,30 @@ export class CreateBookingComponent implements OnInit {
     this.setupDynamicValidation();
   }
 
+  // ── Computed getters used in the template ────────────────────────────────
+
+  get isMovingIn(): boolean {
+    return this.bookingForm?.get("isMovingIn")?.value === "yes";
+  }
+
+  get isLastschrift(): boolean {
+    return this.bookingForm?.get("paymentMethod")?.value === "lastschrift";
+  }
+
+  get isWunschtermin(): boolean {
+    return this.bookingForm?.get("deliveryOption")?.value === "wunschtermin";
+  }
+
+  get showBillingFields(): boolean {
+    return this.bookingForm?.get("hasDifferentBilling")?.value === true;
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+
   onCustomerSelect(): void {
     const customer = this.customers.find(
       (c) => c.id === this.selectedCustomerId,
     );
-
     if (!customer?.address) return;
 
     this.searchForm = {
@@ -77,40 +96,47 @@ export class CreateBookingComponent implements OnInit {
 
   initForm() {
     this.bookingForm = this.fb.group({
-      /* Step 1 */
-      customerId: ["", Validators.required],
-
-      zip: ["", Validators.required],
-      city: ["", Validators.required],
-      street: ["", Validators.required],
-      houseNumber: ["", Validators.required],
       consumption: [4350, Validators.required],
 
-      /* Delivery */
+      /* ── Delivery ────────────────────────────────────────────────── */
       deliveryEmail: ["", Validators.required],
+      deliveryTitle: [""],
+      salutation: ["", Validators.required],
       deliveryFirstName: ["", Validators.required],
       deliveryLastName: ["", Validators.required],
       deliveryMobile: ["", Validators.required],
       deliveryPhone: [""],
-      dob: [""],
+      dob: ["", Validators.required],
+      persons: [2],
+      hasDifferentBilling: [false],
+      billingZip: [""],
+      billingCity: [""],
+      billingStreet: [""],
+      billingHouseNumber: [""],
 
-      /* Connection */
+      /* ── Connection ──────────────────────────────────────────────── */
+      // Moving-in toggle: 'yes' | 'no'
       isMovingIn: ["no"],
+      // Only required when isMovingIn === 'yes'
       moveInDate: [""],
+
+      // Always present
       submitLater: [false],
       meterNumber: ["", Validators.required],
-      marketLocationId: [""],
+      marketLocationId: [""], // optional
 
-      currentProvider: [""],
+      // Only relevant when isMovingIn === 'no'
+      currentProvider: ["", Validators.required], // required by default (default is 'no')
       autoCancellation: [true],
       alreadyCancelled: [false],
       selfCancellation: [false],
+      // Delivery date toggle (only when isMovingIn === 'no')
+      deliveryOption: ["schnellstmoeglich"], // 'schnellstmoeglich' | 'wunschtermin'
+      desiredDeliveryDate: [""], // required when deliveryOption === 'wunschtermin'
 
-      deliveryOption: ["schnellstmoeglich"],
-      desiredDeliveryDate: [""],
-
-      /* Payment */
-      paymentMethod: ["ueberweisung"],
+      /* ── Payment ─────────────────────────────────────────────────── */
+      paymentMethod: ["ueberweisung"], // 'ueberweisung' | 'lastschrift'
+      // Only required when paymentMethod === 'lastschrift'
       iban: [""],
       accountHolderFirstName: [""],
       accountHolderLastName: [""],
@@ -132,7 +158,6 @@ export class CreateBookingComponent implements OnInit {
       .subscribe({
         next: (res) => {
           const customerList = Array.isArray(res?.data) ? res.data : [];
-
           this.customers = customerList.map((customer: any) => ({
             id: customer.id,
             firstName: customer.firstName ?? "",
@@ -143,26 +168,39 @@ export class CreateBookingComponent implements OnInit {
             address: customer.address ?? null,
           }));
         },
-
         error: (err) => {
           console.error("Failed to load customers", err);
-
           this.errorMessage = err?.error?.message || "Failed to load customers";
         },
       });
   }
 
   setupDynamicValidation() {
-    /* Moving in logic */
+    /* isMovingIn toggle ───────────────────────────────────────────────── */
     this.bookingForm.get("isMovingIn")?.valueChanges.subscribe((value) => {
       const moveDate = this.bookingForm.get("moveInDate");
       const currentProvider = this.bookingForm.get("currentProvider");
+      const desiredDate = this.bookingForm.get("desiredDeliveryDate");
 
       if (value === "yes") {
         moveDate?.setValidators([Validators.required]);
         currentProvider?.clearValidators();
+        desiredDate?.clearValidators();
+        desiredDate?.setValue("");
+        // reset fields that belong to the 'no' branch
+        this.bookingForm.patchValue(
+          {
+            currentProvider: "",
+            alreadyCancelled: false,
+            selfCancellation: false,
+            deliveryOption: "schnellstmoeglich",
+            desiredDeliveryDate: "",
+          },
+          { emitEvent: false },
+        );
       } else {
         moveDate?.clearValidators();
+        moveDate?.setValue("");
         currentProvider?.setValidators([Validators.required]);
       }
 
@@ -170,11 +208,41 @@ export class CreateBookingComponent implements OnInit {
       currentProvider?.updateValueAndValidity();
     });
 
-    /* Payment method */
+    /* Cancellation sub-options are mutually exclusive
+       (mirrors selectCancellation() in connection-data.ts) ──────────── */
+    this.bookingForm.get("alreadyCancelled")?.valueChanges.subscribe((v) => {
+      if (v)
+        this.bookingForm.patchValue(
+          { selfCancellation: false },
+          { emitEvent: false },
+        );
+    });
+    this.bookingForm.get("selfCancellation")?.valueChanges.subscribe((v) => {
+      if (v)
+        this.bookingForm.patchValue(
+          { alreadyCancelled: false },
+          { emitEvent: false },
+        );
+    });
+
+    /* deliveryOption ─────────────────────────────────────────────────── */
+    this.bookingForm.get("deliveryOption")?.valueChanges.subscribe((value) => {
+      const desiredDate = this.bookingForm.get("desiredDeliveryDate");
+      if (value === "wunschtermin") {
+        desiredDate?.setValidators([Validators.required]);
+      } else {
+        desiredDate?.clearValidators();
+        desiredDate?.setValue("");
+      }
+      desiredDate?.updateValueAndValidity();
+    });
+
+    /* paymentMethod ──────────────────────────────────────────────────── */
     this.bookingForm.get("paymentMethod")?.valueChanges.subscribe((value) => {
       const iban = this.bookingForm.get("iban");
       const firstName = this.bookingForm.get("accountHolderFirstName");
       const lastName = this.bookingForm.get("accountHolderLastName");
+      const sepa = this.bookingForm.get("sepaConsent");
 
       if (value === "lastschrift") {
         iban?.setValidators([Validators.required]);
@@ -184,38 +252,46 @@ export class CreateBookingComponent implements OnInit {
         iban?.clearValidators();
         firstName?.clearValidators();
         lastName?.clearValidators();
+        // clear values when switching away from Lastschrift
+        iban?.setValue("");
+        firstName?.setValue("");
+        lastName?.setValue("");
+        sepa?.setValue(false);
       }
 
       iban?.updateValueAndValidity();
       firstName?.updateValueAndValidity();
       lastName?.updateValueAndValidity();
     });
-
-    /* Desired delivery date */
-    this.bookingForm.get("deliveryOption")?.valueChanges.subscribe((value) => {
-      const desiredDate = this.bookingForm.get("desiredDeliveryDate");
-
-      if (value === "wunschtermin") {
-        desiredDate?.setValidators([Validators.required]);
-      } else {
-        desiredDate?.clearValidators();
-      }
-
-      desiredDate?.updateValueAndValidity();
-    });
   }
 
+  // ── Rate search ───────────────────────────────────────────────────────────
+
   fetchRates(): void {
-    this.isLoadingRates = true;
     this.rateError = "";
     this.rates = [];
     this.selectedRate = null;
 
-    const customerId = this.selectedCustomerId;
-    
+    if (!this.selectedCustomerId) {
+      this.rateError = "Please select a customer";
+      return;
+    }
+
+    if (
+      !this.searchForm.zip ||
+      !this.searchForm.city ||
+      !this.searchForm.street ||
+      !this.searchForm.houseNumber
+    ) {
+      this.rateError = "Please complete address fields";
+      return;
+    }
+
+    this.isLoadingRates = true;
+
     const payload = {
       ...this.searchForm,
-      customerId,
+      customerId: this.selectedCustomerId,
       adminId: this.authService.getUserId(),
     };
 
@@ -224,6 +300,16 @@ export class CreateBookingComponent implements OnInit {
         this.isLoadingRates = false;
         this.rates = res?.rates?.result ?? [];
         this.baseProvider = res?.baseProvider?.result?.[0] ?? null;
+
+        // Build unique provider names for the 'Current Provider' dropdown
+        // from fetched rate cards + base provider
+        const fromRates = this.rates
+          .map((r: any) => r.providerName)
+          .filter(Boolean);
+        const fromBase = this.baseProvider?.providerName
+          ? [this.baseProvider.providerName]
+          : [];
+        this.providersList = [...new Set([...fromRates, ...fromBase])];
       },
       error: (err) => {
         this.isLoadingRates = false;
@@ -236,7 +322,12 @@ export class CreateBookingComponent implements OnInit {
     this.selectedRate = this.selectedRate?.rateId === rate.rateId ? null : rate;
   }
 
-  async createBooking() {
+  // ── Submit ────────────────────────────────────────────────────────────────
+
+  createBooking(): void {
+    this.errorMessage = "";
+    this.successMessage = "";
+
     if (!this.selectedRate) {
       this.errorMessage = "Please select a provider";
       return;
@@ -244,99 +335,118 @@ export class CreateBookingComponent implements OnInit {
 
     if (this.bookingForm.invalid) {
       this.bookingForm.markAllAsTouched();
+      this.errorMessage = "Please fill in all required fields";
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = "";
-
     const form = this.bookingForm.value;
+    const movingIn = form.isMovingIn === "yes";
 
-    try {
-      /* DELIVERY */
-      const deliveryRes: any = await this.http
-        .post(`${API_BASE}/customer/add-delivery`, {
-          customerId: form.customerId,
-          delivery: {
-            email: form.deliveryEmail,
-            firstName: form.deliveryFirstName,
-            lastName: form.deliveryLastName,
-            mobile: form.deliveryMobile,
-            phone: form.deliveryPhone,
-            dob: form.dob,
-            street: form.street,
-            houseNumber: form.houseNumber,
-            zip: form.zip,
-            city: form.city,
-          },
-        })
-        .toPromise();
+    const payload = {
+      customerId: this.selectedCustomerId,
+      adminId: this.authService.getUserId(),
+      provider: this.selectedRate,
 
-      const deliveryId = deliveryRes?.data?.id;
+      // ── Delivery ──────────────────────────────────────────────────
+      delivery: {
+        email: form.deliveryEmail,
+        title: form.deliveryTitle,
+        firstName: form.deliveryFirstName,
+        lastName: form.deliveryLastName,
+        salutation: form.salutation,
+        mobile: form.deliveryMobile,
+        telephone: form.deliveryPhone,
+        dob: this.formatDate(form.dob),
+        zip: this.searchForm.zip,
+        city: this.searchForm.city,
+        street: this.searchForm.street,
+        houseNumber: this.searchForm.houseNumber,
+        deliveryType: "electricity",
+        persons: form.persons,
+        consumption: form.consumption,
+      },
+      billingAddress: {
+        different: form.hasDifferentBilling,
+        ...(form.hasDifferentBilling && {
+          zip: form.billingZip,
+          city: form.billingCity,
+          street: form.billingStreet,
+          houseNumber: form.billingHouseNumber,
+        }),
+      },
 
-      /* CONNECTION */
-      await this.http
-        .post(`${API_BASE}/customer/add-connection`, {
-          customerId: form.customerId,
-          deliveryId,
-          provider: this.selectedRate,
-          connectionData: {
-            isMovingIn: form.isMovingIn === "yes",
-            moveInDate: form.moveInDate,
-            submitLater: form.submitLater,
-            meterNumber: form.meterNumber,
-            marketLocationId: form.marketLocationId,
-            currentProvider: form.currentProvider,
-
-            cancellation: {
-              autoCancellation: form.autoCancellation,
-              alreadyCancelled: form.alreadyCancelled,
-              selfCancellation: form.selfCancellation,
-            },
-
+      // ── Connection ────────────────────────────────────────────────
+      connection: {
+        isMovingIn: movingIn,
+        ...(movingIn && {
+          moveInDate: this.formatDate(form.moveInDate),
+        }),
+        submitLater: form.submitLater,
+        meterNumber: form.meterNumber,
+        marketLocationId: form.marketLocationId,
+        ...(!movingIn && {
+          currentProvider: form.currentProvider,
+          cancellation: {
             autoCancellation: form.autoCancellation,
             alreadyCancelled: form.alreadyCancelled,
             selfCancellation: form.selfCancellation,
-
-            delivery: form.deliveryOption === "wunschtermin",
-
-            desiredDelivery:
-              form.deliveryOption === "wunschtermin"
-                ? form.desiredDeliveryDate
-                : null,
           },
-        })
-        .toPromise();
+          autoCancellation: form.autoCancellation,
+          alreadyCancelled: form.alreadyCancelled,
+          selfCancellation: form.selfCancellation,
+          delivery: form.deliveryOption === "wunschtermin",
+          desiredDelivery:
+            form.deliveryOption === "wunschtermin"
+              ? this.formatDate(form.desiredDeliveryDate)
+              : null,
+        }),
+      },
 
-      /* PAYMENT */
-      await this.http
-        .post(`${API_BASE}/customer/add-payment`, {
-          customerId: form.customerId,
-          deliveryId,
-          paymentData: {
-            paymentMethod: form.paymentMethod,
+      // ── Payment ───────────────────────────────────────────────────
+      paymentDetails: {
+        paymentData: {
+          paymentMethod: form.paymentMethod,
+          ...(form.paymentMethod === "lastschrift" && {
+            iban: form.iban,
+            accountHolder: {
+              firstName: form.accountHolderFirstName,
+              lastName: form.accountHolderLastName,
+            },
+            sepaConsent: form.sepaConsent,
+          }),
+        },
+      },
+    };
+    console.log("Submitting booking with payload:", payload);
+    this.http.post<any>(`${API_BASE}/admin/add-new-delivery`, payload).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res?.res === false) {
+          this.errorMessage = res?.message || "Failed to create booking";
+          return;
+        }
+        this.successMessage = "Booking created successfully";
+        setTimeout(() => this.router.navigate(["/admin/bookings"]), 1500);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err?.error?.message || "Failed to create booking";
+      },
+    });
+  }
 
-            ...(form.paymentMethod === "lastschrift" && {
-              iban: form.iban,
-              accountHolder: {
-                firstName: form.accountHolderFirstName,
-                lastName: form.accountHolderLastName,
-              },
-              sepaConsent: form.sepaConsent,
-            }),
-          },
-        })
-        .toPromise();
+  formatDate(date: string): string | null {
+    if (!date) return null;
 
-      this.successMessage = "Booking created successfully";
+    const d = new Date(date);
 
-      setTimeout(() => {
-        this.router.navigate(["/admin/bookings"]);
-      }, 1500);
-    } catch (error: any) {
-      this.errorMessage = error?.error?.message || "Failed to create booking";
-    } finally {
-      this.isLoading = false;
-    }
+    if (isNaN(d.getTime())) return null;
+
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+
+    return `${day}.${month}.${year}`;
   }
 }

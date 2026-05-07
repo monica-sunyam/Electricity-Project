@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { ApiService } from "../../../shared/services/api.service";
 import { AuthService } from "../../../shared/services/auth.service";
 import { Router } from "@angular/router";
+import { RouterModule } from "@angular/router";
 
 type CustomerAddress = {
   zip?: string;
@@ -82,7 +83,7 @@ export type ApiBooking = {
 @Component({
   selector: "app-booking-list",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: "./booking-list.component.html",
   styleUrl: "./booking-list.component.css",
 })

@@ -1,275 +1,462 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
-
     <div class="max-w-6xl mx-auto flex flex-col gap-6">
 
-        <!-- ================= CUSTOMER + ADDRESS SEARCH ================= -->
+        <!-- ══════════ BANNERS ══════════ -->
+        @if(successMessage){
+        <div class="rounded-xl bg-green-50 border border-green-200 text-green-800 px-5 py-3 text-sm font-medium">
+            ✅ {{ successMessage }}
+        </div>
+        }
+        @if(errorMessage){
+        <div class="rounded-xl bg-red-50 border border-red-200 text-red-800 px-5 py-3 text-sm font-medium">
+            ⚠️ {{ errorMessage }}
+        </div>
+        }
+
+
+        <!-- ══════════ CUSTOMER + ADDRESS SEARCH ══════════ -->
         <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-5">
                 Customer & Provider Selection
             </h2>
 
-            <!-- Customer Dropdown -->
+            <!-- Customer dropdown -->
             <div class="mb-5">
                 <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                     Select Customer *
                 </label>
-
                 <select [(ngModel)]="selectedCustomerId" name="customerId" (ngModelChange)="onCustomerSelect()"
                     class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800">
                     <option value="">Select customer</option>
-
                     @for(customer of customers; track customer.id){
                     <option [ngValue]="customer.id">
-                        {{ customer.firstName }} {{ customer.lastName }} - {{ customer.email }}
+                        {{ customer.firstName }} {{ customer.lastName }} — {{ customer.email }}
                     </option>
                     }
                 </select>
             </div>
 
-            <!-- Address Search -->
+            <!-- Address search fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-
                 <input type="text" [(ngModel)]="searchForm.zip" name="zip" placeholder="ZIP"
                     class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
-
                 <input type="text" [(ngModel)]="searchForm.city" name="city" placeholder="City"
                     class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
-
                 <input type="text" [(ngModel)]="searchForm.street" name="street" placeholder="Street"
                     class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
-
                 <input type="text" [(ngModel)]="searchForm.houseNumber" name="houseNumber" placeholder="House Number"
                     class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
-
                 <input type="number" [(ngModel)]="searchForm.consum" name="consum" placeholder="Consumption"
                     class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
             </div>
 
-            <!-- Search Button -->
+            @if(rateError){
+            <p class="mt-3 text-sm text-red-600 font-medium">⚠️ {{ rateError }}</p>
+            }
+
             <div class="mt-5">
                 <button type="button" (click)="fetchRates()" [disabled]="isLoadingRates"
-                    class="bg-brand-500 text-white px-5 py-2 rounded-lg hover:bg-brand-600 transition cursor-pointer">
-                    {{ isLoadingRates ? 'Searching...' : 'Search Providers' }}
+                    class="bg-brand-500 text-white px-5 py-2 rounded-lg hover:bg-brand-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                    {{ isLoadingRates ? 'Searching…' : 'Search Providers' }}
                 </button>
             </div>
         </div>
 
 
-        <!-- ================= PROVIDER LIST ================= -->
+        <!-- ══════════ PROVIDER LIST ══════════ -->
         @if(rates.length > 0){
         <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5">
-
-            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">
-                Select Provider
-            </h2>
+            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">Select Provider</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-
                 @for(rate of rates; track rate.rateId){
                 <div (click)="selectRate(rate)" class="border rounded-2xl p-5 cursor-pointer transition hover:shadow-md"
                     [class.border-brand-500]="selectedRate?.rateId === rate.rateId"
                     [class.bg-brand-50]="selectedRate?.rateId === rate.rateId">
 
-                    <!-- Provider Logo -->
                     <div class="mb-4 h-14 flex items-center">
                         <img *ngIf="rate.providerSVGPath" [src]="rate.providerSVGPath" [alt]="rate.providerName"
                             class="h-12 object-contain" />
-
-                        <h3 *ngIf="!rate.providerSVGPath" class="font-semibold text-gray-800 dark:text-white">
-                            {{ rate.providerName }}
-                        </h3>
+                        <h3 *ngIf="!rate.providerSVGPath" class="font-semibold text-gray-800 dark:text-white">{{
+                            rate.providerName }}</h3>
                     </div>
 
-                    <!-- Rate Name -->
-                    <h3 class="font-semibold text-lg text-gray-800 dark:text-white">
-                        {{ rate.rateName }}
-                    </h3>
+                    <h3 class="font-semibold text-lg text-gray-800 dark:text-white">{{ rate.rateName }}</h3>
+                    <p class="text-sm text-gray-500 mt-1">{{ rate.providerName }}</p>
 
-                    <p class="text-sm text-gray-500 mt-1">
-                        {{ rate.providerName }}
-                    </p>
-
-                    <!-- Pricing -->
                     <div class="mt-4 space-y-2">
-
-                        <div class="flex justify-between text-sm">
-                            <span>Yearly Cost</span>
-                            <span class="font-semibold">
-                                €{{ rate.totalPrice }}
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between text-sm">
-                            <span>Monthly Cost</span>
-                            <span>
-                                €{{ rate.totalPriceMonth }}/mo
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between text-sm">
-                            <span>Base Price</span>
-                            <span>
-                                €{{ rate.basePriceMonth }}/mo
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between text-sm">
-                            <span>Work Price</span>
-                            <span>
-                                {{ rate.workPrice }} ct/kWh
-                            </span>
-                        </div>
+                        <div class="flex justify-between text-sm"><span>Yearly Cost</span><span
+                                class="font-semibold">€{{ rate.totalPrice }}</span></div>
+                        <div class="flex justify-between text-sm"><span>Monthly Cost</span><span>€{{
+                                rate.totalPriceMonth }}/mo</span></div>
+                        <div class="flex justify-between text-sm"><span>Base Price</span><span>€{{ rate.basePriceMonth
+                                }}/mo</span></div>
+                        <div class="flex justify-between text-sm"><span>Work Price</span><span>{{ rate.workPrice }}
+                                ct/kWh</span></div>
                     </div>
 
-                    <!-- Bonus -->
                     @if(rate.optBonus > 0){
-                    <div class="mt-3">
-                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
-                            Bonus: €{{ rate.optBonus }}
-                        </span>
-                    </div>
+                    <div class="mt-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Bonus:
+                            €{{ rate.optBonus }}</span></div>
                     }
-
-                    <!-- Eco -->
                     @if(rate.optEco){
-                    <div class="mt-3">
-                        <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs">
-                            🌱 Eco Tariff
-                        </span>
-                    </div>
+                    <div class="mt-3"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs">🌱
+                            Eco Tariff</span></div>
                     }
-
-                    <!-- Price Guarantee -->
                     @if(rate.optGuarantee){
-                    <div class="mt-3">
-                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                            {{ rate.optGuarantee }} Months Price Guarantee
-                        </span>
-                    </div>
+                    <div class="mt-3"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">{{
+                            rate.optGuarantee }} Months Price Guarantee</span></div>
                     }
-
-                    <!-- Contract Types -->
                     <div class="mt-3 flex flex-wrap gap-2">
                         @for(type of rate.rateChangeType; track type){
-                        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">
-                            {{ type }}
-                        </span>
+                        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">{{ type }}</span>
                         }
                     </div>
-
-                    <!-- Recommended -->
                     @if(rate.recommended){
-                    <div class="mt-4 text-sm font-medium text-green-600">
-                        ⭐ Recommended Plan
-                    </div>
+                    <div class="mt-4 text-sm font-medium text-green-600">⭐ Recommended Plan</div>
                     }
-
-                </div>
-                }
-
-                @if(baseProvider){
-                <div class="rounded-2xl bg-yellow-50 border border-yellow-200 p-4 mb-5">
-                    <h3 class="font-semibold text-yellow-800 mb-2">
-                        Current Base Provider
-                    </h3>
-
-                    <p class="text-sm text-yellow-700">
-                        {{ baseProvider.providerName }}
-                    </p>
-
-                    <p class="text-sm text-yellow-700">
-                        {{ baseProvider.rates?.[0]?.rateName }}
-                    </p>
                 </div>
                 }
             </div>
+
+            @if(baseProvider){
+            <div class="rounded-2xl bg-yellow-50 border border-yellow-200 p-4 mt-5">
+                <h3 class="font-semibold text-yellow-800 mb-2">Current Base Provider</h3>
+                <p class="text-sm text-yellow-700">{{ baseProvider.providerName }}</p>
+                <p class="text-sm text-yellow-700">{{ baseProvider.rates?.[0]?.rateName }}</p>
+            </div>
+            }
         </div>
         }
 
 
-        <!-- ================= DELIVERY SECTION ================= -->
+        <!-- ══════════ DELIVERY INFORMATION ══════════ -->
         @if(selectedRate){
-        <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5">
-            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">
-                Delivery Information
-            </h2>
+        <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5" [formGroup]="bookingForm">
+            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">Delivery Information</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input formControlName="deliveryFirstName" placeholder="First Name"
-                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
-
-                <input formControlName="deliveryLastName" placeholder="Last Name"
-                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
-
                 <input formControlName="deliveryEmail" placeholder="Email"
                     class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
 
-                <input formControlName="deliveryMobile" placeholder="Mobile"
+                <select formControlName="deliveryTitle" class="rounded-lg border px-3 py-2 dark:bg-gray-800">
+                    <option value="">Select Title</option>
+                    <option value="Dr.">Dr.</option>
+                    <option value="Prof.">Prof.</option>
+                    <option value="Prof. Dr.">Prof. Dr.</option>
+                </select>
+
+                <select formControlName="salutation" class="rounded-lg border px-3 py-2 dark:bg-gray-800">
+                    <option value="">Select Salutation</option>
+                    <option value="Herr">Herr</option>
+                    <option value="Frau">Frau</option>
+                    <option value="Divers">Divers</option>
+                    <option value="Keine Angabe">Keine Angabe</option>
+                </select>
+
+                <input formControlName="deliveryFirstName" placeholder="First Name"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input formControlName="deliveryLastName" placeholder="Last Name"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input formControlName="deliveryMobile" placeholder="Mobile Number"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input formControlName="deliveryPhone" placeholder="Telephone Number"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input type="date" formControlName="dob" class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input type="number" formControlName="persons" placeholder="Persons"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input type="number" formControlName="consumption" placeholder="Consumption"
                     class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
             </div>
+
+            <!-- Different billing address toggle -->
+            <div class="mt-5">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Different Billing Address?</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button type="button" (click)="bookingForm.patchValue({ hasDifferentBilling: true })"
+                        class="border rounded-lg py-2 cursor-pointer transition"
+                        [class.bg-brand-500]="showBillingFields" [class.text-white]="showBillingFields"
+                        [class.border-brand-500]="showBillingFields">
+                        Yes
+                    </button>
+                    <button type="button" (click)="bookingForm.patchValue({ hasDifferentBilling: false })"
+                        class="border rounded-lg py-2 cursor-pointer transition"
+                        [class.bg-brand-500]="!showBillingFields" [class.text-white]="!showBillingFields"
+                        [class.border-brand-500]="!showBillingFields">
+                        No
+                    </button>
+                </div>
+            </div>
+
+            @if(showBillingFields){
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <input formControlName="billingZip" placeholder="Billing ZIP"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input formControlName="billingCity" placeholder="Billing City"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input formControlName="billingStreet" placeholder="Billing Street"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <input formControlName="billingHouseNumber" placeholder="Billing House Number"
+                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+            </div>
+            }
         </div>
         }
 
 
-        <!-- ================= CONNECTION SECTION ================= -->
+        <!-- ══════════ CONNECTION INFORMATION ══════════ -->
         @if(selectedRate){
-        <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5">
-            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">
-                Connection Information
-            </h2>
+        <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5" [formGroup]="bookingForm">
+            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">Connection Information</h2>
 
-            <select formControlName="isMovingIn" class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800 mb-4">
-                <option value="yes">Moving In</option>
-                <option value="no">Existing Connection</option>
-            </select>
+            <!-- Moving-in toggle (mirrors: Ziehen Sie an der angegebenen Adresse neu ein?) -->
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Are you moving into this address? *</p>
+            <div class="grid grid-cols-2 gap-4 mb-5">
+                <button type="button" (click)="bookingForm.patchValue({ isMovingIn: 'yes' })"
+                    class="border rounded-lg py-2 cursor-pointer transition" [class.bg-brand-500]="isMovingIn"
+                    [class.text-white]="isMovingIn" [class.border-brand-500]="isMovingIn">
+                    Yes
+                </button>
+                <button type="button" (click)="bookingForm.patchValue({ isMovingIn: 'no' })"
+                    class="border rounded-lg py-2 cursor-pointer transition" [class.bg-brand-500]="!isMovingIn"
+                    [class.text-white]="!isMovingIn" [class.border-brand-500]="!isMovingIn">
+                    No
+                </button>
+            </div>
 
-            @if(bookingForm.get('isMovingIn')?.value === 'yes'){
-            <input type="date" formControlName="moveInDate"
-                class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800" />
+            <!-- Move-in date — shown only when moving in (mirrors moveInDate datepicker) -->
+            @if(isMovingIn){
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                    Desired Delivery Date (Gewünschter Liefertermin) *
+                </label>
+                <input type="date" formControlName="moveInDate"
+                    class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                @if(bookingForm.get('moveInDate')?.invalid && bookingForm.get('moveInDate')?.touched){
+                <p class="text-xs text-red-500 mt-1">Please select a move-in date.</p>
+                }
+            </div>
             }
 
-            <div class="mt-4">
+            <!-- Submit later checkbox (mirrors: Ich reiche die benötigten Daten zur Belieferung nach) -->
+            <label class="flex items-center gap-3 mb-4 cursor-pointer select-none">
+                <input type="checkbox" formControlName="submitLater" class="w-4 h-4 rounded" />
+                <span class="text-sm text-gray-700 dark:text-gray-300">
+                    I will submit the required data later (Ich reiche die Daten nach)
+                </span>
+            </label>
+
+            <!-- Meter number (mirrors: Zählernummer) -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                    Meter Number (Zählernummer) *
+                </label>
                 <input formControlName="meterNumber" placeholder="Meter Number"
                     class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                @if(bookingForm.get('meterNumber')?.invalid && bookingForm.get('meterNumber')?.touched){
+                <p class="text-xs text-red-500 mt-1">Please enter the meter number.</p>
+                }
             </div>
+
+            <!-- Market location ID — optional (mirrors: Marktlokations-ID) -->
+            <div class="mb-5">
+                <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                    Market Location ID — optional (Marktlokations-ID)
+                </label>
+                <input formControlName="marketLocationId" placeholder="Market Location ID (optional)"
+                    class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800" />
+            </div>
+
+            <!-- Fields visible only when NOT moving in ──────────────────────── -->
+            @if(!isMovingIn){
+
+            <!-- Current provider dropdown (mirrors: Ihr derzeitiger Stromanbieter) -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                    Current Electricity Provider (Stromanbieter) *
+                </label>
+                <select formControlName="currentProvider" class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800">
+                    <option value="" disabled>Select current provider</option>
+                    @for(provider of providersList; track provider){
+                    <option [value]="provider">{{ provider }}</option>
+                    }
+                </select>
+                @if(bookingForm.get('currentProvider')?.invalid && bookingForm.get('currentProvider')?.touched){
+                <p class="text-xs text-red-500 mt-1">Please select your current provider.</p>
+                }
+            </div>
+
+            <!-- Cancellation options (mirrors: Kündigung des bisherigen Vertrags) -->
+            <div class="mb-4">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Contract Cancellation (Kündigung) *
+                </p>
+                <div class="rounded-lg border dark:border-gray-700 p-4 space-y-3">
+                    <!-- Auto cancellation by new provider — top full-width option -->
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" formControlName="autoCancellation" class="w-4 h-4 rounded" />
+                        <span class="text-sm text-gray-700 dark:text-gray-300">
+                            Automatic cancellation by new provider
+                            <span class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Most
+                                popular</span>
+                        </span>
+                    </label>
+
+                    <!-- Sub-options: mutually exclusive (mirrors kuendigung-bottom toggle) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pl-1">
+                        <button type="button"
+                            (click)="bookingForm.patchValue({ alreadyCancelled: !bookingForm.get('alreadyCancelled')?.value, selfCancellation: false })"
+                            class="flex items-center gap-2 border rounded-lg px-4 py-2 text-sm cursor-pointer transition text-left"
+                            [class.border-brand-500]="bookingForm.get('alreadyCancelled')?.value"
+                            [class.bg-brand-50]="bookingForm.get('alreadyCancelled')?.value">
+                            <input type="checkbox" [checked]="bookingForm.get('alreadyCancelled')?.value"
+                                class="w-4 h-4 rounded pointer-events-none" />
+                            Contract already cancelled
+                        </button>
+                        <button type="button"
+                            (click)="bookingForm.patchValue({ selfCancellation: !bookingForm.get('selfCancellation')?.value, alreadyCancelled: false })"
+                            class="flex items-center gap-2 border rounded-lg px-4 py-2 text-sm cursor-pointer transition text-left"
+                            [class.border-brand-500]="bookingForm.get('selfCancellation')?.value"
+                            [class.bg-brand-50]="bookingForm.get('selfCancellation')?.value">
+                            <input type="checkbox" [checked]="bookingForm.get('selfCancellation')?.value"
+                                class="w-4 h-4 rounded pointer-events-none" />
+                            I will cancel myself
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery date option (mirrors: Gewünschter Liefertermin toggle) -->
+            <div class="mb-4">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Desired Delivery Date (Gewünschter Liefertermin) *
+                </p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button type="button" (click)="bookingForm.patchValue({ deliveryOption: 'schnellstmoeglich' })"
+                        class="border rounded-lg py-2 cursor-pointer transition text-sm"
+                        [class.bg-brand-500]="!isWunschtermin" [class.text-white]="!isWunschtermin"
+                        [class.border-brand-500]="!isWunschtermin">
+                        As soon as possible (Schnellstmöglich)
+                    </button>
+                    <button type="button" (click)="bookingForm.patchValue({ deliveryOption: 'wunschtermin' })"
+                        class="border rounded-lg py-2 cursor-pointer transition text-sm"
+                        [class.bg-brand-500]="isWunschtermin" [class.text-white]="isWunschtermin"
+                        [class.border-brand-500]="isWunschtermin">
+                        Specific date (Wunschtermin)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Desired delivery date picker — shown only when Wunschtermin selected -->
+            @if(isWunschtermin){
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                    Select Date (Wunschtermin) *
+                </label>
+                <input type="date" formControlName="desiredDeliveryDate"
+                    class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                @if(bookingForm.get('desiredDeliveryDate')?.invalid && bookingForm.get('desiredDeliveryDate')?.touched){
+                <p class="text-xs text-red-500 mt-1">Please select a desired delivery date.</p>
+                }
+            </div>
+            }
+
+            } <!-- end @if(!isMovingIn) -->
         </div>
         }
 
 
-        <!-- ================= PAYMENT ================= -->
+        <!-- ══════════ PAYMENT INFORMATION ══════════ -->
         @if(selectedRate){
-        <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5">
-            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">
-                Payment Information
-            </h2>
+        <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5" [formGroup]="bookingForm">
+            <h2 class="text-lg font-semibold mb-5 text-gray-800 dark:text-white">Payment Information</h2>
 
-            <select formControlName="paymentMethod" class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800">
-                <option value="ueberweisung">Überweisung</option>
-                <option value="lastschrift">Lastschrift</option>
-            </select>
+            <!-- Payment method toggle (mirrors: Lastschrift / Überweisung toggle) -->
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method (Zahlungsart) *</p>
+            <div class="grid grid-cols-2 gap-4 mb-5">
+                <button type="button" (click)="bookingForm.patchValue({ paymentMethod: 'lastschrift' })"
+                    class="border rounded-lg py-2 cursor-pointer transition" [class.bg-brand-500]="isLastschrift"
+                    [class.text-white]="isLastschrift" [class.border-brand-500]="isLastschrift">
+                    Lastschrift (Direct Debit)
+                </button>
+                <button type="button" (click)="bookingForm.patchValue({ paymentMethod: 'ueberweisung' })"
+                    class="border rounded-lg py-2 cursor-pointer transition" [class.bg-brand-500]="!isLastschrift"
+                    [class.text-white]="!isLastschrift" [class.border-brand-500]="!isLastschrift">
+                    Überweisung (Bank Transfer)
+                </button>
+            </div>
 
-            @if(bookingForm.get('paymentMethod')?.value === 'lastschrift'){
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <!-- IBAN + account holder — only for Lastschrift (mirrors ng-container *ngIf) -->
+            @if(isLastschrift){
+            <div class="space-y-4">
+                <!-- IBAN (mirrors: IBAN field) -->
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">IBAN *</label>
+                    <input formControlName="iban" placeholder="DE00 0000 0000 0000 0000 00"
+                        class="w-full rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                    @if(bookingForm.get('iban')?.invalid && bookingForm.get('iban')?.touched){
+                    <p class="text-xs text-red-500 mt-1">Please enter your IBAN.</p>
+                    }
+                </div>
 
-                <input formControlName="iban" placeholder="IBAN" class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <!-- Account holder (mirrors: Vorname + Nachname) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                            Account Holder First Name (Vorname) *
+                        </label>
+                        <input formControlName="accountHolderFirstName" placeholder="First Name"
+                            class="rounded-lg border px-3 py-2 w-full dark:bg-gray-800" />
+                        @if(bookingForm.get('accountHolderFirstName')?.invalid &&
+                        bookingForm.get('accountHolderFirstName')?.touched){
+                        <p class="text-xs text-red-500 mt-1">Please enter first name.</p>
+                        }
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                            Account Holder Last Name (Nachname) *
+                        </label>
+                        <input formControlName="accountHolderLastName" placeholder="Last Name"
+                            class="rounded-lg border px-3 py-2 w-full dark:bg-gray-800" />
+                        @if(bookingForm.get('accountHolderLastName')?.invalid &&
+                        bookingForm.get('accountHolderLastName')?.touched){
+                        <p class="text-xs text-red-500 mt-1">Please enter last name.</p>
+                        }
+                    </div>
+                </div>
 
-                <input formControlName="accountHolderFirstName" placeholder="Account Holder First Name"
-                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
-
-                <input formControlName="accountHolderLastName" placeholder="Account Holder Last Name"
-                    class="rounded-lg border px-3 py-2 dark:bg-gray-800" />
+                <!-- SEPA consent (mirrors: Einwilligung zum SEPA-Lastschriftverfahren) -->
+                <div class="rounded-lg border dark:border-gray-700 p-4">
+                    <p class="text-sm font-medium text-gray-800 dark:text-white mb-3">
+                        SEPA Direct Debit Mandate (Einwilligung zum SEPA-Lastschriftverfahren)
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        Der genannte Kontoinhaber ermächtigt den Anbieter, Zahlungen von seinem Konto mittels
+                        Lastschrift einzuziehen. Die Zahlungsabwicklung erfolgt über den beauftragten
+                        Zahlungsdienstleister.
+                    </p>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" formControlName="sepaConsent" class="w-4 h-4 rounded" />
+                        <span class="text-sm text-gray-700 dark:text-gray-300">
+                            I agree to the SEPA direct debit mandate (Ich stimme dem SEPA-Lastschriftmandat zu)
+                        </span>
+                    </label>
+                    @if(!bookingForm.get('sepaConsent')?.value && bookingForm.get('sepaConsent')?.touched){
+                    <p class="text-xs text-red-500 mt-2">Please accept the SEPA mandate.</p>
+                    }
+                </div>
             </div>
             }
         </div>
         }
 
 
-        <!-- FINAL SUBMIT -->
+        <!-- ══════════ SUBMIT ══════════ -->
         @if(selectedRate){
         <div class="rounded-2xl bg-white dark:bg-gray-900 shadow p-5">
-            <button type="submit" (click)="createBooking()" [disabled]="isLoading"
-                class="w-full bg-brand-500 text-white py-3 rounded-lg hover:bg-brand-600 transition cursor-pointer">
-                {{ isLoading ? 'Creating Booking...' : 'Create Booking' }}
+            <button type="button" (click)="createBooking()" [disabled]="isLoading"
+                class="w-full bg-brand-500 text-white py-3 rounded-lg hover:bg-brand-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ isLoading ? 'Creating Booking…' : 'Create Booking' }}
             </button>
         </div>
         }

@@ -646,6 +646,11 @@ AUTH MODE
               }
               this.cdr.detectChanges();
               console.log('UI update triggered for step:', this.currentStep);
+            } else {
+              this.currentStep = 2;
+              this.apiError = '';
+
+              this.cdr.detectChanges();
             }
           }
         },
