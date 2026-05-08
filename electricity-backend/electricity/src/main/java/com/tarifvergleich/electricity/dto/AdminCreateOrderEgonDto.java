@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.tarifvergleich.electricity.model.CustomerAddress;
 import com.tarifvergleich.electricity.model.CustomerBillingAddress;
 import com.tarifvergleich.electricity.model.CustomerConnect;
@@ -13,91 +14,57 @@ import com.tarifvergleich.electricity.model.CustomerSelectedProvider;
 import com.tarifvergleich.electricity.util.Helper;
 
 public record AdminCreateOrderEgonDto(EgonAddressDto delivery, EgonAddressDto billing,
-		EgonContactPersonDto contactPerson, EgonContactDetailsDto contact, EgonPaymentDto payment,
+		EgonContactPersonDto contactPerson, EgonContactDetailsDto contact, Object payment,
 		List<EgonProductDto> products) {
 
 	public static AdminCreateOrderEgonDto mapToEgonRequest(CustomerDelivery delivery, String deliveryType) {
-		
+
 		CustomerAddress customerAddress = delivery.getAddress();
 		CustomerBillingAddress customerBillingAddress = delivery.getBillingAddress();
 		CustomerConnect customerConnection = delivery.getCustomerConnection();
 		CustomerPayment customerPayment = delivery.getCustomerPayment();
 		CustomerSelectedProvider provider = delivery.getCustomerProvider();
 		Helper helper = new Helper();
-		
-		
-	    EgonAddressDto address = new EgonAddressDto(
-	        "81",
-	        customerAddress.getZip(),
-	       customerAddress.getCity(),
-	        customerAddress.getStreet(),
-	        customerAddress.getHouseNumber()
-	    );
-	    
-	    EgonAddressDto billingAddress = new EgonAddressDto(
-	    		"81", 
-	    		customerBillingAddress.getZip(), 
-	    		customerBillingAddress.getCity(), 
-	    		customerBillingAddress.getStreet(), 
-	    		customerBillingAddress.getHouseNumber()
-	    		);
 
-	    EgonContactPersonDto contactPerson = new EgonContactPersonDto(
-	        delivery.getSalutation(),
-	        delivery.getFirstName(),
-	        delivery.getLastName(),
-	        helper.toGermalDateStamp(delivery.getDob())
-	    );
+		EgonAddressDto address = new EgonAddressDto("81", customerAddress.getZip(), customerAddress.getCity(),
+				customerAddress.getStreet(), customerAddress.getHouseNumber());
 
-	    EgonContactDetailsDto contact = new EgonContactDetailsDto(
-	        "49",
-	        delivery.getMobile(),
-	        delivery.getCustomerId().getEmail()
-	    );
+		EgonAddressDto billingAddress = new EgonAddressDto("81", customerBillingAddress.getZip(),
+				customerBillingAddress.getCity(), customerBillingAddress.getStreet(),
+				customerBillingAddress.getHouseNumber());
 
-	    EgonPaymentDto payment = new EgonPaymentDto(
-	        "sepa",
-	        customerPayment.getIban()
-	    );
+		EgonContactPersonDto contactPerson = new EgonContactPersonDto(delivery.getSalutation(), delivery.getFirstName(),
+				delivery.getLastName(), helper.toGermalDateStamp(delivery.getDob()));
 
-	    EgonProductDto product = new EgonProductDto(
-	        provider.getRateId(), 
-	        helper.toGermalDateStamp(Helper.getCurrentTimeBerlin()),
-	        provider.getConsumption(),
-	        provider.getType(),
-	        provider.getBranch(),
-	        deliveryType,
-	        helper.toGermalDateStamp(customerConnection.getDesiredDelivery()),
-	        0, 
-	        customerConnection.getMeterNumber(),
-	        customerConnection.getMarketLocationId(),
-	        provider.getWorkPrice(),
-	        provider.getBasePriceYear()
-	    );
+		EgonContactDetailsDto contact = new EgonContactDetailsDto("49", delivery.getMobile(),
+				delivery.getCustomerId().getEmail());
 
+		Object payment;
 
-	    return new AdminCreateOrderEgonDto(
-	        address, 
-	        billingAddress,
-	        contactPerson,
-	        contact,
-	        payment,
-	        List.of(product)
-	    );
+		if (customerPayment.getIban() != null)
+			payment = new EgonPaymentSepaDto("sepa", customerPayment.getIban());
+		else
+			payment = new EgonPaymentDebitDto("debit");
+
+		EgonProductDto product = new EgonProductDto(provider.getRateId(),
+				helper.toGermalDateStamp(Helper.getCurrentTimeBerlin()), delivery.getTotalConsumption(), provider.getType(),
+				provider.getBranch(), deliveryType,
+				customerConnection.getIsMovingIn() ? helper.toGermalDateStamp(customerConnection.getMoveInDate())
+						: helper.toGermalDateStamp(customerConnection.getDesiredDelivery()),
+				0, customerConnection.getMeterNumber(), customerConnection.getMarketLocationId(),
+				provider.getWorkPrice(), provider.getBasePriceYear());
+
+		return new AdminCreateOrderEgonDto(address, billingAddress, contactPerson, contact, payment, List.of(product));
 	}
-	
-	public static record OrderListResponse(List<OrderResponseDto> orders) {}
-	
+
+	public static record OrderListResponse(@JsonValue List<OrderResponseDto> orders) {
+	}
+
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static record OrderResponseDto(
-	    Long orderNo,
-	    boolean docInboxRequired,
-	    String providerName,
-	    String rateName,
-	    String orderType,
-	    String customerType
-	) {}
-	
+	public static record OrderResponseDto(String orderNo, boolean docInboxRequired, String providerName, String rateName,
+			String orderType, String customerType) {
+	}
+
 }
 
 record EgonAddressDto(String country, String zip, String city, String street, String houseNumber) {
@@ -109,7 +76,10 @@ record EgonContactPersonDto(String salutation, String firstName, String lastName
 record EgonContactDetailsDto(String phonePrefix, String phoneNumber, String email) {
 }
 
-record EgonPaymentDto(String paymentType, String iban) {
+record EgonPaymentSepaDto(String paymentType, String iban) {
+}
+
+record EgonPaymentDebitDto(String paymentType) {
 }
 
 record EgonProductDto(Long rateId, LocalDate sigDate, int consum, String type, String branch, String deliveryType,
@@ -118,11 +88,6 @@ record EgonProductDto(Long rateId, LocalDate sigDate, int consum, String type, S
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-record OrderResponseDto(
-    int orderNo,
-    boolean docInboxRequired,
-    String providerName,
-    String rateName,
-    String orderType,
-    String customerType
-) {}
+record OrderResponseDto(int orderNo, boolean docInboxRequired, String providerName, String rateName, String orderType,
+		String customerType) {
+}

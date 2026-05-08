@@ -106,7 +106,12 @@ public class AdminCustomerManagementController {
 
 	@PostMapping("/place-order")
 	public ResponseEntity<?> placeCustomerOrder(@RequestBody CustomerDeliveryDto deliveryDto) {
-		return ResponseEntity.ok(adminCustomerManagementService.placeNewOrderToEgon(deliveryDto));
+		return ResponseEntity.ok(adminCustomerDeliveryManagementService.placeNewOrderToEgon(deliveryDto));
+	}
+
+	@PostMapping("/fetch-unsigned-doc")
+	public ResponseEntity<?> fetchUnsignedBookingDocument(@RequestBody CustomerDeliveryDto deliveryDto) {
+		return ResponseEntity.ok(adminCustomerDeliveryManagementService.downloadUnsignedPdf(deliveryDto));
 	}
 
 	@PostMapping("/toggle-customer-notification")
@@ -135,5 +140,10 @@ public class AdminCustomerManagementController {
 	public ResponseEntity<?> fetchCustomerSelectiveFields(@RequestBody CustomerDto customerDto) {
 		return ResponseEntity
 				.ok(adminCustomerManagementService.fetchCustomerByNameEmailAndId(customerDto.getAdminId()));
+	}
+
+	@PostMapping("/open-order")
+	public ResponseEntity<?> openOrder(@RequestBody CustomerDeliveryDto deliveryDto) {
+		return ResponseEntity.ok(adminCustomerDeliveryManagementService.openOrder(deliveryDto));
 	}
 }

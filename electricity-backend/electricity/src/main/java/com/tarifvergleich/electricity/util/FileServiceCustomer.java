@@ -73,10 +73,10 @@ public class FileServiceCustomer {
 		byte[] decodedBytes = Base64.getMimeDecoder().decode(base64String.replaceAll("\\s", ""));
 
 		Path filePath = targetDir.resolve(fullFileName);
+		System.out.println("DEBUG: Saving file to -> " + filePath.toAbsolutePath());
+		Files.write(targetDir.resolve(filePath), decodedBytes);
 
-		Files.write(filePath, decodedBytes);
-
-		return folderName + "/" + fileName;
+		return folderName + "/" + fullFileName;
 	}
 
 	public Resource loadFile(String relativePath) {

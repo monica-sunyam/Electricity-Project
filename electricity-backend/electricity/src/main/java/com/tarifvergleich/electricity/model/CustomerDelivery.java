@@ -73,6 +73,9 @@ public class CustomerDelivery {
 	@Column(name = "order_placed")
 	private Boolean orderPlaced;
 	
+	@Column(name = "order_placed_in_egon")
+	private Boolean orderPlacedInEgon;
+	
 	@Column(name = "unique_delivery_id")
 	private String uniqueDeliveryId;
 	
@@ -85,11 +88,17 @@ public class CustomerDelivery {
 	@Column(name = "expiry_on")
 	private BigInteger expiryOn;
 	
+	@Column(name = "last_date_of_cancellation")
+	private BigInteger lastDateOfCancellation;
+	
 	@Column(name = "is_expired")
 	private Boolean isExpired;
 	
 	@Column(name = "is_cancelled")
 	private Boolean isCancelled;
+	
+	@Column(name = "cancelled_on")
+	private Boolean cancelledOn;
 	
 	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "customer_billing_id")
@@ -119,6 +128,10 @@ public class CustomerDelivery {
 	@JoinColumn(name = "customer_booking_document_id")
 	private CustomerBookingDocument customerBookingDocument;
 	
+	@OneToOne(mappedBy = "delivery")
+	@JsonIgnore
+	private CustomerOrder customerOrder;
+	
 	@OneToMany(mappedBy = "customerDelivery")
 	@JsonIgnoreProperties("customerDelivery")
 	private List<CustomerServiceRequest> customerServiceRequests;
@@ -141,6 +154,7 @@ public class CustomerDelivery {
 		isExpired = false;
 		isCancelled = false;
 		notificationEnabled = true;
+		orderPlacedInEgon = false;
 	}
 	
 	public void setUserAdmin(AdminUser admin) {

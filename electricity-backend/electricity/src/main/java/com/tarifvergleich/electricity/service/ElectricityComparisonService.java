@@ -78,6 +78,7 @@ public class ElectricityComparisonService {
 			}
 			
 			filters.put("houseNumber", Integer.parseInt(filters.get("houseNumber").toString()));
+			filters.put("showCommission", true);
 			
 			CompletableFuture<Object> ratesFuture = CompletableFuture
 					.supplyAsync(() -> energyService.getRates(filters));

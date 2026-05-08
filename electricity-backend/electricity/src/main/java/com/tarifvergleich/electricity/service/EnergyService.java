@@ -97,15 +97,22 @@ public class EnergyService {
 					Map<String, Object> body = objectMapper.readValue(response.getBody(),
 							new TypeReference<Map<String, Object>>() {
 							});
-					body.put("message", (Object) "Incorrent iban id");
 					body.put("code", (Object) 200);
 					throw new EnergyApiUnavailableException("Order cannot be placed", body);
 				}).body(OrderListResponse.class);
 	}
-	
-	public EgonDocumentDto createBookingPdf() {
-		return null;
+
+	public EgonDocumentDto createBookingPdf(String orderNo) {
+		return energyApi.post().uri("/order/{orderNo}/document/create/", orderNo).retrieve()
+				.onStatus(HttpStatusCode::isError, (request, response) -> {
+					Map<String, Object> body = objectMapper.readValue(response.getBody(),
+							new TypeReference<Map<String, Object>>() {
+							});
+
+					body.put("message", (Object) "Incorrect iban id");
+					body.put("code", (Object) 200);
+					throw new EnergyApiUnavailableException("Invalid orderNo", body);
+				}).body(EgonDocumentDto.class);
 	}
-	
-	
+
 }

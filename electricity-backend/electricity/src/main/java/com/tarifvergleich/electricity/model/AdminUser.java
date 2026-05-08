@@ -122,6 +122,11 @@ public class AdminUser {
 	@JsonIgnoreProperties("admin")
 	private List<CustomerNote> customerNotes;
 
+	@OneToMany(mappedBy = "admin", cascade = { CascadeType.PERSIST, CascadeType.REMOVE,
+			CascadeType.MERGE }, orphanRemoval = true)
+	@JsonIgnoreProperties("admin")
+	private List<CustomerOrder> customerOrders;
+
 	@PrePersist
 	protected void onCreate() {
 		this.createdOn = Helper.getCurrentTimeBerlin();
@@ -223,5 +228,12 @@ public class AdminUser {
 			customerNotes = new LinkedList<CustomerNote>();
 		note.setAdmin(this);
 		customerNotes.add(note);
+	}
+
+	public void addCustomerOrder(CustomerOrder order) {
+		if (customerOrders == null)
+			customerOrders = new LinkedList<CustomerOrder>();
+		order.setAdmin(this);
+		customerOrders.add(order);
 	}
 }
