@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto;
-import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto.OrderListResponse;
 import com.tarifvergleich.electricity.dto.CustomerAttornyDto;
 import com.tarifvergleich.electricity.dto.CustomerComparingEnergyDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
@@ -45,7 +43,6 @@ import com.tarifvergleich.electricity.repository.CustomerComparingEnergyReposito
 import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
 import com.tarifvergleich.electricity.repository.CustomerRepository;
 import com.tarifvergleich.electricity.repository.CustomerServiceRequestRepository;
-import com.tarifvergleich.electricity.service.EnergyService;
 import com.tarifvergleich.electricity.service.customer.CustomerAuthService;
 import com.tarifvergleich.electricity.util.EmailTemplate;
 import com.tarifvergleich.electricity.util.Helper;
@@ -64,7 +61,6 @@ public class AdminCustomerManagementService {
 	private final CustomerAttornyRepository customerAttornyRepo;
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailTemplate emailTemplate;
-	private final EnergyService energyService;
 	private final CustomerAuthService customerAuthService;
 	private final ObjectMapper objectMapper;
 
@@ -384,31 +380,6 @@ public class AdminCustomerManagementService {
 		customerAttornyRepo.save(attorny);
 
 		return Map.of("res", true, "message", "Status updated successfully");
-	}
-
-	@Transactional
-	public Map<String, Object> placeNewOrderToEgon(CustomerDeliveryDto deliveryDto) {
-		if (deliveryDto.getAdminId() == null || deliveryDto.getAdminId() <= 0)
-			throw new InternalServerException("Admin id missing", HttpStatus.OK);
-		if (deliveryDto.getDeliveryId() == null || deliveryDto.getDeliveryId() <= 0)
-			throw new InternalServerException("Delivery id missing", HttpStatus.OK);
-
-		CustomerDelivery delivery = customerDeliveryRepo
-				.findByIdAndAdminAdminId(deliveryDto.getDeliveryId(), deliveryDto.getAdminId())
-				.orElseThrow(() -> new InternalServerException("Customer delivery not found with this credential",
-						HttpStatus.OK));
-
-		AdminCreateOrderEgonDto placeOrderRequest = AdminCreateOrderEgonDto.mapToEgonRequest(delivery, "new");
-
-		OrderListResponse placeOrderResponse = energyService.placeOrder(placeOrderRequest);
-
-		Long orderNo = placeOrderResponse.orders().getFirst().orderNo();
-
-		delivery.setOrderNo(orderNo);
-
-		customerDeliveryRepo.save(delivery);
-
-		return Map.of("res", true, "message", "Order placed successfully", "Order no", orderNo);
 	}
 
 	@Transactional

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import com.tarifvergleich.electricity.dto.CustomerConnectionRequestDto.CustomerConnectionResponse;
 import com.tarifvergleich.electricity.dto.CustomerContactScheduleRequestDto.CustomerContactScheduleResponse;
+import com.tarifvergleich.electricity.dto.CustomerOrderDto.CustomerOrderAdminResDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto.CustomerPaymentResponse;
 import com.tarifvergleich.electricity.model.CustomerDelivery;
 
@@ -33,7 +34,7 @@ public class CustomerDeliveryResponseDto {
 	private CustomerAddressRes customerAddress;
 	private CustomerBillingAddressRes billingAddress;
 	private EnergyRateDto provider;
-	
+
 	private Integer adminId;
 	private Integer page;
 	private Integer size;
@@ -49,7 +50,7 @@ public class CustomerDeliveryResponseDto {
 		private String houseNumber;
 
 	}
-	
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -60,14 +61,14 @@ public class CustomerDeliveryResponseDto {
 		private String street;
 		private String houseNumber;
 		private Boolean isDifferent;
-		
+
 	}
-	
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	public static class CustomerDeliveryResponseAll{
+	public static class CustomerDeliveryResponseAll {
 		private Integer deliveryId;
 		private String uniqueDeliveryId;
 		private String email;
@@ -87,12 +88,12 @@ public class CustomerDeliveryResponseDto {
 		private CustomerAddressRes customerAddress;
 		private CustomerBillingAddressRes billingAddress;
 		private EnergyRateDto provider;
-		
-		private CustomerConnectionResponse  connection;
+
+		private CustomerConnectionResponse connection;
 		private CustomerPaymentResponse payment;
 		private CustomerContactScheduleResponse contactSchedule;
+		private CustomerOrderAdminResDto order;
 	}
-	
 
 	public static CustomerDeliveryResponseDto mapResponse(CustomerDelivery delivery) {
 		return CustomerDeliveryResponseDto.builder().deliveryId(delivery.getId())
@@ -106,20 +107,16 @@ public class CustomerDeliveryResponseDto {
 						.city(delivery.getBillingAddress().getCity()).street(delivery.getBillingAddress().getStreet())
 						.houseNumber(delivery.getBillingAddress().getHouseNumber())
 						.isDifferent(delivery.getBillingAddress().getIsDifferent()).build())
-				.orderPlaced(delivery.getOrderPlaced())
-				.orderPlacedOn(delivery.getOrderPlacedOn())
+				.orderPlaced(delivery.getOrderPlaced()).orderPlacedOn(delivery.getOrderPlacedOn())
 				.provider(EnergyRateDto.getProviderResponse(delivery.getCustomerProvider())).build();
 	}
-	
+
 	public static CustomerDeliveryResponseAll getDeliveryResponse(CustomerDelivery delivery) {
-		return CustomerDeliveryResponseAll.builder()
-				.deliveryId(delivery.getId())
-				.uniqueDeliveryId(delivery.getUniqueDeliveryId())
-				.email(delivery.getCustomerId().getEmail()).title(delivery.getTitle())
-				.firstName(delivery.getFirstName()).lastName(delivery.getLastName()).mobile(delivery.getMobile())
-				.persons(delivery.getNumberOfPerson())
-				.consumption(delivery.getTotalConsumption())
-				.telephone(delivery.getTelephone()).dob(delivery.getDob())
+		return CustomerDeliveryResponseAll.builder().deliveryId(delivery.getId())
+				.uniqueDeliveryId(delivery.getUniqueDeliveryId()).email(delivery.getCustomerId().getEmail())
+				.title(delivery.getTitle()).firstName(delivery.getFirstName()).lastName(delivery.getLastName())
+				.mobile(delivery.getMobile()).persons(delivery.getNumberOfPerson())
+				.consumption(delivery.getTotalConsumption()).telephone(delivery.getTelephone()).dob(delivery.getDob())
 				.customerAddress(CustomerAddressRes.builder().zip(delivery.getAddress().getZip())
 						.city(delivery.getAddress().getCity()).street(delivery.getAddress().getStreet())
 						.houseNumber(delivery.getAddress().getHouseNumber()).build())
@@ -127,14 +124,15 @@ public class CustomerDeliveryResponseDto {
 						.city(delivery.getBillingAddress().getCity()).street(delivery.getBillingAddress().getStreet())
 						.houseNumber(delivery.getBillingAddress().getHouseNumber())
 						.isDifferent(delivery.getBillingAddress().getIsDifferent()).build())
-				.orderPlaced(delivery.getOrderPlaced())
-				.orderPlacedOn(delivery.getOrderPlacedOn())
+				.orderPlaced(delivery.getOrderPlaced()).orderPlacedOn(delivery.getOrderPlacedOn())
 				.notificationEnabled(delivery.getNotificationEnabled())
 				.provider(EnergyRateDto.getProviderResponse(delivery.getCustomerProvider()))
 				.connection(CustomerConnectionRequestDto.getConnectionResponse(delivery.getCustomerConnection()))
 				.payment(CustomerPaymentRequestDto.getCustomerPaymentResponse(delivery.getCustomerPayment()))
-				.contactSchedule(CustomerContactScheduleRequestDto.getContactScheduleResponse(delivery.getCustomerSchedule()))
-				.expiryOn(delivery.getExpiryOn())
+				.order(CustomerOrderDto.mapAdminRes(delivery.getCustomerOrder()))
+				.contactSchedule(
+						CustomerContactScheduleRequestDto.getContactScheduleResponse(delivery.getCustomerSchedule()))
+				.expiryOn(delivery.getExpiryOn()).order(CustomerOrderDto.mapAdminRes(delivery.getCustomerOrder()))
 				.build();
 	}
 }

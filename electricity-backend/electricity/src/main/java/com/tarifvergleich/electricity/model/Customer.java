@@ -141,6 +141,10 @@ public class Customer {
 	@JsonIgnoreProperties("customer")
 	private List<CustomerNote> customerNotes;
 
+	@OneToMany(mappedBy = "customer", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JsonIgnoreProperties("customer")
+	private List<CustomerOrder> customerOrders;
+
 	@ManyToOne
 	@JoinColumn(name = "admin_id")
 	@JsonIgnore
@@ -219,6 +223,13 @@ public class Customer {
 		note.setCustomer(this);
 		note.setAdmin(admin);
 		customerNotes.add(note);
+	}
+
+	public void addCustomerOrder(CustomerOrder order) {
+		if (customerOrders == null)
+			customerOrders = new LinkedList<CustomerOrder>();
+		order.setCustomer(this);
+		customerOrders.add(order);
 	}
 
 	public void setUserAdmin(AdminUser admin) {

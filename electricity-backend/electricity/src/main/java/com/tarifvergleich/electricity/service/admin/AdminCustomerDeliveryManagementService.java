@@ -1,28 +1,42 @@
 package com.tarifvergleich.electricity.service.admin;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto;
+import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto.OrderListResponse;
 import com.tarifvergleich.electricity.dto.CustomerBillingRequestDto;
+import com.tarifvergleich.electricity.dto.CustomerBookingDocumentDto;
+import com.tarifvergleich.electricity.dto.CustomerBookingDocumentDto.CustomerBookingDocumentAdminResDto;
 import com.tarifvergleich.electricity.dto.CustomerConnectionRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryRequestWrapper.AdminEditCustomerDeliveryRelated;
+import com.tarifvergleich.electricity.dto.CustomerOrderDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto.PaymentDto;
+import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonDocumentDto;
 import com.tarifvergleich.electricity.dto.EnergyRateDto;
 import com.tarifvergleich.electricity.exception.InternalServerException;
+import com.tarifvergleich.electricity.model.CustomerBookingDocument;
 import com.tarifvergleich.electricity.model.CustomerConnect;
 import com.tarifvergleich.electricity.model.CustomerDelivery;
+import com.tarifvergleich.electricity.model.CustomerOrder;
 import com.tarifvergleich.electricity.model.CustomerPayment;
 import com.tarifvergleich.electricity.model.CustomerSelectedProvider;
+import com.tarifvergleich.electricity.repository.CustomerBookingDocumentRepository;
 import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
+import com.tarifvergleich.electricity.repository.CustomerOrderRepository;
 import com.tarifvergleich.electricity.service.ElectricityComparisonService;
+import com.tarifvergleich.electricity.service.EnergyService;
 import com.tarifvergleich.electricity.service.customer.CustomerBookingService;
+import com.tarifvergleich.electricity.util.FileServiceCustomer;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.transaction.Transactional;
@@ -33,10 +47,14 @@ import lombok.RequiredArgsConstructor;
 public class AdminCustomerDeliveryManagementService {
 
 	private final CustomerDeliveryRepository customerDeliveryRepo;
+	private final CustomerBookingDocumentRepository bookingDocumentRepo;
 	private final Helper helper;
 	private final ElectricityComparisonService electricityComparisonService;
 	private final ObjectMapper objectMapper;
 	private final CustomerBookingService customerBookingService;
+	private final EnergyService energyService;
+	private final FileServiceCustomer fileServiceCustomer;
+	private final CustomerOrderRepository customerOrderRepo;
 
 	@Transactional
 	public Map<String, Object> editDeliveryDetailsByAdmin(AdminEditCustomerDeliveryRelated deliveryDetails) {
@@ -263,10 +281,129 @@ public class AdminCustomerDeliveryManagementService {
 
 		Map<String, Object> paymentResponse = customerBookingService.savePayment(newCustomerPayment);
 
+		CustomerDelivery delivery = customerDeliveryRepo.findById(deliveryId)
+				.orElseThrow(() -> new InternalServerException("Failed to create order", HttpStatus.OK));
+
+		delivery.setOrderPlaced(true);
+
+		customerDeliveryRepo.save(delivery);
+
 		if (!(Boolean) paymentResponse.get("res"))
 			throw new RuntimeException();
 
 		return Map.of("res", true, "deliveryId", deliveryId);
+	}
+
+	@Transactional
+	public Map<String, Object> placeNewOrderToEgon(CustomerOrderDto customerOrderDto) {
+		if (customerOrderDto.getAdminId() == null || customerOrderDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (customerOrderDto.getCustomerOrderId() == null || customerOrderDto.getCustomerOrderId() <= 0)
+			throw new InternalServerException("Delivery id missing", HttpStatus.OK);
+
+		CustomerOrder order = customerOrderRepo
+				.findByIdAndAdminAdminId(customerOrderDto.getCustomerOrderId(), customerOrderDto.getAdminId())
+				.orElseThrow(() -> new InternalServerException("Order record not found with this credential",
+						HttpStatus.OK));
+
+		CustomerDelivery delivery = order.getDelivery();
+
+		CustomerSelectedProvider provider = delivery.getCustomerProvider();
+
+		LocalDate expiry;
+
+		try {
+			expiry = helper.flexibleDateParser(provider.getRaw().get("optTerm").asText())
+					.atStartOfDay(ZoneId.of("Europe/Berlin")).minusDays(1).toLocalDate();
+		} catch (DateTimeParseException e) {
+			Integer expireDuration = Integer.parseInt(provider.getRaw().get("optTerm").asText());
+			expiry = LocalDate.now().atStartOfDay().atZone(ZoneId.of("Europe/Berlin")).plusMonths(expireDuration)
+					.minusDays(1).toLocalDate();
+		}
+
+		delivery.setExpiryOn(helper.toGermamUnixTimestamp(expiry));
+
+		AdminCreateOrderEgonDto placeOrderRequest = AdminCreateOrderEgonDto.mapToEgonRequest(delivery, "new");
+
+		OrderListResponse placeOrderResponse = energyService.placeOrder(placeOrderRequest);
+
+		Long orderNo = Long.parseLong(placeOrderResponse.orders().getFirst().orderNo());
+
+		delivery.setOrderNo(orderNo);
+		delivery.setOrderPlacedInEgon(true);
+		
+		customerDeliveryRepo.save(delivery);
+
+		return Map.of("res", true, "message", "Order placed successfully", "Order no", orderNo);
+	}
+
+	@Transactional
+	public Map<String, Object> downloadUnsignedPdf(CustomerDeliveryDto deliveryDto) {
+		if (deliveryDto.getAdminId() == null || deliveryDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (deliveryDto.getDeliveryId() == null || deliveryDto.getDeliveryId() <= 0)
+			throw new InternalServerException("Delivery id missing", HttpStatus.OK);
+
+		CustomerDelivery delivery = customerDeliveryRepo
+				.findByIdAndAdminAdminId(deliveryDto.getDeliveryId(), deliveryDto.getAdminId())
+				.orElseThrow(() -> new InternalServerException("Customer delivery not found with this credential",
+						HttpStatus.OK));
+
+		if (!delivery.getOrderPlaced() || delivery.getOrderNo() == null || delivery.getOrderNo() <= 0)
+			throw new InternalServerException("Incomplete order", HttpStatus.OK);
+
+		CustomerBookingDocument bookingDoc = bookingDocumentRepo
+				.findByCustomerDeliveryIdAndAdminAdminId(deliveryDto.getDeliveryId(), deliveryDto.getAdminId())
+				.orElse(null);
+
+		if (bookingDoc != null && !bookingDoc.getFileUrl().isEmpty()) {
+			CustomerBookingDocumentAdminResDto bookingDocRes = CustomerBookingDocumentDto
+					.mapAdminBookingDocRes(bookingDoc);
+			return Map.of("res", true, "data", bookingDocRes);
+		}
+
+		bookingDoc = CustomerBookingDocument.builder().orderNo(delivery.getOrderNo()).customer(delivery.getCustomerId())
+				.customerDelivery(delivery).admin(delivery.getAdmin()).build();
+
+		EgonDocumentDto egonBookingResponse = energyService.createBookingPdf(delivery.getOrderNo().toString());
+
+		try {
+			String fileName = delivery.getFirstName() + delivery.getUniqueDeliveryId();
+			String unsignedUrlPath = fileServiceCustomer.saveBase64Pdf(egonBookingResponse.file(), fileName,
+					"customer-unsigned-documents");
+			bookingDoc.setUnsignedOriginalFileName(fileName);
+			bookingDoc.setFileUrl(unsignedUrlPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+
+		bookingDoc = bookingDocumentRepo.save(bookingDoc);
+
+		CustomerBookingDocumentAdminResDto bookingDocRes = CustomerBookingDocumentDto.mapAdminBookingDocRes(bookingDoc);
+
+		return Map.of("res", true, "data", bookingDocRes);
+	}
+
+	@Transactional
+	public Map<String, Object> openOrder(CustomerDeliveryDto deliveryDto) {
+
+		if (deliveryDto.getAdminId() == null || deliveryDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+
+		if (deliveryDto.getDeliveryId() == null || deliveryDto.getDeliveryId() <= 0)
+			throw new InternalServerException("Delivery id missing", HttpStatus.OK);
+
+		CustomerDelivery delivery = customerDeliveryRepo
+				.findByIdAndAdminAdminId(deliveryDto.getDeliveryId(), deliveryDto.getAdminId()).orElseThrow(
+						() -> new InternalServerException("Delivery not found with this credential", HttpStatus.OK));
+
+		CustomerOrder newOrder = CustomerOrder.builder().delivery(delivery).customer(delivery.getCustomerId())
+				.admin(delivery.getAdmin()).build();
+
+		newOrder = customerOrderRepo.save(newOrder);
+
+		return Map.of("res", true, "customerOrderId", newOrder.getId());
 	}
 
 }

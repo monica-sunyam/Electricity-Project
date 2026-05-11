@@ -34,9 +34,12 @@ public class CustomerBookingDocument {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
+	@Column(name = "order_no", unique = true)
+	private Long orderNo;
 
-	@Column(name = "original_file_name")
-	private String originalFileName;
+	@Column(name = "unsigned_original_file_name")
+	private String unsignedOriginalFileName;
 
 	@Column(name = "file_url")
 	private String fileUrl;
@@ -51,10 +54,10 @@ public class CustomerBookingDocument {
 	private Boolean signedDocumentSubmitted;
 
 	@Column(name = "added_on")
-	private BigInteger addedOn;
+	private BigInteger addedOn; // This refers the creation date
 
 	@Column(name = "updated_on")
-	private BigInteger updatedOn;
+	private BigInteger updatedOn; // This refers to the signing date
 
 	@ManyToOne
 	@JoinColumn(name = "admin_id")
@@ -69,6 +72,10 @@ public class CustomerBookingDocument {
 	@OneToOne(mappedBy = "customerBookingDocument")
 	@JsonIgnore
 	private CustomerDelivery customerDelivery;
+	
+	@OneToOne(mappedBy = "customerBookingDocument")
+	@JsonIgnore
+	private CustomerOrder customerOrder;
 
 	@PrePersist
 	protected void onCreate() {

@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -193,5 +196,26 @@ public class Helper {
 				.add(BigInteger.valueOf(minute).multiply(BigInteger.valueOf(60))).add(BigInteger.valueOf(second));
 
 		return totalDuration;
+	}
+	
+	public LocalDate flexibleDateParser(String dateStr) {
+
+		List<String> patterns = Arrays.asList(
+	        "yyyy-MM-dd",   // 2026-05-08
+	        "dd.MM.yyyy",   // 08.05.2026
+	        "MM/dd/yyyy",   // 05/08/2026
+	        "dd-MM-yyyy",   // 08-05-2026
+	        "yyyy/MM/dd"    // 2026/05/08
+	    );
+
+	    for (String pattern : patterns) {
+	        try {
+	            return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern(pattern));
+	        } catch (DateTimeParseException e) {
+	            continue; 
+	        }
+	    }
+
+	    throw new IllegalArgumentException("Unknown date format: " + dateStr);
 	}
 }

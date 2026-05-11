@@ -195,7 +195,7 @@ public class CustomerBookingService {
 					.billingAddress(billingAddress).salutation(deliveryDto.getSalutation())
 					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone())
 					.deliveryType(deliveryDto.getDeliveryType().toUpperCase()).customerProvider(selectedProvider)
-					.expiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()))
+//					.expiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()))
 					.numberOfPerson(deliveryDto.getPersons()).totalConsumption(deliveryDto.getConsumption())
 					.dob(helper.toGermamUnixTimestamp(deliveryDto.getDob())).build();
 
@@ -213,7 +213,7 @@ public class CustomerBookingService {
 			editDelivery.setTelephone(deliveryDto.getTelephone());
 			editDelivery.setDob(helper.toGermamUnixTimestamp(deliveryDto.getDob()));
 			editDelivery.setBillingAddress(billingAddress);
-			editDelivery.setExpiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()));
+//			editDelivery.setExpiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()));
 			editDelivery.setNumberOfPerson(deliveryDto.getPersons());
 			editDelivery.setTotalConsumption(deliveryDto.getConsumption());
 
@@ -315,6 +315,7 @@ public class CustomerBookingService {
 					: null);
 
 			customerConnect.setMarketLocationId(customerConnectDto.getMarketLocationId());
+			delivery.setCustomerConnection(customerConnect);
 		}
 
 		customerDeliveryRepo.save(delivery);
@@ -380,6 +381,8 @@ public class CustomerBookingService {
 			payment.setAccountHolderFirstName(account.getFirstName());
 			payment.setAccountHolderLastName(account.getLastName());
 			payment.setSepaConsent(paymentDetails.getSepaConsent());
+			
+			delivery.setCustomerPayment(payment);
 		}
 
 		customerDeliveryRepo.save(delivery);
