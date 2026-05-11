@@ -1,0 +1,487 @@
+<!-- ───────────────────────── BOOKING DETAIL PAGE ───────────────────────── -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-950 px-4 py-8">
+
+    <!-- Loading -->
+    @if (isLoading) {
+    <div class="flex items-center justify-center py-24 gap-3 text-gray-500">
+        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-500"></div>
+        <span class="text-sm">Buchung wird geladen…</span>
+    </div>
+    }
+
+    <!-- Error -->
+    @if (!isLoading && errorMessage) {
+    <div class="max-w-xl mx-auto mt-12 text-center">
+        <div class="text-red-500 text-sm mb-4">{{ errorMessage }}</div>
+        <button (click)="goBack()"
+            class="px-4 py-2 text-sm bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition cursor-pointer">
+            Zurück zur Liste
+        </button>
+    </div>
+    }
+
+    <!-- Detail Content -->
+    @if (!isLoading && !errorMessage && booking) {
+    <div class="max-w-5xl mx-auto space-y-6">
+
+        <!-- ── Page header ── -->
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <button (click)="goBack()"
+                class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-white transition cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Zurück zur Liste
+            </button>
+
+            <!-- Action buttons -->
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+
+                <!-- Edit -->
+                <button (click)="editBooking()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg
+                 bg-brand-50 text-brand-600 hover:bg-brand-100
+                 dark:bg-brand-900/20 dark:text-brand-400 dark:hover:bg-brand-900/40
+                 border border-brand-200 dark:border-brand-700/40 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Details bearbeiten
+                </button>
+
+                <!-- Change provider -->
+                <button (click)="changeProvider()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg
+                 bg-amber-50 text-amber-700 hover:bg-amber-100
+                 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40
+                 border border-amber-200 dark:border-amber-700/40 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    Anbieter wechseln
+                </button>
+
+                <!-- Place order — only shown when orderId exists and order not yet placed -->
+                @if (hasOrderId && !booking.order?.adminPlacedOrder) {
+                <button (click)="placeOrder()" [disabled]="isPlacingOrder" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg
+                 bg-green-600 text-white hover:bg-green-700
+                 disabled:opacity-60 disabled:cursor-not-allowed
+                 border border-green-700 transition cursor-pointer shadow-sm">
+                    @if (isPlacingOrder) {
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Wird aufgegeben…
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Daten geprüft – Bestellung aufgeben
+                    }
+                </button>
+                }
+
+                <!-- Already placed badge -->
+                @if (booking.order?.adminPlacedOrder) {
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg
+                     bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
+                     border border-green-200 dark:border-green-700/40">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Bestellung aufgegeben
+                </span>
+                }
+
+            </div>
+        </div>
+
+        <!-- ── Order success / error banner ── -->
+        @if (orderPlacedMessage) {
+        <div class="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700/40
+                text-green-800 dark:text-green-300 rounded-xl px-4 py-3 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>
+                {{ orderPlacedMessage }}
+                @if (orderPlacedNumber) {
+                &nbsp;— <strong>Bestellnr. {{ orderPlacedNumber }}</strong>
+                }
+            </span>
+        </div>
+        }
+
+        @if (orderError) {
+        <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/40
+                text-red-700 dark:text-red-400 rounded-xl px-4 py-3 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ orderError }}
+        </div>
+        }
+
+        <!-- ── Hero card — customer identity ── -->
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-6">
+            <div class="flex items-start gap-5 flex-wrap">
+                <div
+                    class="h-14 w-14 rounded-xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center text-lg font-bold flex-shrink-0">
+                    {{ initials() }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+                            {{ fullName() || 'Kein Name' }}
+                        </h1>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            [class.bg-green-100]="booking.orderPlaced" [class.text-green-700]="booking.orderPlaced"
+                            [class.dark:bg-green-900\/30]="booking.orderPlaced"
+                            [class.dark:text-green-400]="booking.orderPlaced"
+                            [class.bg-yellow-100]="!booking.orderPlaced" [class.text-yellow-700]="!booking.orderPlaced"
+                            [class.dark:bg-yellow-900\/30]="!booking.orderPlaced"
+                            [class.dark:text-yellow-400]="!booking.orderPlaced">
+                            {{ booking.orderPlaced ? 'Bestätigt' : 'Offen' }}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ booking.email || '—' }}</p>
+                    <p class="text-xs font-mono text-gray-400 mt-1">{{ booking.uniqueDeliveryId }}</p>
+                </div>
+                <div class="flex gap-6 text-sm flex-wrap">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400 mb-0.5">Bestellt am</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">{{ formatDate(booking.orderPlacedOn) }}
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400 mb-0.5">Lieferdatum</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">{{ formatDate(booking.deliveryDate) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── 2-column grid ── -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- ── Kundendaten ── -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 space-y-4">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Kundendaten
+                </h2>
+                <div class="divide-y divide-gray-100 dark:divide-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800">
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Telefon (mobil)</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ booking.mobile || '—'
+                            }}</span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Festnetz</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ booking.telephone || '—'
+                            }}</span>
+                    </div>
+                    <div class="flex flex-col px-4 py-2.5 gap-0.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Lieferadresse</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200 text-right">
+                            {{ formatAddress(booking.customerAddress) }}
+                        </span>
+                    </div>
+                    @if (booking.billingAddress?.isDifferent) {
+                    <div class="flex flex-col px-4 py-2.5 gap-0.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Rechnungsadresse</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200 text-right">
+                            {{ formatAddress(booking.billingAddress) }}
+                        </span>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ── Anbieter ── -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 space-y-4">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Anbieter
+                    &amp; Tarif</h2>
+                @if (booking.provider) {
+                <div class="divide-y divide-gray-100 dark:divide-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800">
+                    <div class="flex items-center gap-3 px-4 py-3">
+                        @if (booking.provider.providerSVG) {
+                        <img [src]="booking.provider.providerSVG" alt="Anbieter Logo" class="h-7 w-auto object-contain"
+                            onerror="this.style.display='none'" />
+                        }
+                        <span class="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                            {{ booking.provider.providerName || '—' }}
+                        </span>
+                        @if (booking.provider.branch) {
+                        <span
+                            class="ml-auto px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 capitalize">
+                            {{ booking.provider.branch }}
+                        </span>
+                        }
+                    </div>
+                    <div class="flex flex-col px-4 py-2.5 gap-0.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Tarif</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200 text-right">
+                            {{ booking.provider.rateName || '—' }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Tarif-ID</span>
+                        <span class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.provider.rateId || '—' }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Gesamtpreis / Jahr</span>
+                        <span class="text-xs font-semibold text-gray-900 dark:text-white">
+                            {{ (booking.provider.totalPrice ?? 0).toFixed(2) }} €
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Monatlich</span>
+                        <span class="text-xs font-semibold text-gray-900 dark:text-white">
+                            {{ (booking.provider.totalPriceMonth ?? 0).toFixed(2) }} €
+                        </span>
+                    </div>
+                    @if ((booking.provider.basePriceYear ?? 0) > 0) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Grundpreis / Jahr</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ (booking.provider.basePriceYear ?? 0).toFixed(2) }} €
+                        </span>
+                    </div>
+                    }
+                    @if ((booking.provider.workPrice ?? 0) > 0) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Arbeitspreis</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ (booking.provider.workPrice ?? 0).toFixed(4) }} ct/kWh
+                        </span>
+                    </div>
+                    }
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Öko-Tarif</span>
+                        <span class="text-xs font-medium" [class.text-green-600]="booking.provider.optEco"
+                            [class.text-gray-400]="!booking.provider.optEco">
+                            {{ booking.provider.optEco ? 'Ja' : 'Nein' }}
+                        </span>
+                    </div>
+                </div>
+                } @else {
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-800 px-4 py-3">
+                    <p class="text-xs text-gray-400 italic">Kein Anbieter ausgewählt</p>
+                </div>
+                }
+            </div>
+
+            <!-- ── Anschluss ── -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 space-y-4">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Anschluss
+                </h2>
+                @if (booking.connection) {
+                <div class="divide-y divide-gray-100 dark:divide-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800">
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Einzug</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.connection.isMovingIn ? 'Ja' : 'Nein' }}
+                        </span>
+                    </div>
+                    @if (booking.connection.isMovingIn) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Einzugsdatum</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ formatDate(booking.connection.moveInDate) }}
+                        </span>
+                    </div>
+                    }
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Später einreichen</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.connection.submitLater ? 'Ja' : 'Nein' }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Zählernummer</span>
+                        <span class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.connection.meterNumber || '—' }}
+                        </span>
+                    </div>
+                    <div class="flex flex-col px-4 py-2.5 gap-0.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Marktlokation</span>
+                        <span
+                            class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200 break-all text-right">
+                            {{ booking.connection.marketLocationId || '—' }}
+                        </span>
+                    </div>
+                    @if (!booking.connection.isMovingIn) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Aktueller Anbieter</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.connection.currentProvider || '—' }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Automatische Kündigung</span>
+                        <span class="text-xs font-medium" [class.text-green-600]="booking.connection.autoCancellation"
+                            [class.text-gray-400]="!booking.connection.autoCancellation">
+                            {{ booking.connection.autoCancellation ? 'Ja' : 'Nein' }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Bereits gekündigt</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.connection.alreadyCancelled ? 'Ja' : 'Nein' }}
+                        </span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-800 px-4 py-3">
+                    <p class="text-xs text-gray-400 italic">Keine Anschlussdaten vorhanden</p>
+                </div>
+                }
+            </div>
+
+            <!-- ── Zahlung ── -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 space-y-4">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Zahlung</h2>
+                @if (booking.payment) {
+                <div class="divide-y divide-gray-100 dark:divide-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800">
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Methode</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200 capitalize">
+                            {{ booking.payment.paymentMethod || '—' }}
+                        </span>
+                    </div>
+                    @if (booking.payment.iban) {
+                    <div class="flex flex-col px-4 py-2.5 gap-0.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">IBAN</span>
+                        <span
+                            class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200 break-all text-right">
+                            {{ formatIban(booking.payment.iban) }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Kontoinhaber</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.payment.firstName }} {{ booking.payment.lastName }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">SEPA-Mandat</span>
+                        <span class="text-xs font-medium" [class.text-green-600]="booking.payment.sepaConsent"
+                            [class.dark:text-green-400]="booking.payment.sepaConsent"
+                            [class.text-red-500]="!booking.payment.sepaConsent">
+                            {{ booking.payment.sepaConsent ? 'Akzeptiert' : 'Nicht akzeptiert' }}
+                        </span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-800 px-4 py-3">
+                    <p class="text-xs text-gray-400 italic">Keine Zahlungsdaten vorhanden</p>
+                </div>
+                }
+            </div>
+
+        </div><!-- /grid -->
+
+        <!-- ── Bestellinfo (full width) ── -->
+        @if (booking.order) {
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 space-y-4">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Bestellinfo</h2>
+            <div class="divide-y divide-gray-100 dark:divide-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800">
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Kunden-Bestell-ID</span>
+                    <span class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200">
+                        {{ booking.order.customerOrderId ?? '—' }}
+                    </span>
+                </div>
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Bestell-ID</span>
+                    <span class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200">
+                        {{ booking.order.orderId ?? '—' }}
+                    </span>
+                </div>
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Bestellstatus</span>
+                    <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                        {{ booking.order.orderStatus ?? '—' }}
+                    </span>
+                </div>
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Admin-Bestellung aufgegeben</span>
+                    <span class="text-xs font-medium" [class.text-green-600]="booking.order.adminPlacedOrder"
+                        [class.text-gray-400]="!booking.order.adminPlacedOrder">
+                        {{ booking.order.adminPlacedOrder ? 'Ja' : 'Nein' }}
+                    </span>
+                </div>
+                @if (booking.order.adminOrderPlacedOn) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Aufgegeben am</span>
+                    <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                        {{ formatDateTime(booking.order.adminOrderPlacedOn) }}
+                    </span>
+                </div>
+                }
+                @if (booking.order.expiryOn) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Ablaufdatum</span>
+                    <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                        {{ formatDate(booking.order.expiryOn) }}
+                    </span>
+                </div>
+                }
+                @if (booking.order.lastDateOfCancellation) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Letzter Kündigungstermin</span>
+                    <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                        {{ formatDate(booking.order.lastDateOfCancellation) }}
+                    </span>
+                </div>
+                }
+                @if (booking.order.bookingDocId) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Buchungsdokument-ID</span>
+                    <span class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200">
+                        {{ booking.order.bookingDocId }}
+                    </span>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- ── Kontakttermin (full width, only when present) ── -->
+        @if (booking.contactSchedule?.dayOfWeek) {
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 space-y-4">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Kontakttermin
+            </h2>
+            <div class="flex items-center gap-4 flex-wrap">
+                <span
+                    class="px-3 py-1.5 rounded-full text-sm font-medium bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300">
+                    {{ dayLabel(booking.contactSchedule?.dayOfWeek) }}
+                </span>
+                <span
+                    class="px-3 py-1.5 rounded-full text-sm font-medium bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300">
+                    {{ booking.contactSchedule?.timeSlot || timeLabel(booking.contactSchedule?.timeSlot) }}
+                </span>
+                @if (booking.contactSchedule?.description) {
+                <span class="text-sm text-gray-500 dark:text-gray-400 italic">
+                    {{ booking.contactSchedule?.description }}
+                </span>
+                }
+            </div>
+        </div>
+        }
+
+    </div><!-- /max-w -->
+    }
+
+</div>

@@ -23,6 +23,7 @@ import { ChangeBookingProviderComponent } from "./pages/bookings/change-booking-
 import { CreateCustomerComponent } from "./pages/customers/create-customer/create-customer.component";
 import { CreateBookingComponent } from "./pages/bookings/create-booking/create-booking.component";
 import { CustomerCallbackComponent } from "./pages/customer-callback/customer-callback.component";
+import { BookingDetailComponent } from "./pages/bookings/booking-details/booking-details.component";
 
 export const routes: Routes = [
   {
@@ -161,6 +162,11 @@ export const routes: Routes = [
         path: "customer-callback",
         component: CustomerCallbackComponent,
         title: "Rückrufe",
+      },
+      {
+        path: "bookings/:id",
+        component: BookingDetailComponent,
+        title: "Buchungsdetails",
       },
     ],
   },

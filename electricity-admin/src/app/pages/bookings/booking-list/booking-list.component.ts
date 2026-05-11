@@ -91,8 +91,6 @@ export class BookingListComponent implements OnInit {
   bookings: ApiBooking[] = [];
   isLoading = false;
   errorMessage = "";
-  selectedBooking: ApiBooking | null = null;
-  isSidebarOpen = false;
 
   hasMoreData = true;
   currentPage = 1;
@@ -125,17 +123,9 @@ export class BookingListComponent implements OnInit {
     this.fetchBookings();
   }
 
-  editBooking(booking: ApiBooking): void {
-    this.router.navigate(["bookings/change", booking.deliveryId, "edit"], {
-      state: { booking },
-    });
-  }
-
-  /** Navigate to the Change Provider page, passing the full booking via router state */
-  changeProvider(booking: ApiBooking): void {
-    this.router.navigate(["bookings", booking.deliveryId, "change-provider"], {
-      state: { booking },
-    });
+  /** Navigate to the dedicated booking detail page */
+  openDetail(booking: ApiBooking): void {
+    this.router.navigate(["bookings", booking.deliveryId]);
   }
 
   fetchBookings(page: number = 1): void {
@@ -146,7 +136,6 @@ export class BookingListComponent implements OnInit {
     };
     this.isLoading = true;
     this.errorMessage = "";
-    this.closeSidebar();
 
     this.api.post("admin/fetch-deliveries", payload).subscribe({
       next: (res: any) => {
@@ -175,39 +164,10 @@ export class BookingListComponent implements OnInit {
     }
   }
 
-  openSidebar(booking: ApiBooking): void {
-    if (this.selectedBooking?.deliveryId === booking.deliveryId) {
-      this.closeSidebar();
-      return;
-    }
-    this.selectedBooking = booking;
-    this.isSidebarOpen = true;
-  }
-
-  closeSidebar(): void {
-    this.isSidebarOpen = false;
-    this.selectedBooking = null;
-  }
-
-  isSelected(booking: ApiBooking): boolean {
-    return this.selectedBooking?.deliveryId === booking.deliveryId;
-  }
-
   fullName(booking: ApiBooking): string {
     return [booking.title, booking.firstName, booking.lastName]
       .filter(Boolean)
       .join(" ");
-  }
-
-  initials(booking: ApiBooking): string {
-    const f = booking.firstName?.[0] ?? "";
-    const l = booking.lastName?.[0] ?? "";
-    return (f + l).toUpperCase() || "?";
-  }
-
-  formatAddress(addr?: CustomerAddress | null): string {
-    if (!addr) return "—";
-    return `${addr.street ?? ""} ${addr.houseNumber ?? ""}, ${addr.zip ?? ""} ${addr.city ?? ""}`.trim();
   }
 
   dayLabel(key?: string | null): string {
@@ -216,11 +176,6 @@ export class BookingListComponent implements OnInit {
 
   timeLabel(key?: string | null): string {
     return key ? (this.timeLabels[key] ?? key) : "—";
-  }
-
-  formatIban(iban?: string | null): string {
-    if (!iban) return "—";
-    return iban.replace(/(.{4})/g, "$1 ").trim();
   }
 
   formatDate(value?: number | string | null): string {
@@ -232,20 +187,6 @@ export class BookingListComponent implements OnInit {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-    }).format(new Date(ms));
-  }
-
-  formatDateTime(value?: number | string | null): string {
-    if (value === null || value === undefined || value === "") return "—";
-    const num = typeof value === "number" ? value : Number(value);
-    if (Number.isNaN(num)) return String(value);
-    const ms = num < 1_000_000_000_000 ? num * 1000 : num;
-    return new Intl.DateTimeFormat("de-DE", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     }).format(new Date(ms));
   }
 
