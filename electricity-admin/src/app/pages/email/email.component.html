@@ -1,0 +1,161 @@
+<div class="max-w-xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+
+  <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">
+        E-Mail Geschäftsführung</h2>
+
+  <form class="space-y-5">
+
+    <!-- Dropdown -->
+    <div>
+      <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        Wählen Sie E-Mail-Anfrage *
+      </label>
+
+      <select
+        class="w-full border rounded-xl px-4 py-3 outline-none"
+      >
+      class="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-brand-400 transition">
+        <option>Select Option</option>
+        <option>Customer Mail</option>
+        <option>Promotion Mail</option>
+        <option>Booking Mail</option>
+        <option>Support Mail</option>
+      </select>
+    </div>
+
+    <!-- Title -->
+    <div>
+      <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        Titel *
+      </label>
+
+      <input
+        type="text"
+        placeholder="Enter tiel"
+        class="w-full border rounded-xl px-4 py-3 outline-none"
+      />
+    </div>
+
+    <!-- SubTitle -->
+    <div>
+      <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        Untertitel *
+      </label>
+
+      <input
+        type="text"
+        placeholder="Enter Untertitel"
+        class="w-full border rounded-xl px-4 py-3 outline-none"
+      />
+    </div>
+
+    <!-- Text Area -->
+    <div>
+      <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        E-Mail Inhalte *
+      </label>
+
+      <div class="border rounded-xl overflow-hidden">
+
+        <!-- Toolbar -->
+        <div class="border-b px-4 py-3 flex gap-4 bg-gray-50">
+
+          <button type="button"><b>B</b></button>
+
+          <button type="button"><i>I</i></button>
+
+          <button type="button">🔗</button>
+
+          <button type="button">🖼️</button>
+
+          <button type="button">❝ ❞</button>
+
+        </div>
+
+        <!-- Textarea -->
+        <textarea
+          rows="1"
+          placeholder="E-Mail-Inhalte schreiben..."
+          class="w-full p-4 outline-none"
+        ></textarea>
+
+      </div>
+    </div>
+
+    <!-- File Upload -->
+    <label class="block mb-2 font-medium">
+        Datei hochladen (optional)
+    </label>
+
+    <div class="relative mt-4">
+
+    <!-- Top Right Buttons -->
+    <div class="absolute top-2 right-2 flex gap-2 z-10">
+
+        <!-- Add -->
+        <button
+        type="button" 
+        (click)="addUploadField()"
+        class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-400 text-white hover:bg-blue-500 transition-all duration-200"
+        >
+          +
+        </button>
+
+        <!-- Delete -->
+        <button
+        type="button"
+        (click)="removeUploadField()"
+        class="w-8 h-8 flex items-center justify-center rounded-full bg-red-400 text-white hover:bg-red-500"
+        >
+          🗑
+        </button>
+
+    </div>
+
+    <!-- Upload Box -->
+    <div
+        class="border-2 border-dashed border-gray-200 rounded-2xl p-10 text-center text-gray-400 bg-white transition duration-300 hover:border-blue-400 hover:bg-blue-50"
+    >
+    Klicken Sie hier, um eine Datei hochzuladen (max. 2MB)
+    </div>
+    
+    <!-- Second Upload Field -->
+        @if(showSecondUpload){
+
+        <div class="mb-6">
+
+        <label class="block mb-2 text-sm font-medium text-gray-700">
+        </label>
+
+        <div
+            class="border-2 border-dashed border-gray-200 rounded-2xl p-10 text-center text-gray-400 bg-white transition duration-300 hover:border-blue-400 hover:bg-blue-50"
+        >
+            Klicken Sie hier, um eine Datei hochzuladen (max. 2MB)
+        </div>
+
+</div>
+
+}
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex gap-4 pt-6">
+
+    <button
+        type="submit"
+        class="flex-1 bg-brand-500 text-white py-2 rounded-lg hover:bg-brand-600 transition cursor-pointer disabled:opacity-50">
+    Erstellen
+    </button>
+
+    <button
+    type="button"
+    class="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition text-center cursor-pointer"
+    >
+    Abbrechen
+    </button>
+
+</div>
+
+</form>
+
+</div>
