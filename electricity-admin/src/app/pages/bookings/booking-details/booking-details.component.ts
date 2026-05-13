@@ -3,7 +3,99 @@ import { CommonModule } from "@angular/common";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { ApiService } from "../../../shared/services/api.service";
 import { AuthService } from "../../../shared/services/auth.service";
-import { ApiBooking } from "../booking-list/booking-list.component";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Full API response types (mirrors the /admin/fetch-deliveries response shape)
+// Every field is optional / nullable because partially-completed bookings may
+// omit any of them.
+// ─────────────────────────────────────────────────────────────────────────────
+
+type CustomerAddress = {
+  zip?: string | null;
+  city?: string | null;
+  street?: string | null;
+  houseNumber?: string | null;
+};
+
+type BillingAddress = CustomerAddress & {
+  isDifferent?: boolean | null;
+};
+
+type ProviderInfo = {
+  rateId?: number | null;
+  rateName?: string | null;
+  providerId?: number | null;
+  netzProviderId?: number | null;
+  providerName?: string | null;
+  providerSVG?: string | null;
+  providerSVGPath?: string | null;
+  consumption?: number | null;
+  basePriceYear?: number | null;
+  basePriceMonth?: number | null;
+  workPrice?: number | null;
+  totalPrice?: number | null;
+  totalPriceMonth?: number | null;
+  savingPerYear?: number | null;
+  workPriceNt?: number | null;
+  optBonus?: number | null;
+  partialPayment?: number | null;
+  optGuarantee?: string | null;
+  optGuaranteeType?: string | null;
+  optTerm?: string | null;
+  rateChangeType?: string | null;
+  cancel?: number | null;
+  cancelType?: number | null;
+  termBeforeNewType?: string | null;
+  termBeforeNewMaxDate?: string | null;
+  selfPayment?: boolean | null;
+  requiredEmail?: boolean | null;
+  optEco?: boolean | null;
+  recommended?: boolean | null;
+  commission?: number | null;
+  branch?: string | null;
+  type?: string | null;
+};
+
+type ConnectionInfo = {
+  id?: number | null;
+  isMovingIn?: boolean | null;
+  moveInDate?: number | null;
+  submitLater?: boolean | null;
+  meterNumber?: string | null;
+  marketLocationId?: string | null;
+  currentProvider?: string | null;
+  autoCancellation?: boolean | null;
+  alreadyCancelled?: boolean | null;
+  selfCancellation?: boolean | null;
+  delivery?: string | null;
+  desiredDelivery?: string | null;
+};
+
+type PaymentInfo = {
+  id?: number | null;
+  paymentMethod?: string | null;
+  iban?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  sepaConsent?: boolean | null;
+};
+
+type ContactSchedule = {
+  id?: number | null;
+  dayOfWeek?: string | null;
+  timeSlot?: string | null;
+  description?: string | null;
+};
+
+type DocCustomer = {
+  id?: number | null;
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  userType?: string | null;
+  title?: string | null;
+  salutation?: string | null;
+};
 
 type DocInfo = {
   bookingDocId?: number | null;
@@ -14,6 +106,7 @@ type DocInfo = {
   signedDocumentSubmitted?: boolean | null;
   addedOn?: number | null;
   deliveryId?: number | null;
+  customer?: DocCustomer | null;
 };
 
 type OrderInfo = {
@@ -23,16 +116,52 @@ type OrderInfo = {
   adminPlacedOrder?: boolean | null;
   adminOrderPlacedOn?: number | null;
   expiryOn?: number | null;
-  lastDateOfCancellation?: number | null;
-  operationPeriod?: number | null;
   isExpired?: boolean | null;
   isCancelled?: boolean | null;
   cancelledOn?: number | null;
-  bookingDocId?: number | null;
+  lastDateOfCancellation?: number | null;
+  operationPeriod?: number | null;
   doc?: DocInfo | null;
+  bookingDocId?: number | null;
 };
 
-type ApiBookingWithOrder = ApiBooking & { order?: OrderInfo | null };
+/** Full shape of a single delivery record returned by the API */
+export type ApiBooking = {
+  // ── Identity ────────────────────────────────────────────────────────────────
+  deliveryId?: number | null;
+  uniqueDeliveryId?: string | null;
+
+  // ── Customer personal data ──────────────────────────────────────────────────
+  email?: string | null;
+  title?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  mobile?: string | null;
+  telephone?: string | null;
+  dob?: number | null; // Unix timestamp (seconds)
+
+  // ── Booking meta ────────────────────────────────────────────────────────────
+  persons?: number | null;
+  consumption?: number | null;
+  orderPlacedOn?: number | null; // Unix timestamp (seconds)
+  orderPlaced?: boolean | null;
+  expiryOn?: number | null; // Unix timestamp (seconds)
+  notificationEnabled?: boolean | null;
+
+  // ── Addresses ───────────────────────────────────────────────────────────────
+  customerAddress?: CustomerAddress | null;
+  billingAddress?: BillingAddress | null;
+
+  // ── Nested objects ───────────────────────────────────────────────────────────
+  provider?: ProviderInfo | null;
+  connection?: ConnectionInfo | null;
+  payment?: PaymentInfo | null;
+  contactSchedule?: ContactSchedule | null;
+  order?: OrderInfo | null;
+
+  // ── Legacy / derived fields that may appear in older records ─────────────────
+  deliveryDate?: number | string | null;
+};
 
 /** Base URL for document files served from the backend */
 const DOC_BASE_URL = "http://192.168.0.155:8080/assets/customers/";
@@ -50,7 +179,7 @@ const DOC_POLL_INTERVAL_MS = 4000;
   styleUrl: "./booking-details.component.css",
 })
 export class BookingDetailComponent implements OnInit, OnDestroy {
-  booking: ApiBookingWithOrder | null = null;
+  booking: ApiBooking | null = null;
   isLoading = false;
   errorMessage = "";
 
@@ -134,6 +263,21 @@ export class BookingDetailComponent implements OnInit, OnDestroy {
   }
 
   // ── Computed state helpers ─────────────────────────────────────────────────
+
+  /**
+   * Booking is incomplete: the customer has not confirmed/placed it yet.
+   * Shown as a CTA to redirect the admin to the edit/completion flow.
+   * Hidden once the order has been placed, created, cancelled, or expired.
+   */
+  get isIncompleteBooking(): boolean {
+    if (!this.booking) return false;
+    return (
+      !this.booking.orderPlaced &&
+      !this.booking.order?.customerOrderId &&
+      !this.booking.order?.isCancelled &&
+      !this.booking.order?.isExpired
+    );
+  }
 
   /** No order object at all, or order exists but customerOrderId is null/undefined */
   get hasNoCustomerOrderId(): boolean {
@@ -377,6 +521,13 @@ export class BookingDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  completeBooking(): void {
+    if (!this.booking) return;
+    this.router.navigate(["/booking/new"], {
+      queryParams: { deliveryId: this.booking.deliveryId },
+    });
+  }
+
   changeProvider(): void {
     if (!this.booking) return;
     this.router.navigate(
@@ -389,7 +540,7 @@ export class BookingDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(["/bookings"]);
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────────────────
 
   fullName(): string {
     if (!this.booking) return "";
@@ -407,10 +558,10 @@ export class BookingDetailComponent implements OnInit, OnDestroy {
 
   formatAddress(
     addr?: {
-      zip?: string;
-      city?: string;
-      street?: string;
-      houseNumber?: string;
+      zip?: string | null;
+      city?: string | null;
+      street?: string | null;
+      houseNumber?: string | null;
     } | null,
   ): string {
     if (!addr) return "—";
@@ -456,10 +607,10 @@ export class BookingDetailComponent implements OnInit, OnDestroy {
     }).format(new Date(ms));
   }
 
-  private extractBooking(response: any): ApiBookingWithOrder | null {
+  private extractBooking(response: any): ApiBooking | null {
     if (response?.data && !Array.isArray(response.data)) return response.data;
     if (response?.booking) return response.booking;
-    const list: ApiBookingWithOrder[] = Array.isArray(response?.data)
+    const list: ApiBooking[] = Array.isArray(response?.data)
       ? response.data
       : Array.isArray(response?.bookings)
         ? response.bookings

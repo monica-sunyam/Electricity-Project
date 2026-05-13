@@ -25,6 +25,7 @@ import com.tarifvergleich.electricity.dto.CustomerServiceRequestDto.CustomerServ
 import com.tarifvergleich.electricity.dto.CustomerServicesDto;
 import com.tarifvergleich.electricity.dto.CustomerServicesDto.CustomerListOfServiceResDto;
 import com.tarifvergleich.electricity.dto.ServiceRequestEmailEvent;
+import com.tarifvergleich.electricity.dto.ServiceRequestEmailEvent.ServiceResponseEmailEvent;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminUser;
 import com.tarifvergleich.electricity.model.Customer;
@@ -556,6 +557,24 @@ public class CustomerDetailService {
 		customerDeliveryRepo.save(delivery);
 
 		return Map.of("res", true, "message", "Notifcation updated successfully");
+	}
+
+	public Map<String, Object> sendMailToCustomer(Integer customerId, Integer adminId) {
+
+		if (adminId == null || adminId <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (customerId == null || customerId <= 0)
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
+
+		Customer customer = customerRepo.findByCustomerIdAndAdminAdminId(customerId, adminId).orElseThrow(
+				() -> new InternalServerException("Customer not found with this credential", HttpStatus.OK));
+
+		ServiceResponseEmailEvent mailEvent = new ServiceResponseEmailEvent(customer.getEmail(), "Attorny Signing",
+				emailTemplate.getPowerOfAttorneyEmailTemplate(customer.getFirstName() + " " + customer.getLastName()));
+
+		eventPublisher.publishEvent(mailEvent);
+
+		return Map.of("res", true, "message", "email send successfully");
 	}
 
 }

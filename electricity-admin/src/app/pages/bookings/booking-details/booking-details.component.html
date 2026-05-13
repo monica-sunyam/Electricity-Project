@@ -38,6 +38,23 @@
             <!-- Action buttons -->
             <div class="flex items-center gap-2 flex-wrap justify-end">
 
+                <!-- ── Incomplete booking CTA ──────────────────────────────────────────
+                     Visible only when orderPlaced is false AND no order has been created
+                     yet (no customerOrderId). Once the booking is confirmed, placed,
+                     cancelled, or expired this block disappears automatically.          -->
+                @if (isIncompleteBooking) {
+                <button (click)="completeBooking()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg
+                 bg-orange-500 text-white hover:bg-orange-600
+                 border border-orange-600 transition cursor-pointer shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Buchung vervollständigen
+                </button>
+                }
+
                 <!-- Edit & Change Provider — hidden once an order has been created -->
                 @if (hasNoCustomerOrderId) {
                 <button (click)="editBooking()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg
@@ -267,6 +284,43 @@
                         <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ booking.telephone || '—'
                             }}</span>
                     </div>
+                    @if (booking.dob) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Geburtsdatum</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ formatDate(booking.dob) }}
+                        </span>
+                    </div>
+                    }
+                    @if ((booking.persons ?? 0) > 0) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Personenanzahl</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ booking.persons }}</span>
+                    </div>
+                    }
+                    @if ((booking.consumption ?? 0) > 0) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Verbrauch (kWh/Jahr)</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ booking.consumption }}
+                            kWh</span>
+                    </div>
+                    }
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Benachrichtigungen</span>
+                        <span class="text-xs font-medium" [class.text-green-600]="booking.notificationEnabled"
+                            [class.dark:text-green-400]="booking.notificationEnabled"
+                            [class.text-gray-400]="!booking.notificationEnabled">
+                            {{ booking.notificationEnabled ? 'Aktiviert' : 'Deaktiviert' }}
+                        </span>
+                    </div>
+                    @if (booking.expiryOn) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Ablaufdatum</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ formatDate(booking.expiryOn) }}
+                        </span>
+                    </div>
+                    }
                     <div class="flex flex-col px-4 py-2.5 gap-0.5">
                         <span class="text-xs text-gray-500 dark:text-gray-400">Lieferadresse</span>
                         <span class="text-xs font-medium text-gray-800 dark:text-gray-200 text-right">
@@ -526,15 +580,82 @@
                     </span>
                 </div>
                 }
-                @if (booking.order.bookingDocId) {
+                @if (booking.order?.bookingDocId) {
                 <div class="flex justify-between px-4 py-2.5">
                     <span class="text-xs text-gray-500 dark:text-gray-400">Buchungsdokument-ID</span>
                     <span class="text-xs font-mono font-medium text-gray-800 dark:text-gray-200">
-                        {{ booking.order.bookingDocId }}
+                        {{ booking.order?.bookingDocId }}
                     </span>
                 </div>
                 }
+                @if (booking.order?.operationPeriod) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Betriebszeitraum</span>
+                    <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                        {{ booking.order?.operationPeriod }}
+                    </span>
+                </div>
+                }
+                @if (booking.order?.isCancelled) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Storniert</span>
+                    <span class="text-xs font-medium text-red-600 dark:text-red-400">Ja</span>
+                </div>
+                }
+                @if (booking.order?.cancelledOn) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Storniert am</span>
+                    <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                        {{ formatDateTime(booking.order?.cancelledOn) }}
+                    </span>
+                </div>
+                }
+                @if (booking.order?.isExpired) {
+                <div class="flex justify-between px-4 py-2.5">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Abgelaufen</span>
+                    <span class="text-xs font-medium text-amber-600 dark:text-amber-400">Ja</span>
+                </div>
+                }
             </div>
+
+            <!-- ── Dokument-Kundendaten ── -->
+            @if (booking.order?.doc?.customer) {
+            <div class="space-y-2 pt-2">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    Dokument-Kundenkonto</h3>
+                <div class="divide-y divide-gray-100 dark:divide-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800">
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Name</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.order?.doc?.customer?.title ? booking.order?.doc?.customer?.title + ' ' : '' }}{{
+                            booking.order?.doc?.customer?.firstName }} {{ booking.order?.doc?.customer?.lastName }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">E-Mail</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.order?.doc?.customer?.email || '—' }}
+                        </span>
+                    </div>
+                    @if (booking.order?.doc?.customer?.salutation) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Anrede</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                            {{ booking.order?.doc?.customer?.salutation }}
+                        </span>
+                    </div>
+                    }
+                    @if (booking.order?.doc?.customer?.userType) {
+                    <div class="flex justify-between px-4 py-2.5">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Kundentyp</span>
+                        <span class="text-xs font-medium text-gray-800 dark:text-gray-200 capitalize">
+                            {{ booking.order?.doc?.customer?.userType }}
+                        </span>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
 
             <!-- ── Dokumente ── -->
             @if (hasOrderId) {

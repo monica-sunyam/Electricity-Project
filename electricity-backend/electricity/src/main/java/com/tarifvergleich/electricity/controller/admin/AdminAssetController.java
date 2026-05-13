@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.tarifvergleich.electricity.dto.AdminAssetDto;
 import com.tarifvergleich.electricity.dto.AdminAssetDto.AdminAssetSuffleDto;
 import com.tarifvergleich.electricity.dto.AdminServiceMenuDto;
+import com.tarifvergleich.electricity.dto.ManageAdminDocumentDto;
 import com.tarifvergleich.electricity.service.admin.AdminAssetService;
 import com.tarifvergleich.electricity.service.admin.ViewService;
 
@@ -29,6 +30,7 @@ public class AdminAssetController {
 
 	private final AdminAssetService adminAssetService;
 	private final ViewService viewService;
+	private final ObjectMapper objectMapper;
 
 	@PostMapping(value = "/add-menu")
 	public ResponseEntity<?> addAsset(@RequestParam("data") String assetDtoJson,
@@ -91,5 +93,12 @@ public class AdminAssetController {
 	@PostMapping("/content")
 	public ResponseEntity<?> getAllContents() {
 		return ResponseEntity.ok(viewService.getAllView());
+	}
+
+	@PostMapping("/add-doc")
+	public ResponseEntity<?> addSuperAdminDoc(@RequestPart("data") String jsonData,
+			@RequestPart("file") MultipartFile file) {
+		ManageAdminDocumentDto adminDocumentDto = objectMapper.readValue(jsonData, ManageAdminDocumentDto.class);
+		return ResponseEntity.ok(adminAssetService.addAdminDocument(adminDocumentDto, file));
 	}
 }

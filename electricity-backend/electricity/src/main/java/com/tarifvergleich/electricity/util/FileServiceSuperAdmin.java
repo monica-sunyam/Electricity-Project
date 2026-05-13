@@ -52,6 +52,31 @@ public class FileServiceSuperAdmin {
 			throw new RuntimeException("Failed to store file", e);
 		}
 	}
+	
+	public String saveFilePdf(MultipartFile file, String contentType) {
+		try {
+			if (file.isEmpty())
+				throw new RuntimeException("Failed to store empty file.");
+			
+			String folderName = contentType.toLowerCase().trim();
+			Path targetDir = this.rootLocation.resolve(folderName);
+			
+			String originalFileName = file.getOriginalFilename().replace(" ", "_").replaceAll("[^a-zA-Z0-9.-]", "_");
+			
+			if (!Files.exists(targetDir)) {
+				Files.createDirectories(targetDir);
+			}
+			
+			String fileName = UUID.randomUUID().toString() + "_" + originalFileName + ".pdf";
+			
+			Files.copy(file.getInputStream(), targetDir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+			
+			return folderName + "/" + fileName;
+			
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to store file", e);
+		}
+	}
 
 	public Resource loadFile(String relativePath) {
 		try {

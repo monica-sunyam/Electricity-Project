@@ -1422,7 +1422,15 @@ export class SelectProvider implements OnInit {
     this.isDropdownOpen = false;
   }
 
+  private isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  }
+
   private persistViewState(): void {
+    if (!this.isBrowser()) {
+      return;
+    }
+
     const state: SelectProviderState = {
       priceDisplayMonthly: this.priceDisplayMonthly,
       kundenPrivat: this.kundenPrivat,
@@ -1446,6 +1454,10 @@ export class SelectProvider implements OnInit {
   }
 
   private restoreViewState(): void {
+    if (!this.isBrowser()) {
+      return;
+    }
+
     try {
       const raw = localStorage.getItem(this.providerStateStorageKey);
       if (!raw) {

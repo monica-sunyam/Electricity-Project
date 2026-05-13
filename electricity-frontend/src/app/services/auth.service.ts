@@ -346,6 +346,11 @@ export class AuthService {
 
   /* Load from localStorage */
   private loadFromStorage(): void {
+    if (!this.isBrowser()) {
+      this.addressData = null;
+      return;
+    }
+
     try {
       const data = localStorage.getItem(ADDRESS_KEY);
       if (data) {
@@ -359,6 +364,10 @@ export class AuthService {
 
   /* Save to localStorage */
   private saveToStorage(data: any): void {
+    if (!this.isBrowser()) {
+      return;
+    }
+
     try {
       localStorage.setItem(ADDRESS_KEY, JSON.stringify(data));
     } catch (e) {
@@ -379,7 +388,13 @@ export class AuthService {
 
   /* Clear data (optional) */
   clearAddress(): void {
-    localStorage.removeItem(ADDRESS_KEY);
+    if (this.isBrowser()) {
+      try {
+        localStorage.removeItem(ADDRESS_KEY);
+      } catch (e) {
+        console.error('Error clearing address', e);
+      }
+    }
     this.addressData = null;
   }
 

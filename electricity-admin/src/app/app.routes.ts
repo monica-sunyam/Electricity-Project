@@ -25,7 +25,7 @@ import { CreateBookingComponent } from "./pages/bookings/create-booking/create-b
 import { CustomerCallbackComponent } from "./pages/customer-callback/customer-callback.component";
 import { BookingDetailComponent } from "./pages/bookings/booking-details/booking-details.component";
 import { EmailTemplateViewComponent } from "./pages/email-template-view/email-template-view.component";
-import { ContentComponent } from "./pages/content/content.component";
+import { ContentPDFsComponent } from "./pages/contents/content-pdfs/content-pdfs.component";
 
 export const routes: Routes = [
   {
@@ -177,7 +177,7 @@ export const routes: Routes = [
       },
       {
         path: "content",
-        component: ContentComponent,
+        component: ContentPDFsComponent,
         title: "content",
       },
     ],

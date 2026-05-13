@@ -22,9 +22,7 @@
             <strong>Verbrauch / Jahr:</strong> {{ consum | number: '1.0-0' }} kWh
           </p>
         </ng-container>
-        <button class="btn-suche" *ngIf="hasAddress && !isEditMode" (click)="searchMode()">
-          Suche ändern
-        </button>
+        <button class="btn-suche" *ngIf="hasAddress" (click)="searchMode()">Suche ändern</button>
 
         <!-- EDIT MODE -->
         <ng-template #editMode>
@@ -346,8 +344,6 @@
         </div>
       </div>
     </div>
-    <app-contact-person></app-contact-person>
-    <app-need-support></app-need-support>
   </aside>
 
   <!-- ══════════ MAIN ══════════ -->
@@ -1303,5 +1299,10 @@
       </div>
     </div>
     <!-- end comp-container -->
+
+    <div class="contact-support-row">
+      <app-contact-person></app-contact-person>
+      <app-need-support></app-need-support>
+    </div>
   </main>
 </div>

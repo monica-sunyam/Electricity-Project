@@ -43,7 +43,7 @@ public class EnergyRateDto {
 	private String optTerm;
 	private List<String> rateChangeType;
 	private int cancel;
-	private Integer cancelType;
+	private int cancelType;
 	private String termBeforeNewType;
 	@JsonFormat(pattern = "dd.MM.yyyy")
 	private LocalDate termBeforeNewMaxDate;
@@ -63,6 +63,7 @@ public class EnergyRateDto {
 	public static EnergyRateDto getProviderResponse(CustomerSelectedProvider provider) {
 		if (provider == null)
 			return null;
+		
 		return EnergyRateDto.builder().branch(provider.getBranch()).netzProviderId(provider.getNetzProviderId())
 				.providerId(provider.getProviderId()).providerSVG(provider.getProviderSVGPath())
 				.providerName(provider.getProviderName()).rateId(provider.getRateId())

@@ -329,12 +329,11 @@ public class AdminCustomerDeliveryManagementService {
 				ZonedDateTime.now(ZoneId.of("Europe/Berlin"))));
 
 		BigInteger cancelTime = BigInteger.valueOf(0);
-		if (provider.getRaw().get("cancel") != null && provider.getRaw().get("cancelType") != null) {
-			Integer cancel = Integer.parseInt(provider.getRaw().get("cancel").asText());
-			Integer cancelType = Integer.parseInt(provider.getRaw().get("cancelType").asText());
+		if (provider.getRaw().path("cancel") != null && provider.getRaw().path("cancelType") != null) {
+			Integer cancel = provider.getRaw().path("cancel").asInt();
+			Integer cancelType = provider.getRaw().path("cancelType").asInt();
 			BigInteger expiryBigInt = helper.toGermamUnixTimestamp(expiry);
 
-			System.err.println("hello world");
 			if (cancelType.equals(0))
 				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, 0, 0, 0, 0, 0));
 			else if (cancelType.equals(1))
@@ -347,15 +346,16 @@ public class AdminCustomerDeliveryManagementService {
 
 		/* Map egon place order payload */
 		AdminCreateOrderEgonDto placeOrderRequest = AdminCreateOrderEgonDto.mapToEgonRequest(delivery, "new");
+
 		OrderListResponse placeOrderResponse = energyService.placeOrder(placeOrderRequest);
 
 		Long orderNo = Long.parseLong(placeOrderResponse.orders().getFirst().orderNo());
 
 		order.setAdminPlacedOrderOn(Helper.getCurrentTimeBerlin());
 		order.setAdminPlacedOrder(true);
+		order.setOrderId(orderNo);
 		order.setExpiryOn(helper.toGermamUnixTimestamp(expiry));
 		order.setLastDateOfCancellation(cancelTime);
-		order.setOrderId(orderNo);
 		order.setOperationPeriod(totalTerm);
 
 		delivery.setOrderNo(orderNo);

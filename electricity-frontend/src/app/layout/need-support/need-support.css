@@ -1,0 +1,85 @@
+.card {
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #003366;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 14px 16px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  background: #003366;
+}
+
+.container-contact-us {
+  padding: 0;
+}
+
+.main-container-service {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.container-contact {
+  padding: 0 16px 18px;
+}
+
+.contact-us {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.main-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-start;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #ff8c00;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.main-btn:hover {
+  background: #f37a00;
+}
+
+.container-services {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btn-text {
+  flex: 1;
+  text-align: left;
+}
+
+.icon-telephone,
+.icon-wechat,
+.icon-whatsapp,
+.icon-email,
+.icon-transport {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 768px) {
+  .contact-us {
+    gap: 10px;
+  }
+}
