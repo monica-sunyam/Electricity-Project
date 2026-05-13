@@ -3,28 +3,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 20px 32px;
   font-size: 15px;
   font-weight: 600;
   background-color: #003366;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 10px;
 }
 
 .footer > div {
-  min-width: 120px;
-  padding: 8px 12px;
   text-align: center;
   color: #ffffff;
   transition: color 0.2s ease;
 }
 
-.footer > div:hover {
-  color: #ffe166;
-}
 .footer-link {
   cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #ffe166;
 }
 .footer-text {
   width: min(100%, 1080px);
@@ -47,6 +46,9 @@
   .footer-text {
     padding: 16px 18px 18px;
     font-size: 11.5px;
+    margin: 4px;
+    height: auto;
+    width: auto;
   }
 }
 

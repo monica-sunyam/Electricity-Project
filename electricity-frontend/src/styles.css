@@ -53,6 +53,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #00a651;
   display: flex;
   gap: 5px;
+  margin: 4px;
 }
 
 .feature-grid {
@@ -127,7 +128,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0.3rem 0.2rem 0.5rem 0.2rem;
   cursor: pointer;
   border-radius: 8px;
-  width: 24.5rem;
+  width: 24rem;
 }
 
 .compare:hover{ background-color: #1976d2;}

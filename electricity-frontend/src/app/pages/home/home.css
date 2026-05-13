@@ -45,41 +45,50 @@
   width: auto;
 }
 
-/*  -----------------------------  electricity ----------------------- div */
+/* ----------------------------- electricity ----------------------- */
+
 .electricity {
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   box-sizing: border-box;
   border: 1px solid #003366;
   font-weight: 500;
   border-radius: 8px;
   width: 100%;
+  padding: 0.5rem;
 }
 
 .icon-btn-electricity {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 16px;
-  font-weight: 500;
+  justify-content: center;
+  gap: 0.35rem;
+
   border: none !important;
-  box-shadow: none;
   outline: none;
-  color: #ffffff;
+  box-shadow: none;
+
   background-color: #003366;
-  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
-  border-radius: 6px;
-  height: 32px;
+  color: #fff;
+
+  border-radius: 4px;
+
+  padding: 0.3rem 0.55rem;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  width: auto;
+  min-height: 30px;
+
+  white-space: nowrap;
 }
 
-.icon-btn-electricity:hover {
-  background-color: #0085e0;
-}
-
+.icon-btn-electricity:hover,
 .icon-btn-electricity.active {
   background-color: #0085e0;
 }
@@ -103,9 +112,9 @@
 .btn-text {
   padding-bottom: 0.2rem;
 }
-/* ----------------------*/
 
-/* ---------------------------------------------- our services  ------------------------------ */
+/* ---------------------- our services ------------------------------ */
+
 .service-container {
   display: flex;
   flex-direction: column;
@@ -147,10 +156,6 @@
   padding: 0.2rem 0.5rem 0.2rem 0.5rem;
 }
 
-.icon-btn-service:hover {
-  /* background-color: #e0e0e0; */
-}
-
 .icon-check {
   height: 25px;
   width: 25px;
@@ -160,7 +165,7 @@
   padding-left: 0.2rem;
 }
 
-/*  ----------------------  div below the discount bar --------------------- */
+/* ---------------------- div below the discount bar --------------------- */
 
 .container-services-by-company {
   display: flex;
@@ -174,12 +179,14 @@
   flex: 1.3;
   min-width: 280px;
 }
+
 .container-contact-us {
   flex: 0.68;
   min-width: 280px;
 }
 
-/* -----------------------------------------------------  about us  ----------------------- */
+/* ----------------------- about us ----------------------- */
+
 .container-about {
   display: block;
   flex: 1.9;
@@ -234,9 +241,9 @@
 .details-para {
   margin-bottom: 0;
 }
-/* ---------------- */
 
-/* ---------------------------------------------------------- other services --------------------------- */
+/* --------------------------- other services --------------------------- */
+
 .main-container-service {
   background-color: #ffffff;
   font-size: 16px;
@@ -275,6 +282,7 @@
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
   border: 1px solid #192a5e;
+  width: 100%;
 }
 
 .container-all-services {
@@ -342,7 +350,7 @@
   width: 20px;
 }
 
-/*  -------------------------- responsive design ---------------- */
+/* -------------------------- responsive design ---------------- */
 
 @media (min-width: 1024px) {
   .home-container {
@@ -431,12 +439,14 @@
 }
 
 @media (max-width: 600px) {
+
   .home-left {
     margin: 0.6rem 0.5rem;
   }
 
   .home-container {
     gap: 0.5rem;
+    padding: 0.5rem;
   }
 
   .container-services-by-company {
@@ -453,10 +463,37 @@
     height: auto;
   }
 
-  .icon-btn-electricity,
   .icon-btn-service,
   .main-btn {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .electricity {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: flex-start;
+  }
+
+  .icon-btn-electricity {
+    width: auto;
+    flex: 0 1 auto;
+    font-size: 11px;
+    padding: 0.3rem 0.45rem;
+    min-height: 28px;
+    white-space: nowrap;
+  }
+
+  .icon,
+  .icon-cable,
+  .icon-pump {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Hide Kostenloser Service on mobile */
+  .service-container {
+    display: none;
   }
 }

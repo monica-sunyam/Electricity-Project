@@ -32,14 +32,14 @@
   display: block; /* removes bottom gap from inline images */
 }
 
-.nav-wrapper {
+/* .nav-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex: 1;
   min-width: 0;
   background-color: #003366;
-}
+} */
 
 .main-nav ul {
   display: flex;
@@ -52,12 +52,12 @@
   gap: 1.5rem;
 }
 
-.nav-wrapper {
+/* .nav-wrapper {
   display: flex;
   align-items: center;
   flex: 1;
   min-width: 0;
-}
+} */
 
 
 .main-nav ul li {

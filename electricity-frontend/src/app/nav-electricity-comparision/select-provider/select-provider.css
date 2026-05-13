@@ -13,6 +13,7 @@
   font-size: 16px;
   display: flex;
   align-items: center;
+  margin: 4px;
 }
 .address-card__body {
   padding: 10px 12px 12px;
@@ -184,6 +185,7 @@
   padding: 9px;
   font-weight: 600;
   font-size: 16px;
+  margin: 4px;
 }
 /* Filter banner body: two halves split by a vertical line */
 .filter-banner__body {
@@ -1140,6 +1142,13 @@ a {
     padding: 0 !important;
     gap: 0 !important;
     margin: 15px 20px;
+
+    .container-contact-us,
+  .main-container-service,
+  .container-contact,
+  .contact-us {
+    display: none !important;
+  }
   }
   .sidebar {
     flex-direction: column !important;
