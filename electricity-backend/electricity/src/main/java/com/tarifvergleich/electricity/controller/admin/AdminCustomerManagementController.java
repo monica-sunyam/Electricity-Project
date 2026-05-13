@@ -61,7 +61,8 @@ public class AdminCustomerManagementController {
 		Integer adminId = (Integer) payload.get("adminId");
 		Integer page = (Integer) payload.get("page");
 		Integer size = (Integer) payload.get("size");
-		return ResponseEntity.ok(adminCustomerManagementService.getAllComparison(adminId, page, size));
+		String search = payload.getOrDefault("search", "").toString();
+		return ResponseEntity.ok(adminCustomerManagementService.getAllComparison(adminId, page, size, search));
 	}
 
 	@PostMapping("/add-customer-service")

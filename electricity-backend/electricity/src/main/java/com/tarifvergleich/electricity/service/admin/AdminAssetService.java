@@ -10,15 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tarifvergleich.electricity.dto.AdminAssetDto;
-import com.tarifvergleich.electricity.dto.AdminServiceMenuDto;
 import com.tarifvergleich.electricity.dto.AdminAssetDto.AdminAssetSuffleDto;
+import com.tarifvergleich.electricity.dto.AdminServiceMenuDto;
+import com.tarifvergleich.electricity.dto.ManageAdminDocumentDto;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminAsset;
 import com.tarifvergleich.electricity.model.AdminServiceMenu;
 import com.tarifvergleich.electricity.model.AdminUser;
+import com.tarifvergleich.electricity.model.ManageAdminDocument;
 import com.tarifvergleich.electricity.repository.AdminAssetRepository;
 import com.tarifvergleich.electricity.repository.AdminServiceMenuRepository;
 import com.tarifvergleich.electricity.repository.AdminUserRepository;
+import com.tarifvergleich.electricity.repository.ManageAdminDocumentRepository;
 import com.tarifvergleich.electricity.util.FileServiceSuperAdmin;
 
 import jakarta.transaction.Transactional;
@@ -32,6 +35,7 @@ public class AdminAssetService {
 	private final AdminAssetRepository adminAssetRepo;
 	private final FileServiceSuperAdmin fileUtil;
 	private final AdminServiceMenuRepository adminServiceMenuRepo;
+	private final ManageAdminDocumentRepository manageAdminDocumentRepo;
 
 	@Transactional
 	public Map<String, Object> addAsset(AdminAssetDto assetDto, MultipartFile file) {
@@ -365,5 +369,54 @@ public class AdminAssetService {
 		});
 
 		return Map.of("res", true, "message", "Order updated");
+	}
+
+	@Transactional
+	public Map<String, Object> addAdminDocument(ManageAdminDocumentDto documentDto, MultipartFile file) {
+
+		if (documentDto == null || file == null)
+			throw new InternalServerException("Insufficient data", HttpStatus.OK);
+
+		if (documentDto.getAdminId() == null || documentDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+
+		if (documentDto.getDocumentCategory() == null || documentDto.getDocumentCategory().isEmpty())
+			throw new InternalServerException("Document category missing", HttpStatus.OK);
+
+		if (documentDto.getAdminDocId() != null && documentDto.getAdminDocId() > 0) {
+			ManageAdminDocument existingDoc = manageAdminDocumentRepo
+					.findByIdAndAdminAdminId(documentDto.getAdminDocId(), documentDto.getAdminId())
+					.orElseThrow(() -> new InternalServerException("Admin document not found with this credentials",
+							HttpStatus.OK));
+
+			String relativePath = existingDoc.getFilePath();
+			String newPath = fileUtil.saveFilePdf(file, "documents");
+
+			if (newPath == null || newPath.isEmpty())
+				throw new InternalServerException("Error saving file", HttpStatus.OK);
+
+			existingDoc.setFilePath(newPath);
+			existingDoc.setDocumentCategory(documentDto.getDocumentCategory());
+			existingDoc.setOriginalFileName(file.getOriginalFilename());
+
+			existingDoc = manageAdminDocumentRepo.save(existingDoc);
+
+			fileUtil.deleteFile(relativePath);
+
+			return Map.of("res", true, "adminDocId", existingDoc.getId());
+		}
+
+		AdminUser admin = adminUserRepo.findById(documentDto.getAdminId())
+				.orElseThrow(() -> new InternalServerException("Admin not found with this credential", HttpStatus.OK));
+
+		String newFilePath = fileUtil.saveFilePdf(file, "documents");
+
+		ManageAdminDocument newDoc = ManageAdminDocument.builder().filePath(newFilePath)
+				.originalFileName(file.getOriginalFilename())
+				.documentCategory(documentDto.getDocumentCategory().toUpperCase()).admin(admin).build();
+
+		newDoc = manageAdminDocumentRepo.save(newDoc);
+
+		return Map.of("res", true, "adminDocId", newDoc.getId());
 	}
 }

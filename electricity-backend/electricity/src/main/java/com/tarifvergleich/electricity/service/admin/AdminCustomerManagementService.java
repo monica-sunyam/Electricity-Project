@@ -178,7 +178,7 @@ public class AdminCustomerManagementService {
 		return Map.of("res", true, "data", selectiveResults);
 	}
 
-	public Map<String, Object> getAllComparison(Integer adminId, Integer page, Integer size) {
+	public Map<String, Object> getAllComparison(Integer adminId, Integer page, Integer size, String search) {
 
 		if (adminId == null || adminId <= 0)
 			throw new InternalServerException("Admin id missing", HttpStatus.OK);
@@ -189,9 +189,9 @@ public class AdminCustomerManagementService {
 				size = 20;
 			;
 
-			Pageable pageable = PageRequest.of(page - 1, size, Sort.by("comparedOn").descending());
+			Pageable pageable = PageRequest.of(page - 1, size, Sort.by("compared_on").descending());
 
-			Page<CustomerComparingEnergy> energyComparisons = customerComparingEnergyRepo.findAll(pageable);
+			Page<CustomerComparingEnergy> energyComparisons = customerComparingEnergyRepo.findAllByDifferentFilter(search, adminId, pageable);
 
 			Page<CustomerComparingEnergyDto> energyComparisonResp = energyComparisons
 					.map(CustomerComparingEnergyDto::customerComparisonResponse);

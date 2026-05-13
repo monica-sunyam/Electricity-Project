@@ -267,4 +267,12 @@ public class EmailTemplate {
 				+ "<p style='font-size: 12px; color: #888;'>This is an automated notification from the Tarifvergleich Electricity Admin Portal.</p>"
 				+ "</div>";
 	}
+
+	public String getPowerOfAttorneyEmailTemplate(String customerName) {
+		return "Subject: Power of Attorney for your energy contracts\n\n" + "Dear " + customerName + ",\n\n"
+				+ "We require a power of attorney for your energy contracts so that you can use some of our features and we can offer our comprehensive service. "
+				+ "This allows us to, among other things, submit meter readings, request invoices, report changes, use our cancellation service, "
+				+ "change your monthly payment, report meter replacements, send messages to energy suppliers, request invoices, and much more.\n\n"
+				+ "Kind regards,\n\n" + "Your Support Team";
+	}
 }

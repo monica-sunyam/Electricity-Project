@@ -368,5 +368,9 @@ public class AdminServicePointManagementService {
 
 		return Map.of("res", true, "message", "Request status updated successfully");
 	}
+	
+	public Map<String, Object> fetchAllAdminDocuments(Integer adminId){
+		return Map.of();
+	}
 
 }

@@ -97,10 +97,10 @@ public class CustomerDto {
 		private String uniqueCustomerId;
 		@Schema(description = "Account status (active/inactive)", example = "true")
 		private Boolean status;
-		
+
 		@Schema(description = "Customer lexoffice number")
 		private String lexofficeNumber;
-		
+
 		@Schema(description = "List of notes added to the customer by admin")
 		private List<CustomerNoteResponseDto> notes;
 		@Schema(description = "List of power of attorney documents linked to this customer")
@@ -129,6 +129,30 @@ public class CustomerDto {
 		private Boolean status;
 		private Boolean isNotificationEnabled;
 		private List<CustomerDeliveryResponseDto> deliveryDetails;
+		private String lexofficeNumber;
+	}
+
+	@Data
+	@Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class SingleCustomerAdminResponseDelivery {
+		private Integer id;
+		private String email;
+		private String firstName;
+		private String lastName;
+		private String userType;
+		private String title;
+		private String salutation;
+		private String companyName;
+		private String mobileNumber;
+		private Boolean isVerified;
+		private BigInteger verifiedOn;
+		private BigInteger joinedOn;
+		private Boolean isAcknowledged;
+		private CustomerAddressRes address;
+		private Boolean status;
+		private Boolean isNotificationEnabled;
 		private String lexofficeNumber;
 	}
 
@@ -171,8 +195,20 @@ public class CustomerDto {
 						.street(customer.getStreet()).houseNumber(customer.getHouseNumber()).build())
 				.deliveryDetails(
 						customer.getCustomerDelivery().stream().map(CustomerDeliveryResponseDto::mapResponse).toList())
-				.lexofficeNumber(customer.getLexofficeNumber())
-				.build();
+				.lexofficeNumber(customer.getLexofficeNumber()).build();
+	}
+
+	public static SingleCustomerAdminResponseDelivery getAdminCustomerResponseDto(Customer customer) {
+		return SingleCustomerAdminResponseDelivery.builder().id(customer.getCustomerId()).email(customer.getEmail())
+				.firstName(customer.getFirstName()).lastName(customer.getLastName())
+				.salutation(customer.getSalutation()).title(customer.getTitle()).userType(customer.getUserType())
+				.isNotificationEnabled(customer.getIsNotificationEnabled()).companyName(customer.getCompanyName())
+				.mobileNumber(customer.getMobileNumber()).status(customer.getStatus())
+				.isVerified(customer.getIsVerified()).joinedOn(customer.getJoinedOn())
+				.isAcknowledged(customer.getIsAcknowledged())
+				.address(CustomerAddressRes.builder().zip(customer.getZip()).city(customer.getCity())
+						.street(customer.getStreet()).houseNumber(customer.getHouseNumber()).build())
+				.lexofficeNumber(customer.getLexofficeNumber()).build();
 	}
 
 	public static AdminCustomerResponse getCustomerDtoResponseForAdmin(Customer customer) {
@@ -182,8 +218,8 @@ public class CustomerDto {
 				.firstName(customer.getFirstName()).lastName(customer.getLastName())
 				.salutation(customer.getSalutation()).title(customer.getTitle()).userType(customer.getUserType())
 				.companyName(customer.getCompanyName()).mobileNumber(customer.getMobileNumber())
-				.lexofficeNumber(customer.getLexofficeNumber())
-				.status(customer.getStatus()).isVerified(customer.getIsVerified()).verifiedOn(customer.getVerifiedOn())
+				.lexofficeNumber(customer.getLexofficeNumber()).status(customer.getStatus())
+				.isVerified(customer.getIsVerified()).verifiedOn(customer.getVerifiedOn())
 				.joinedOn(customer.getJoinedOn()).isAcknowledged(customer.getIsAcknowledged())
 				.uniqueCustomerId(customer.getCustomerUniqueId())
 				.address(Optional.ofNullable(customer.getCustomerAddresses()).filter(list -> !list.isEmpty())

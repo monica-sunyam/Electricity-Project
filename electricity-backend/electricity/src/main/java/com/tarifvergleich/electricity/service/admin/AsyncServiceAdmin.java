@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AsyncServiceAdmin {
 
-	private final CustomerBookingDocumentRepository bookingDocumentRepo;
 	private final EnergyService energyService;
 	private final FileServiceCustomer fileServiceCustomer;
 	private final CustomerOrderRepository customerOrderRepo;
@@ -48,12 +47,7 @@ public class AsyncServiceAdmin {
 		if (!delivery.getOrderPlaced() || delivery.getOrderNo() == null || delivery.getOrderNo() <= 0)
 			throw new InternalServerException("Incomplete order", HttpStatus.OK);
 
-		CustomerBookingDocument bookingDoc = bookingDocumentRepo.findByCustomerOrderIdAndAdminAdminId(
-				customerOrderDto.getCustomerOrderId(), customerOrderDto.getAdminId()).orElse(null);
-
-		if (bookingDoc != null && !bookingDoc.getFileUrl().isEmpty()) {
-			return;
-		}
+		CustomerBookingDocument bookingDoc = null;
 
 		bookingDoc = CustomerBookingDocument.builder().orderNo(delivery.getOrderNo()).customer(delivery.getCustomerId())
 				.customerDelivery(delivery).admin(delivery.getAdmin()).customerOrder(order).build();

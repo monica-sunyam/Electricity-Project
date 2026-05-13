@@ -10,4 +10,8 @@ public record EgonFileSignatureResponse() {
 		public static record MimeTypeDto(String ext, String mime) {
 		}
 	}
+	
+	public static record uploadDocumentPayloadDto(String file, Integer fileType) {
+		
+	}
 }

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import com.tarifvergleich.electricity.dto.CustomerConnectionRequestDto.CustomerConnectionResponse;
 import com.tarifvergleich.electricity.dto.CustomerContactScheduleRequestDto.CustomerContactScheduleResponse;
+import com.tarifvergleich.electricity.dto.CustomerDto.SingleCustomerAdminResponseDelivery;
 import com.tarifvergleich.electricity.dto.CustomerOrderDto.CustomerOrderAdminResDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto.CustomerPaymentResponse;
 import com.tarifvergleich.electricity.model.CustomerDelivery;
@@ -92,7 +93,8 @@ public class CustomerDeliveryResponseDto {
 		private CustomerConnectionResponse connection;
 		private CustomerPaymentResponse payment;
 		private CustomerContactScheduleResponse contactSchedule;
-		private CustomerOrderAdminResDto order;
+		private SingleCustomerAdminResponseDelivery customer;
+//		private CustomerOrderAdminResDto order;
 	}
 
 	public static CustomerDeliveryResponseDto mapResponse(CustomerDelivery delivery) {
@@ -129,10 +131,11 @@ public class CustomerDeliveryResponseDto {
 				.provider(EnergyRateDto.getProviderResponse(delivery.getCustomerProvider()))
 				.connection(CustomerConnectionRequestDto.getConnectionResponse(delivery.getCustomerConnection()))
 				.payment(CustomerPaymentRequestDto.getCustomerPaymentResponse(delivery.getCustomerPayment()))
-				.order(CustomerOrderDto.mapAdminRes(delivery.getCustomerOrder()))
+//				.order(CustomerOrderDto.mapAdminRes(delivery.getCustomerOrder()))
+				.customer(CustomerDto.getAdminCustomerResponseDto(delivery.getCustomerId()))
 				.contactSchedule(
 						CustomerContactScheduleRequestDto.getContactScheduleResponse(delivery.getCustomerSchedule()))
-				.expiryOn(delivery.getExpiryOn()).order(CustomerOrderDto.mapAdminRes(delivery.getCustomerOrder()))
+				.expiryOn(delivery.getExpiryOn())
 				.build();
 	}
 }

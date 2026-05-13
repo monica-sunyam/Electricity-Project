@@ -171,4 +171,10 @@ public class CustomerController {
 				deliveryDto.getDeliveryId()));
 	}
 
+	@PostMapping("/send-attorny-mail")
+	public ResponseEntity<?> sendAttornyMail(@RequestBody CustomerDto customerDto) {
+		return ResponseEntity
+				.ok(customerDetailService.sendMailToCustomer(customerDto.getId(), customerDto.getAdminId()));
+	}
+
 }
