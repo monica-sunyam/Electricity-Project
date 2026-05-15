@@ -195,15 +195,14 @@ public class CustomerBookingService {
 					.billingAddress(billingAddress).salutation(deliveryDto.getSalutation())
 					.mobile(deliveryDto.getMobile()).telephone(deliveryDto.getTelephone())
 					.deliveryType(deliveryDto.getDeliveryType().toUpperCase()).customerProvider(selectedProvider)
-//					.expiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()))
-					.numberOfPerson(deliveryDto.getPersons()).totalConsumption(deliveryDto.getConsumption())
+					.customerId(customer).numberOfPerson(deliveryDto.getPersons())
+					.totalConsumption(deliveryDto.getConsumption())
 					.dob(helper.toGermamUnixTimestamp(deliveryDto.getDob())).build();
 
 			delivery.setUserAdmin(customer.getAdmin());
 
-			customer.addCustomerDelivery(delivery);
-			customerRepo.save(customer);
-			deliveryId = customer.getCustomerDelivery().getLast().getId();
+			CustomerDelivery successDelivery = customerDeliveryRepo.save(delivery);
+			deliveryId = successDelivery.getId();
 		} else {
 			editDelivery.setTitle(deliveryDto.getTitle());
 			editDelivery.setFirstName(deliveryDto.getFirstName());
@@ -213,13 +212,11 @@ public class CustomerBookingService {
 			editDelivery.setTelephone(deliveryDto.getTelephone());
 			editDelivery.setDob(helper.toGermamUnixTimestamp(deliveryDto.getDob()));
 			editDelivery.setBillingAddress(billingAddress);
-//			editDelivery.setExpiryOn(helper.toGermamUnixTimestamp(providerInfo.getTermBeforeNewMaxDate()));
 			editDelivery.setNumberOfPerson(deliveryDto.getPersons());
 			editDelivery.setTotalConsumption(deliveryDto.getConsumption());
 
 			editDelivery.setAddress(address);
 			customerDeliveryRepo.save(editDelivery);
-			customerRepo.save(customer);
 		}
 
 		return Map.of("res", true, "customerId", customerId, "deliveryId", deliveryId);

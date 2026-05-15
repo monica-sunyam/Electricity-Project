@@ -149,14 +149,44 @@ public class AdminCustomerManagementService {
 			Pageable pageable = PageRequest.of(deliveryReq.getPage() - 1, deliveryReq.getSize(),
 					Sort.by("orderPlacedOn").descending());
 
-			Page<CustomerDelivery> customerDeliveries = customerDeliveryRepo.findAll(pageable);
+			Page<CustomerDelivery> customerDeliveries;
+			Integer filter = deliveryReq.getFilter();
+			
+			if(deliveryReq.getSearch() == null)
+				deliveryReq.setSearch("");
+			if(filter == null)
+				filter = 0;
+
+			if (filter.equals(0))
+				customerDeliveries = customerDeliveryRepo.findByConditions(deliveryReq.getAdminId(),
+						deliveryReq.getSearch(), null, null, null, null, null, null, pageable);
+			else if (filter.equals(1))
+				customerDeliveries = customerDeliveryRepo.findByConditions(deliveryReq.getAdminId(),
+						deliveryReq.getSearch(), false, null, null, null, null, null, pageable);
+			else if (filter.equals(2))
+				customerDeliveries = customerDeliveryRepo.findByConditions(deliveryReq.getAdminId(),
+						deliveryReq.getSearch(), null, true, null, null, null, null, pageable);
+			else if (filter.equals(3))
+				customerDeliveries = customerDeliveryRepo.findByConditions(deliveryReq.getAdminId(),
+						deliveryReq.getSearch(), null, null, true, null, null, null, pageable);
+			else if (filter.equals(4))
+				customerDeliveries = customerDeliveryRepo.findByConditions(deliveryReq.getAdminId(),
+						deliveryReq.getSearch(), null, null, null, true, null, null, pageable);
+			else if (filter.equals(5))
+				customerDeliveries = customerDeliveryRepo.findByConditions(deliveryReq.getAdminId(),
+						deliveryReq.getSearch(), null, null, null, null, true, null, pageable);
+			else if (filter.equals(6))
+				customerDeliveries = customerDeliveryRepo.findByConditions(deliveryReq.getAdminId(),
+						deliveryReq.getSearch(), null, null, null, null, null, true, pageable);
+			else
+				throw new InternalServerException("Wrong usage of filter", HttpStatus.OK);
 
 			Page<CustomerDeliveryResponseAll> customerDeliveryResponse = customerDeliveries
 					.map(CustomerDeliveryResponseDto::getDeliveryResponse);
 
 			return Map.of("res", true, "data", customerDeliveryResponse.getContent(), "page",
 					customerDeliveryResponse.getPageable().getPageNumber() + 1, "totalPage",
-					customerDeliveryResponse.getTotalPages());
+					customerDeliveryResponse.getTotalPages(), "totalRecord", customerDeliveryResponse.getTotalElements());
 
 		}
 
@@ -191,7 +221,8 @@ public class AdminCustomerManagementService {
 
 			Pageable pageable = PageRequest.of(page - 1, size, Sort.by("compared_on").descending());
 
-			Page<CustomerComparingEnergy> energyComparisons = customerComparingEnergyRepo.findAllByDifferentFilter(search, adminId, pageable);
+			Page<CustomerComparingEnergy> energyComparisons = customerComparingEnergyRepo
+					.findAllByDifferentFilter(search, adminId, pageable);
 
 			Page<CustomerComparingEnergyDto> energyComparisonResp = energyComparisons
 					.map(CustomerComparingEnergyDto::customerComparisonResponse);

@@ -12,6 +12,7 @@ import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto.OrderListRespo
 import com.tarifvergleich.electricity.dto.BaseProviderResponse;
 import com.tarifvergleich.electricity.dto.CheckIbanResponseDto;
 import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonDocumentDto;
+import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonFileSignatureRequest;
 import com.tarifvergleich.electricity.dto.EnergyApiResponse;
 import com.tarifvergleich.electricity.exception.EnergyApiUnavailableException;
 
@@ -102,8 +103,8 @@ public class EnergyService {
 				}).body(OrderListResponse.class);
 	}
 
-	public EgonDocumentDto createBookingPdf(String orderNo) {
-		return energyApi.post().uri("/order/{orderNo}/document/create/", orderNo).retrieve()
+	public EgonDocumentDto createBookingPdf(String orderNo, EgonFileSignatureRequest signature) {
+		return energyApi.post().uri("/order/{orderNo}/document/create/", orderNo).body(signature).retrieve()
 				.onStatus(HttpStatusCode::isError, (request, response) -> {
 					Map<String, Object> body = objectMapper.readValue(response.getBody(),
 							new TypeReference<Map<String, Object>>() {

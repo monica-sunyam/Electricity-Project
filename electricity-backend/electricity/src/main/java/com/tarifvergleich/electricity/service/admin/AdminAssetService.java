@@ -482,7 +482,7 @@ public class AdminAssetService {
 			String oldSignature = adminSignature.getFilePath();
 
 			if (file != null && !file.isEmpty()) {
-				if (!file.getContentType().equals("image/png") || !file.getContentType().equals("image/jpeg"))
+				if (!file.getContentType().equals("image/png") && !file.getContentType().equals("image/jpeg"))
 					throw new InternalServerException("Content type mismatch", HttpStatus.OK);
 				String newPath = fileUtil.saveFile(file, "signature");
 				adminSignature.setFilePath(newPath);

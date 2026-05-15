@@ -7,6 +7,7 @@ import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,7 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,61 +23,48 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "customer_booking_documents")
-@Getter
-@Setter
+@Table(name = "customer_contract_signatures")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomerBookingDocument {
+@Getter
+@Setter
+public class CustomerContractSignature {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(name = "order_no", unique = true)
-	private Long orderNo;
-
-	@Column(name = "signed_original_file_name")
-	private String signedOriginalFileName;
-
-	@Column(name = "signed_file_url")
-	private String signedFileUrl;
-
-	@Column(name = "signed_document_submitted")
-	private Boolean signedDocumentSubmitted;
-
-	@Column(name = "added_on")
-	private BigInteger addedOn; // This refers the creation date
-
-	@Column(name = "updated_on")
-	private BigInteger updatedOn; // This refers to the signing date
-
-	@ManyToOne
-	@JoinColumn(name = "admin_id")
-	@JsonIgnore
-	private AdminUser admin;
-
-	@ManyToOne
+	private String signature;
+	
+	@Column(name = "signature_bank")
+	private String signatureBank;
+	
+	@Column(name = "signature_customer")
+	private String signatureCustomer;
+	
+	@Column(name = "signature_data_protection")
+	private String signatureDataProtection;
+	
+	@Column(name = "signed_on")
+	private BigInteger signedOn;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "customer_id")
 	@JsonIgnore
 	private Customer customer;
-
-	@OneToOne(mappedBy = "customerBookingDocument")
-	@JsonIgnore
-	private CustomerDelivery customerDelivery;
 	
-	@OneToOne(mappedBy = "customerBookingDocument")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "admin_id")
+	@JsonIgnore
+	private AdminUser admin;
+	
+	@OneToOne(mappedBy = "customerContractSignature", fetch = FetchType.LAZY)
 	@JsonIgnore
 	private CustomerOrder customerOrder;
-
+	
 	@PrePersist
 	protected void onCreate() {
-		addedOn = Helper.getCurrentTimeBerlin();
-	}
-
-	@PreUpdate
-	public void onUpdate() {
-		updatedOn = Helper.getCurrentTimeBerlin();
+		signedOn = Helper.getCurrentTimeBerlin();
 	}
 }

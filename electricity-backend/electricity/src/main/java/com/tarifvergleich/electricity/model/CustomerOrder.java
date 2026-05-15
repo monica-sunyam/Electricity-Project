@@ -8,6 +8,7 @@ import com.tarifvergleich.electricity.util.Helper;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -74,16 +75,20 @@ public class CustomerOrder {
 	private CustomerDelivery delivery;
 
 	
-	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "customer_doc_id")
 	private CustomerBookingDocument customerBookingDocument;
+	
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "customer_contract_id")
+	private CustomerContractSignature customerContractSignature;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "customer_id")
 	@JsonIgnore
 	private Customer customer;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "admin_id")
 	@JsonIgnore
 	private AdminUser admin;

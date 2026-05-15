@@ -17,8 +17,6 @@ import lombok.NoArgsConstructor;
 public class CustomerBookingDocumentDto {
 
 	private Integer bookingDocId;
-	private String unsignedOriginalFileName;
-	private String fileUrl;
 	private String signedOriginalFileName;
 	private String signedFileUrl;
 	private Boolean signedDocumentSubmitted;
@@ -35,8 +33,6 @@ public class CustomerBookingDocumentDto {
 	public static class CustomerBookingDocumentAdminResDto {
 
 		private Integer bookingDocId;
-		private String unsignedOriginalFileName;
-		private String fileUrl;
 		private String signedOriginalFileName;
 		private String signedFileUrl;
 		private Boolean signedDocumentSubmitted;
@@ -50,7 +46,6 @@ public class CustomerBookingDocumentDto {
 			return null;
 
 		return CustomerBookingDocumentAdminResDto.builder().bookingDocId(document.getId())
-				.unsignedOriginalFileName(document.getUnsignedOriginalFileName()).fileUrl(document.getFileUrl())
 				.signedOriginalFileName(document.getSignedOriginalFileName()).signedFileUrl(document.getSignedFileUrl())
 				.signedDocumentSubmitted(document.getSignedDocumentSubmitted()).addedOn(document.getAddedOn())
 				.deliveryId(document.getCustomerDelivery().getId())

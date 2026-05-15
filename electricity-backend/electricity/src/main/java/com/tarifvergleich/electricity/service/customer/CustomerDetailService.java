@@ -28,20 +28,26 @@ import com.tarifvergleich.electricity.dto.ServiceRequestEmailEvent;
 import com.tarifvergleich.electricity.dto.ServiceRequestEmailEvent.ServiceResponseEmailEvent;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.AdminUser;
+import com.tarifvergleich.electricity.model.ContractToken;
 import com.tarifvergleich.electricity.model.Customer;
 import com.tarifvergleich.electricity.model.CustomerAddress;
 import com.tarifvergleich.electricity.model.CustomerAttorny;
+import com.tarifvergleich.electricity.model.CustomerContractSignature;
 import com.tarifvergleich.electricity.model.CustomerDelivery;
+import com.tarifvergleich.electricity.model.CustomerOrder;
 import com.tarifvergleich.electricity.model.CustomerServiceRequest;
 import com.tarifvergleich.electricity.model.CustomerServiceRequestMessages;
 import com.tarifvergleich.electricity.model.CustomerServices;
 import com.tarifvergleich.electricity.repository.AdminUserRepository;
+import com.tarifvergleich.electricity.repository.ContractTokenRespository;
 import com.tarifvergleich.electricity.repository.CustomerAddressRepository;
 import com.tarifvergleich.electricity.repository.CustomerAttornyRepository;
 import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
+import com.tarifvergleich.electricity.repository.CustomerOrderRepository;
 import com.tarifvergleich.electricity.repository.CustomerRepository;
 import com.tarifvergleich.electricity.repository.CustomerServiceRequestRepository;
 import com.tarifvergleich.electricity.repository.CustomerServicesRepository;
+import com.tarifvergleich.electricity.service.AesEncryptionService;
 import com.tarifvergleich.electricity.util.EmailTemplate;
 import com.tarifvergleich.electricity.util.FileServiceCustomer;
 import com.tarifvergleich.electricity.util.Helper;
@@ -63,6 +69,9 @@ public class CustomerDetailService {
 	private final CustomerServiceRequestRepository customerServiceRequestRepo;
 	private final EmailTemplate emailTemplate;
 	private final ApplicationEventPublisher eventPublisher;
+	private final CustomerOrderRepository customerOrderRepo;
+	private final AesEncryptionService aesEncryptionService;
+	private final ContractTokenRespository contractTokenRespo;
 
 	public Map<String, Object> getCustomerDetails(Integer customerId) {
 
@@ -583,6 +592,55 @@ public class CustomerDetailService {
 		eventPublisher.publishEvent(mailEvent);
 
 		return Map.of("res", true, "message", "email send successfully");
+	}
+
+	@Transactional
+	public Map<String, Object> submitCustomerContractSignatures(String token, Map<String, MultipartFile> files) {
+
+		if (token == null || files == null || files.size() == 0)
+			throw new InternalServerException("Insufficient data", HttpStatus.OK);
+
+		Integer customerOrderId = 0;
+		try {
+			String tokenId = aesEncryptionService.decrypt(token);
+
+			ContractToken validToken = contractTokenRespo.findByToken(tokenId)
+					.orElseThrow(() -> new InternalServerException("Invalid token", HttpStatus.OK));
+
+			if (validToken.getExpiryDate().compareTo(Helper.getCurrentTimeBerlin()) < 0)
+				throw new InternalServerException("Token expired", HttpStatus.OK);
+
+			customerOrderId = validToken.getOrderId();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new InternalServerException("Token is invalid", HttpStatus.OK);
+		}
+
+		CustomerOrder order = customerOrderRepo.findById(customerOrderId)
+				.orElseThrow(() -> new InternalServerException("Invalid customer order id", HttpStatus.OK));
+
+		CustomerContractSignature newSignature = CustomerContractSignature.builder().admin(order.getAdmin())
+				.customer(order.getCustomer()).customerOrder(order).build();
+
+		files.forEach((key, value) -> {
+			String newFilePath = fileServiceCustomer.saveFile(value, "customer-signature");
+
+			if (newSignature.getSignature() == null && key.equalsIgnoreCase("signature"))
+				newSignature.setSignature(newFilePath);
+			else if (newSignature.getSignatureBank() == null && key.equalsIgnoreCase("signatureBank"))
+				newSignature.setSignatureBank(newFilePath);
+			else if (newSignature.getSignatureCustomer() == null && key.equalsIgnoreCase("signatureCustomer"))
+				newSignature.setSignatureCustomer(newFilePath);
+			else if (newSignature.getSignatureDataProtection() == null && key.equalsIgnoreCase("signatureDataProtection"))
+				newSignature.setSignatureDataProtection(newFilePath);
+		});
+		
+		order.setCustomerContractSignature(newSignature);
+		
+		customerOrderRepo.save(order);
+
+		return Map.of("res", true, "message", "Customer signature added successfully");
 	}
 
 }

@@ -147,6 +147,11 @@ public class Customer {
 	@OneToMany(mappedBy = "customer", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JsonIgnoreProperties("customer")
 	private List<CustomerOrder> customerOrders;
+	
+	
+	@OneToMany(mappedBy = "customer", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JsonIgnoreProperties("customer")
+	private List<CustomerContractSignature> customerContractSignatures;
 
 	@ManyToOne
 	@JoinColumn(name = "admin_id")
@@ -233,6 +238,13 @@ public class Customer {
 			customerOrders = new LinkedList<CustomerOrder>();
 		order.setCustomer(this);
 		customerOrders.add(order);
+	}
+	
+	public void addCustomerContractSignature(CustomerContractSignature signature) {
+		if(customerContractSignatures == null)
+			customerContractSignatures = new LinkedList<CustomerContractSignature>();
+		signature.setCustomer(this);
+		customerContractSignatures.add(signature);
 	}
 
 	public void setUserAdmin(AdminUser admin) {

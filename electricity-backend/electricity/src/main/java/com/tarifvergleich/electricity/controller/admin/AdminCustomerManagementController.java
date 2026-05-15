@@ -118,11 +118,6 @@ public class AdminCustomerManagementController {
 		return ResponseEntity.ok(adminCustomerDeliveryManagementService.placeNewOrderToEgon(customerOrderDto));
 	}
 
-	@PostMapping("/fetch-unsigned-doc")
-	public ResponseEntity<?> fetchUnsignedBookingDocument(@RequestBody CustomerOrderDto customerOrderDto) {
-		return ResponseEntity.ok(adminCustomerDeliveryManagementService.downloadUnsignedPdf(customerOrderDto));
-	}
-
 	@PostMapping("/toggle-customer-notification")
 	public ResponseEntity<?> toggleCustomerNotification(@RequestBody CustomerDto customerDto) {
 		return ResponseEntity.ok(adminCustomerManagementService.toggleNotificationOfCustomer(customerDto.getAdminId(),

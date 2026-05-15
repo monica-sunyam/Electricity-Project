@@ -16,7 +16,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 10MB
-      max-request-size: 20MB
+      max-request-size: 30MB
   mail:
     host: smtp.office365.com
     port: 587
@@ -58,6 +58,8 @@ app:
   cleanup:
     retention-days: 30
     cron-expression: "0 0 1 1 * ?"
+  secrets:
+    aesKey: "3[SQ$l4}m:PcA8RF|X>Q"
 
 springdoc:
   packages-to-scan: com.tarifvergleich.electricity

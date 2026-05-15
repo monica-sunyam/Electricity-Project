@@ -48,6 +48,10 @@ public class CustomerDeliveryDto {
 	private Integer customerId;
 	private Integer page;
 	private Integer size;
+	private Boolean orderPlacedInEgon;
+	private Boolean orderPlaced;
+	private String search;
+	private Integer filter;
 	
 	@JsonSetter("dob")
 	public void setDob(String dob) {

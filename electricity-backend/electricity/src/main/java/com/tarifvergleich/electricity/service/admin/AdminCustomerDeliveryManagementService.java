@@ -1,33 +1,27 @@
 package com.tarifvergleich.electricity.service.admin;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto;
 import com.tarifvergleich.electricity.dto.AdminCreateOrderEgonDto.OrderListResponse;
 import com.tarifvergleich.electricity.dto.CustomerBillingRequestDto;
-import com.tarifvergleich.electricity.dto.CustomerBookingDocumentDto;
-import com.tarifvergleich.electricity.dto.CustomerBookingDocumentDto.CustomerBookingDocumentAdminResDto;
 import com.tarifvergleich.electricity.dto.CustomerConnectionRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryDto;
 import com.tarifvergleich.electricity.dto.CustomerDeliveryRequestWrapper.AdminEditCustomerDeliveryRelated;
 import com.tarifvergleich.electricity.dto.CustomerOrderDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto;
 import com.tarifvergleich.electricity.dto.CustomerPaymentRequestDto.PaymentDto;
+import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse;
 import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonDocumentDto;
+import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonFileSignatureRequest;
 import com.tarifvergleich.electricity.dto.EnergyRateDto;
 import com.tarifvergleich.electricity.exception.InternalServerException;
 import com.tarifvergleich.electricity.model.CustomerBookingDocument;
@@ -311,38 +305,38 @@ public class AdminCustomerDeliveryManagementService {
 
 		CustomerDelivery delivery = order.getDelivery();
 
-		CustomerSelectedProvider provider = delivery.getCustomerProvider();
-
-		LocalDate expiry;
-		BigInteger totalTerm;
-
-		try {
-			expiry = helper.flexibleDateParser(provider.getRaw().get("optTerm").asText())
-					.atStartOfDay(ZoneId.of("Europe/Berlin")).minusDays(1).toLocalDate();
-		} catch (DateTimeParseException | IllegalArgumentException e) {
-			Long expireDuration = provider.getRaw().get("optTerm").asLong();
-			expiry = LocalDate.now().atStartOfDay().atZone(ZoneId.of("Europe/Berlin")).plusMonths(expireDuration)
-					.minusDays(1).toLocalDate();
-		}
-
-		totalTerm = BigInteger.valueOf(ChronoUnit.SECONDS.between(expiry.atStartOfDay(ZoneId.of("Europe/Berlin")),
-				ZonedDateTime.now(ZoneId.of("Europe/Berlin"))));
-
-		BigInteger cancelTime = BigInteger.valueOf(0);
-		if (provider.getRaw().path("cancel") != null && provider.getRaw().path("cancelType") != null) {
-			Integer cancel = provider.getRaw().path("cancel").asInt();
-			Integer cancelType = provider.getRaw().path("cancelType").asInt();
-			BigInteger expiryBigInt = helper.toGermamUnixTimestamp(expiry);
-
-			if (cancelType.equals(0))
-				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, 0, 0, 0, 0, 0));
-			else if (cancelType.equals(1))
-				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, 0, cancel, 0, 0, 0));
-			else if (cancelType.equals(2))
-				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, 0, cancel * 7, 0, 0, 0));
-			else if (cancelType.equals(3))
-				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, cancel, 0, 0, 0, 0));
-		}
+//		CustomerSelectedProvider provider = delivery.getCustomerProvider();
+//
+//		LocalDate expiry;
+//		BigInteger totalTerm;
+//
+//		try {
+//			expiry = helper.flexibleDateParser(provider.getRaw().get("optTerm").asText())
+//					.atStartOfDay(ZoneId.of("Europe/Berlin")).minusDays(1).toLocalDate();
+//		} catch (DateTimeParseException | IllegalArgumentException e) {
+//			Long expireDuration = provider.getRaw().get("optTerm").asLong();
+//			expiry = LocalDate.now().atStartOfDay().atZone(ZoneId.of("Europe/Berlin")).plusMonths(expireDuration)
+//					.minusDays(1).toLocalDate();
+//		}
+//
+//		totalTerm = BigInteger.valueOf(ChronoUnit.SECONDS.between(expiry.atStartOfDay(ZoneId.of("Europe/Berlin")),
+//				ZonedDateTime.now(ZoneId.of("Europe/Berlin"))));
+//
+//		BigInteger cancelTime = BigInteger.valueOf(0);
+//		if (provider.getRaw().path("cancel") != null && provider.getRaw().path("cancelType") != null) {
+//			Integer cancel = provider.getRaw().path("cancel").asInt();
+//			Integer cancelType = provider.getRaw().path("cancelType").asInt();
+//			BigInteger expiryBigInt = helper.toGermamUnixTimestamp(expiry);
+//
+//			if (cancelType.equals(0))
+//				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, 0, 0, 0, 0, 0));
+//			else if (cancelType.equals(1))
+//				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, 0, cancel, 0, 0, 0));
+//			else if (cancelType.equals(2))
+//				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, 0, cancel * 7, 0, 0, 0));
+//			else if (cancelType.equals(3))
+//				cancelTime = expiryBigInt.subtract(helper.getSecondValueOfDuration(0, cancel, 0, 0, 0, 0));
+//		}
 
 		/* Map egon place order payload */
 		AdminCreateOrderEgonDto placeOrderRequest = AdminCreateOrderEgonDto.mapToEgonRequest(delivery, "new");
@@ -354,14 +348,14 @@ public class AdminCustomerDeliveryManagementService {
 		order.setAdminPlacedOrderOn(Helper.getCurrentTimeBerlin());
 		order.setAdminPlacedOrder(true);
 		order.setOrderId(orderNo);
-		order.setExpiryOn(helper.toGermamUnixTimestamp(expiry));
-		order.setLastDateOfCancellation(cancelTime);
-		order.setOperationPeriod(totalTerm);
+//		order.setExpiryOn(helper.toGermamUnixTimestamp(expiry));
+//		order.setLastDateOfCancellation(cancelTime);
+//		order.setOperationPeriod(totalTerm);
 
 		delivery.setOrderNo(orderNo);
 		delivery.setOrderPlacedInEgon(true);
-		delivery.setExpiryOn(helper.toGermamUnixTimestamp(expiry));
-		delivery.setLastDateOfCancellation(cancelTime);
+//		delivery.setExpiryOn(helper.toGermamUnixTimestamp(expiry));
+//		delivery.setLastDateOfCancellation(cancelTime);
 
 		order.setDelivery(delivery);
 
@@ -369,18 +363,18 @@ public class AdminCustomerDeliveryManagementService {
 
 		customerOrderDto.setOrderId(orderNo);
 
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-			@Override
-			public void afterCommit() {
-				asyncServiceAdmin.downloadUnsignedPdf(customerOrderDto);
-			}
-		});
+//		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+//			@Override
+//			public void afterCommit() {
+//				asyncServiceAdmin.downloadUnsignedPdf(customerOrderDto);
+//			}
+//		});
 
 		return Map.of("res", true, "message", "Order placed successfully", "Order no", orderNo);
 	}
 
 	@Transactional
-	public Map<String, Object> downloadUnsignedPdf(CustomerOrderDto customerOrderDto) {
+	public Map<String, Object> getSignedPdfFromEgon(CustomerOrderDto customerOrderDto) {
 		if (customerOrderDto.getAdminId() == null || customerOrderDto.getAdminId() <= 0)
 			throw new InternalServerException("Admin id missing", HttpStatus.OK);
 		if (customerOrderDto.getCustomerOrderId() == null || customerOrderDto.getCustomerOrderId() <= 0)
@@ -388,46 +382,48 @@ public class AdminCustomerDeliveryManagementService {
 
 		CustomerOrder order = customerOrderRepo
 				.findByIdAndAdminAdminId(customerOrderDto.getCustomerOrderId(), customerOrderDto.getAdminId())
-				.orElseThrow(() -> new InternalServerException("Customer order not found with this credential",
+				.orElseThrow(() -> new InternalServerException("Order record not found with this credential",
 						HttpStatus.OK));
+
+		if (order.getOrderId() == null || order.getOrderId() <= 0)
+			throw new InternalServerException("Order is not placed", HttpStatus.OK);
+
+		if (order.getCustomerBookingDocument() != null)
+			throw new InternalServerException("Contract already signed", HttpStatus.OK);
 
 		CustomerDelivery delivery = order.getDelivery();
 
-		if (!delivery.getOrderPlaced() || delivery.getOrderNo() == null || delivery.getOrderNo() <= 0)
-			throw new InternalServerException("Incomplete order", HttpStatus.OK);
+		CustomerBookingDocument bookingDoc = CustomerBookingDocument.builder().orderNo(delivery.getOrderNo())
+				.customer(delivery.getCustomerId()).customerDelivery(delivery).admin(delivery.getAdmin())
+				.customerOrder(order).build();
 
-		CustomerBookingDocument bookingDoc = bookingDocumentRepo.findByCustomerOrderIdAndAdminAdminId(
-				customerOrderDto.getCustomerOrderId(), customerOrderDto.getAdminId()).orElse(null);
+		EgonFileSignatureRequest signature = EgonFileSignatureResponse.mapSignatures("", "", "", "", "");
 
-		if (bookingDoc != null && !bookingDoc.getFileUrl().isEmpty()) {
-			CustomerBookingDocumentAdminResDto bookingDocRes = CustomerBookingDocumentDto
-					.mapAdminBookingDocRes(bookingDoc);
-			return Map.of("res", true, "data", bookingDocRes);
-		}
+		EgonDocumentDto egonBookingResponse = energyService.createBookingPdf(delivery.getOrderNo().toString(),
+				signature);
 
-		bookingDoc = CustomerBookingDocument.builder().orderNo(delivery.getOrderNo()).customer(delivery.getCustomerId())
-				.customerDelivery(delivery).admin(delivery.getAdmin()).customerOrder(order).build();
-
-		EgonDocumentDto egonBookingResponse = energyService.createBookingPdf(delivery.getOrderNo().toString());
+		String fileName = delivery.getFirstName() + "_" + delivery.getLastName() + "_" + delivery.getUniqueDeliveryId();
 
 		try {
-			String fileName = delivery.getFirstName() + delivery.getUniqueDeliveryId();
-			String unsignedUrlPath = fileServiceCustomer.saveBase64Pdf(egonBookingResponse.file(), fileName,
-					"customer-unsigned-documents");
-			bookingDoc.setUnsignedOriginalFileName(fileName);
-			bookingDoc.setFileUrl(unsignedUrlPath);
+			String signedContractFilePath = fileServiceCustomer.saveBase64Pdf(egonBookingResponse.file(), fileName,
+					"customer-signed-documents");
+			bookingDoc.setSignedOriginalFileName(fileName);
+			bookingDoc.setSignedFileUrl(signedContractFilePath);
+			bookingDoc.setSignedDocumentSubmitted(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException();
 		}
 
+		bookingDoc = customerBookingDocumentRepo.save(bookingDoc);
+
+		delivery.setCustomerBookingDocument(bookingDoc);
 		order.setCustomerBookingDocument(bookingDoc);
+		order.setDelivery(delivery);
 
 		customerOrderRepo.save(order);
 
-		CustomerBookingDocumentAdminResDto bookingDocRes = CustomerBookingDocumentDto.mapAdminBookingDocRes(bookingDoc);
-
-		return Map.of("res", true, "data", bookingDocRes);
+		return Map.of();
 	}
 
 	@Transactional
@@ -489,5 +485,4 @@ public class AdminCustomerDeliveryManagementService {
 
 		return Map.of("res", true, "message", "Customer signed document uploaded successfully");
 	}
-
 }

@@ -52,18 +52,18 @@ public class AsyncServiceAdmin {
 		bookingDoc = CustomerBookingDocument.builder().orderNo(delivery.getOrderNo()).customer(delivery.getCustomerId())
 				.customerDelivery(delivery).admin(delivery.getAdmin()).customerOrder(order).build();
 
-		EgonDocumentDto egonBookingResponse = energyService.createBookingPdf(delivery.getOrderNo().toString());
+//		EgonDocumentDto egonBookingResponse = energyService.createBookingPdf(delivery.getOrderNo().toString());
 
-		try {
-			String fileName = delivery.getFirstName() + delivery.getUniqueDeliveryId();
-			String unsignedUrlPath = fileServiceCustomer.saveBase64Pdf(egonBookingResponse.file(), fileName,
-					"customer-unsigned-documents");
-			bookingDoc.setUnsignedOriginalFileName(fileName);
-			bookingDoc.setFileUrl(unsignedUrlPath);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException();
-		}
+//		try {
+//			String fileName = delivery.getFirstName() + delivery.getUniqueDeliveryId();
+////			String unsignedUrlPath = fileServiceCustomer.saveBase64Pdf(egonBookingResponse.file(), fileName,
+////					"customer-unsigned-documents");
+////			bookingDoc.setUnsignedOriginalFileName(fileName);
+////			bookingDoc.setFileUrl(unsignedUrlPath);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			throw new RuntimeException();
+//		}
 
 		bookingDoc = customerBookingDocumentRepo.save(bookingDoc);
 

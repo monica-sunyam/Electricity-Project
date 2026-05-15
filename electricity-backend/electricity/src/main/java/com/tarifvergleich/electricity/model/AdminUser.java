@@ -132,11 +132,16 @@ public class AdminUser {
 			CascadeType.MERGE }, orphanRemoval = true)
 	@JsonIgnoreProperties("admin")
 	private List<ManageAdminDocument> adminDocuments;
-	
+
 	@OneToOne(mappedBy = "admin", cascade = { CascadeType.PERSIST, CascadeType.REMOVE,
 			CascadeType.MERGE }, orphanRemoval = true)
 	@JsonIgnoreProperties("admin")
 	private AdminSignature adminSignatures;
+
+	@OneToOne(mappedBy = "admin", cascade = { CascadeType.PERSIST, CascadeType.REMOVE,
+			CascadeType.MERGE }, orphanRemoval = true)
+	@JsonIgnoreProperties("admin")
+	private List<CustomerContractSignature> customerContractSignatures;
 
 	@PrePersist
 	protected void onCreate() {
@@ -253,5 +258,13 @@ public class AdminUser {
 			adminDocuments = new LinkedList<ManageAdminDocument>();
 		adminDoc.setAdmin(this);
 		adminDocuments.add(adminDoc);
+	}
+
+	public void addCustomerContractSignature(CustomerContractSignature signature) {
+		if (customerContractSignatures == null)
+			customerContractSignatures = new LinkedList<CustomerContractSignature>();
+
+		signature.setAdmin(this);
+		customerContractSignatures.add(signature);
 	}
 }
