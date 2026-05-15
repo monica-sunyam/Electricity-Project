@@ -1060,9 +1060,9 @@
     </div>
     <!--══════════ Meters Section End ══════════-->
 
-    <!--══════════ Reminder Section Start (Tab - 3) ══════════-->
+    <!--══════════ Reminder Section Start (Tab - 2) ══════════-->
 
-    <div class="" *ngIf="activeTab === 3 && currentStep === 1">
+    <div class="" *ngIf="activeTab === 2 && currentStep === 1">
       <div class="login-berich">Wechselerinnerung</div>
       <br />
       <div
@@ -1229,7 +1229,7 @@
 
     <!--══════════ Service Request Section Start (Tab - 4) ══════════-->
 
-    <div class="customer-profile-box" *ngIf="activeTab === 4 && currentStep === 1">
+    <div class="customer-profile-box" *ngIf="activeTab === 3 && currentStep === 1">
       <div class="attorney-berich">Servicecenter</div>
 
       <div class="tab-row">
@@ -1252,7 +1252,7 @@
         </div>
         <!--══════════ New request Section ══════════-->
 
-        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 1">
+        <div style="width: 100%" *ngIf="activeTab === 3 && currentStep === 1 && serviceTab === 1">
           <div class="form-group">
             <div class="tab-header">Hilfe zu Ihren Verträgen und allgemeine Anfragen</div>
             <div class="tab-text">
@@ -1443,7 +1443,7 @@
 
         <!--══════════ Open requests Section ══════════-->
 
-        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 2">
+        <div style="width: 100%" *ngIf="activeTab === 3 && currentStep === 1 && serviceTab === 2">
           <div *ngIf="showList">
             <div class="form-group">
               <div class="tab-header">Ihre Anfrage wurde erfolgreich abgesendet!</div>
@@ -1494,7 +1494,7 @@
         </div>
 
         <!--══════════ In Progress Section ══════════-->
-        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 3">
+        <div style="width: 100%" *ngIf="activeTab === 3 && currentStep === 1 && serviceTab === 3">
           <div *ngIf="showList">
             <div class="form-group">
               <div class="tab-header">
@@ -1636,7 +1636,7 @@
         </div>
 
         <!--══════════ Closed Requests Section ══════════-->
-        <div style="width: 100%" *ngIf="activeTab === 4 && currentStep === 1 && serviceTab === 4">
+        <div style="width: 100%" *ngIf="activeTab === 3 && currentStep === 1 && serviceTab === 4">
           <!--══════ List Section ══════-->
           <div *ngIf="showList">
             <div class="form-group">
@@ -1786,7 +1786,7 @@
 
     <!--══════════ Power of Attorney Section Start (Tab - 5) ══════════-->
 
-    <div class="customer-profile-box" *ngIf="activeTab === 5 && currentStep === 1">
+    <div class="customer-profile-box" *ngIf="activeTab === 4 && currentStep === 1">
       <div class="attorney-berich">
         {{
           customerType === 'BUSINESS'
@@ -1796,7 +1796,7 @@
       </div>
 
       <div class="tab-row">
-        <div class="success-box" *ngIf="activeTab === 5 && isRevoked">
+        <div class="success-box" *ngIf="activeTab === 4 && isRevoked">
           <div class="success-content">
             <div class="success-row">
               <img src="assets/icons/Kreis_Haken_gruen.png" alt="success" />
@@ -1843,7 +1843,7 @@
       </div>
     </div>
 
-    <div class="customer-profile-box" *ngIf="activeTab === 5 && currentStep === 2">
+    <div class="customer-profile-box" *ngIf="activeTab === 4 && currentStep === 2">
       <div class="attorney-berich">
         {{
           customerType === 'BUSINESS'
@@ -2189,7 +2189,7 @@
     <div
       class="customer-profile-box"
       *ngIf="
-        activeTab === 5 && currentStep === 3 && approvalStatus === 'PENDING' && recordIsPresent
+        activeTab === 4 && currentStep === 3 && approvalStatus === 'PENDING' && recordIsPresent
       "
     >
       <div class="attorney-berich-green">
@@ -2233,7 +2233,7 @@
 
     <div
       class="customer-profile-box"
-      *ngIf="activeTab === 5 && currentStep === 4 && approvalStatus === 'APPROVED'"
+      *ngIf="activeTab === 4 && currentStep === 4 && approvalStatus === 'APPROVED'"
     >
       <div class="attorney-berich">
         {{
@@ -2264,9 +2264,9 @@
 
     <!--══════════ Document archive Section Start (Tab - 6) ══════════-->
 
-    <div class="customer-profile-box" *ngIf="activeTab === 6 && currentStep === 1">
+    <div class="customer-profile-box" *ngIf="activeTab === 5 && currentStep === 1">
       <div class="login-berich">Dokumentarchiv - Übersicht</div>
-      <div *ngIf="activeTab === 6 && documentTab === 0">
+      <div *ngIf="activeTab === 5 && documentTab === 0">
         <div class="tab-row">
           <div class="form-group">
             <div class="tab-header">
@@ -2283,7 +2283,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="activeTab === 6 && documentTab === 1">
+      <div *ngIf="activeTab === 5 && documentTab === 1">
         <br />
         <div class="attorney-berich">Auftragsdokumente zu aktiven Verträgen</div>
         <div class="tab-row">
@@ -2325,7 +2325,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="activeTab === 6 && documentTab === 2">
+      <div *ngIf="activeTab === 5 && documentTab === 2">
         <br />
         <div class="attorney-berich">Meine Vollmachten</div>
         <div class="tab-row">
@@ -2362,7 +2362,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="activeTab === 6 && documentTab === 3">
+      <div *ngIf="activeTab === 5 && documentTab === 3">
         <br />
         <div class="attorney-berich">Meine gekündigten Verträge</div>
         <div class="tab-row">
@@ -2402,7 +2402,7 @@
         </div>
       </div>
 
-      <div *ngIf="activeTab === 6 && documentTab === 4">
+      <div *ngIf="activeTab === 5 && documentTab === 4">
         <br />
         <div class="attorney-berich">Vertragsdokumente zu aktiven Verträgen</div>
         <div class="tab-row">
@@ -2445,7 +2445,7 @@
         </div>
       </div>
 
-      <div *ngIf="activeTab === 6 && documentTab === 5">
+      <div *ngIf="activeTab === 5 && documentTab === 5">
         <br />
         <div class="attorney-berich">Sonstige Dokumente</div>
         <div class="tab-row">
@@ -2483,7 +2483,7 @@
       </div>
     </div>
 
-    <div class="customer-profile-box" *ngIf="activeTab === 6 && currentStep === 2">
+    <div class="customer-profile-box" *ngIf="activeTab === 5 && currentStep === 2">
       <div class="attorney-berich-green">Downloadbereich</div>
       <div class="tab-row">
         <div class="success-box">
@@ -2508,7 +2508,7 @@
 
     <!-- ══════════ Reset Password Start (Tab - 7) ══════════-->
 
-    <div class="customer-profile-box" *ngIf="activeTab === 7 && currentStep === 1">
+    <div class="customer-profile-box" *ngIf="activeTab === 6 && currentStep === 1">
       <div class="login-berich">Bitte geben Sie Ihr neues Passwort ein</div>
       <div class="tab-row">
         <div class="form-group">
@@ -2675,7 +2675,7 @@
     </div>
 
     <!-- OTP VERIFY  -->
-    <div class="customer-profile-box" *ngIf="activeTab === 7 && currentStep === 2">
+    <div class="customer-profile-box" *ngIf="activeTab === 6 && currentStep === 2">
       <div class="login-berich">
         {{ otpInvalid ? 'Bitte überprüfen Sie den Code' : 'Geben Sie den Code ein' }}
       </div>
@@ -2773,7 +2773,7 @@
       </div>
     </div>
 
-    <div class="customer-profile-box" *ngIf="activeTab === 7 && currentStep === 3">
+    <div class="customer-profile-box" *ngIf="activeTab === 6 && currentStep === 3">
       <div class="attorney-berich-green">Passwort erfolgreich zurückgesetzt!</div>
       <div class="tab-row">
         <div class="form-group">

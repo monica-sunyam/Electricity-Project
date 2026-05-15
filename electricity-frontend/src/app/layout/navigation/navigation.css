@@ -5,7 +5,7 @@
   align-items: center;
 }
 
-.home-icon{
+.home-icon {
   display: flex;
   width: 33px;
   height: 33px;
@@ -32,14 +32,14 @@
   display: block; /* removes bottom gap from inline images */
 }
 
-/* .nav-wrapper {
+.nav-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex: 1;
   min-width: 0;
   background-color: #003366;
-} */
+}
 
 .main-nav ul {
   display: flex;
@@ -52,13 +52,12 @@
   gap: 1.5rem;
 }
 
-/* .nav-wrapper {
+.nav-wrapper {
   display: flex;
   align-items: center;
   flex: 1;
   min-width: 0;
-} */
-
+}
 
 .main-nav ul li {
   display: flex;
@@ -68,14 +67,16 @@
   padding: 0.3rem 0.3rem;
 }
 
-.main-nav li:hover,  .home-icon:hover, .nav-icon-home:hover{
+.main-nav li:hover,
+.home-icon:hover,
+.nav-icon-home:hover {
   background-color: #0085e0;
 }
 
-.nav-links li.active, .home-icon.active {
+.nav-links li.active,
+.home-icon.active {
   background-color: #0085e0;
 }
-
 
 .main-nav ul li a {
   display: flex;
@@ -99,7 +100,6 @@
   font-weight: 500;
   font-size: 18px;
 }
-
 
 .small-text {
   font-size: 0.75rem;
@@ -140,7 +140,7 @@
   opacity: 0.8;
 }
 
-.nav-icon-strom{
+.nav-icon-strom {
   width: 13px;
   height: 20px;
   padding-right: 0.25rem;
@@ -149,10 +149,10 @@
 .nav-icon-gas {
   width: 16px;
   height: 20px;
-   padding-right: 0.25rem;
+  padding-right: 0.25rem;
 }
 
-.nav-icons-outlined{
+.nav-icons-outlined {
   width: 27px;
   height: 22px;
   padding-right: 0.25rem;
@@ -167,15 +167,14 @@
 .nav-icon-gewerbestrom {
   width: 27px;
   height: 22px;
-   padding-right: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 .nav-icon-360 {
   width: 30px;
   height: 25px;
-   padding-right: 0.25rem;
+  padding-right: 0.25rem;
 }
-
 
 .hamburger {
   display: none;
@@ -194,7 +193,6 @@
 ========================= */
 
 @media (max-width: 768px) {
-
   .hamburger {
     display: block;
   }
@@ -218,7 +216,7 @@
 
   .nav-links li {
     padding: 1rem 2rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .nav-links li a {
@@ -226,5 +224,14 @@
     align-items: center;
     gap: 10px;
   }
+}
 
+/* =========================
+   MOBILE VIEW
+========================= */
+
+@media screen and (max-width: 768px) {
+  .main-nav {
+    display: none;
+  }
 }

@@ -1,10 +1,8 @@
 <div class="footer">
-  <div>
-    <span class="footer-link" (click)="goToPage('imprint')">Impressum</span> |
-    <span class="footer-link">Kontakt</span> |
-    <span class="footer-link" (click)="goToPage('data-protection')">Datenschutz</span> |
-    <span class="footer-link" (click)="goToPage('terms-conditions')">AGB</span>
-  </div>
+  <div (click)="goToPage('/imprint')" class="footer-link">Impressum</div>
+  <div>Kontakt</div>
+  <div (click)="goToPage('/data-protection')" class="footer-link">Datenschutz</div>
+  <div (click)="goToPage('/terms-conditions')" class="footer-link">AGB</div>
 </div>
 <div class="footer-text">
   <p>

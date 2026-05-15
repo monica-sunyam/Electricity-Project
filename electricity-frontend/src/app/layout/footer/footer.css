@@ -1,77 +1,74 @@
-.footer {
-  padding: 18px 24px 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 15px;
-  font-weight: 600;
-  background-color: #003366;
-  color: #ffffff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin: 10px;
-}
 
-.footer > div {
-  text-align: center;
-  color: #ffffff;
-  transition: color 0.2s ease;
+.footer {
+padding: 0.4rem;
+display: flex;
+justify-content: center;
+gap: 14rem;
+font-size: 16px;
+font-weight: 500;
+background-color: #003366;
+color: #ffffff;
 }
 
 .footer-link {
   cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.footer-link:hover {
-  color: #ffe166;
 }
 .footer-text {
-  width: min(100%, 1080px);
-  margin: 0 auto;
-  padding: 18px 24px 22px;
-  text-align: center;
-  font-size: 12px;
-  line-height: 1.72;
-  letter-spacing: 0.02em;
-  background-color: #263045;
-  color: #f4f4f4;
+text-align: center;
+font-size: 12px;
+padding: 0.5rem 5rem;
+background-color: #4a4949;
+padding: 0.5rem;
+color: #ffffff;
 }
 
-@media (max-width: 1024px) {
-  .footer {
-    gap: 16px 18px;
-    padding: 16px 18px 14px;
-  }
 
-  .footer-text {
-    padding: 16px 18px 18px;
-    font-size: 11.5px;
-    margin: 4px;
-    height: auto;
-    width: auto;
-  }
+p {
+margin: 0;
 }
 
-@media (max-width: 640px) {
+/* =========================
+   MOBILE RESPONSIVE
+   FOOTER
+========================= */
+
+@media screen and (max-width: 768px) {
+
   .footer {
-    flex-direction: column;
-    align-items: stretch;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 12px;
+
     text-align: center;
-    gap: 12px;
-    padding: 16px 16px 14px;
+
+    font-size: 14px;
   }
 
   .footer > div {
-    width: 100%;
-    min-width: auto;
+
+    flex: 1 1 40%;
+
+    min-width: 120px;
   }
 
   .footer-text {
-    padding: 14px 14px 16px;
-    font-size: 11px;
-  }
-}
 
-p {
-  margin: 0;
+    font-size: 11px;
+
+    padding: 10px 12px;
+
+    line-height: 18px;
+
+    text-align: center;
+  }
+
 }
