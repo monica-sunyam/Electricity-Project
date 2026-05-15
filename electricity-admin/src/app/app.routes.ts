@@ -24,12 +24,12 @@ import { CreateCustomerComponent } from "./pages/customers/create-customer/creat
 import { CreateBookingComponent } from "./pages/bookings/create-booking/create-booking.component";
 import { CustomerCallbackComponent } from "./pages/customer-callback/customer-callback.component";
 import { BookingDetailComponent } from "./pages/bookings/booking-details/booking-details.component";
-// import { EmailComponent } from "./pages/email/email.component";
 import { EmailRequestsComponent } from "./pages/email/email-requests/email-requests.component";
 import { EmailCategoryComponent } from "./pages/email/email-category/email-category.component";
 import { EmailTemplateViewComponent } from "./pages/email-template-view/email-template-view.component";
 import { ContentPDFsComponent } from "./pages/contents/content-pdfs/content-pdfs.component";
 import { AdminSignatureComponent } from "./pages/credentials/admin-signature/admin-signature.component";
+import { StaticContentComponent } from "./pages/static-content/static-content.component";
 
 export const routes: Routes = [
   {
@@ -174,12 +174,6 @@ export const routes: Routes = [
         component: BookingDetailComponent,
         title: "Buchungsdetails",
       },
-      // {
-      //   path: "email-management",
-      //   component: EmailComponent,
-      //   title: "E-Mail Verwaltung",
-      //   children: []
-      // },
       {
         path: "email-requests",
         component: EmailRequestsComponent,
@@ -199,6 +193,11 @@ export const routes: Routes = [
         path: "content",
         component: ContentPDFsComponent,
         title: "Contents",
+      },
+      {
+        path: "static-content",
+        component: StaticContentComponent,
+        title: "Static Content",
       },
       {
         path: "credentials/admin-signature",

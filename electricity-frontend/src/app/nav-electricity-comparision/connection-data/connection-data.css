@@ -1,20 +1,45 @@
-.section-body {display: flex; flex-direction: column;  gap: 12px;}
-.toggle-row {font-size: 14px; margin: 0; align-items: center;}
-.header {font-weight: 600;}
-.toggle-box { display: flex; flex: 1; margin: 0; }
-.form-row { display: flex; gap: 10px; margin-bottom: 10px; width: 100%; }
-.row-with-info > *:first-child { flex: 1; }
-.field-wrap.date {display: flex; flex-direction: row; justify-content: space-between;}
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.toggle-row {
+  font-size: 14px;
+  margin: 0;
+  align-items: center;
+}
+.header {
+  font-weight: 600;
+}
+.toggle-box {
+  display: flex;
+  flex: 1;
+  margin: 0;
+}
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.row-with-info > *:first-child {
+  flex: 1;
+}
+.field-wrap.date {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
 .toggle-area {
-  display: flex; flex-direction: row;
+  display: flex;
+  flex-direction: row;
   gap: 10px;
   width: 96%;
   font-size: 14px;
   padding: 15px;
   border: 1px solid black;
   border-radius: 8px;
-
 }
 
 .mat-datepicker-toggle .mat-icon {
@@ -23,9 +48,14 @@
   width: 10px;
 }
 
-
 /* ── Express box ── */
-.row-with-info{ display: flex; flex-direction: row; gap: 10px; position:relative; align-items: center;}
+.row-with-info {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  position: relative;
+  align-items: center;
+}
 
 .express-box {
   border: 1px solid #3ab54a;
@@ -39,7 +69,7 @@
   flex: 1;
 }
 
-.container-express{
+.container-express {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -54,7 +84,10 @@
   color: #1a1a2e;
 }
 
-.express-header svg { color: #3ab54a; flex-shrink: 0; }
+.express-header svg {
+  color: #3ab54a;
+  flex-shrink: 0;
+}
 
 .express-desc {
   font-size: 14px;
@@ -76,7 +109,10 @@
   -webkit-appearance: none;
 }
 
-.field-wraper input::placeholder { font-weight: 400; color: #bbb; }
+.field-wraper input::placeholder {
+  font-weight: 400;
+  color: #bbb;
+}
 
 /* Select chevron */
 .select-wraper {
@@ -91,7 +127,6 @@
   pointer-events: none;
   color: #888;
 }
-
 
 /* ── Kündigung box ── */
 .kuendigung-box {
@@ -113,18 +148,29 @@
   font-size: 14px;
 }
 
-.frequent {display: flex; align-items: center; gap: 5px;}
+.frequent {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 
 .badge-green {
   gap: 4px;
   color: #00a651;
   font-size: 14px;
   padding: 3px 5px;
-
 }
 
-
-.kuendigung-box::before {content: ""; position: absolute; width: 1px; background: #4a4949;  top: 0; bottom: 0; left: 50%; transform: translateX(-50%);}
+.kuendigung-box::before {
+  content: "";
+  position: absolute;
+  width: 1px;
+  background: #4a4949;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
 .kuendigung-bottom {
   display: flex;
@@ -142,10 +188,14 @@
   cursor: pointer;
   font-size: 13px;
   user-select: none;
-  transition: background .15s, border-color .15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
-.kuendigung-opt:hover { background: #f5f9fd; }
+.kuendigung-opt:hover {
+  background: #f5f9fd;
+}
 
 .kuendigung-opt.selected {
   border-color: #3a9bd5;
@@ -153,7 +203,10 @@
   font-weight: 600;
 }
 
-.kuendigung-opt.selected .chk-square { background: #3a9bd5; border-color: #3a9bd5; }
+.kuendigung-opt.selected .chk-square {
+  background: #3a9bd5;
+  border-color: #3a9bd5;
+}
 
 /* ── Link hint ── */
 .link-hint {
@@ -165,9 +218,9 @@
   text-decoration: none;
 }
 
-.link-hint:hover { text-decoration: underline; }
-
-
+.link-hint:hover {
+  text-decoration: underline;
+}
 
 /* ── SVG helpers ── */
 .tick-white {
@@ -177,10 +230,265 @@
 }
 
 .error-hint {
-    display: block;
-    margin-top: 4px;
-    font-size: 12px;
-    color: #e53935;
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #e53935;
 }
 
-.icon-express { height: 15px; width: 15px;}
+.icon-express {
+  height: 15px;
+  width: 15px;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — MOBILE ≤768px
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── PAGE LAYOUT: sidebar to bottom ── */
+  .page-layout {
+    flex-direction: column !important;
+    gap: 12px;
+    padding: 8px !important;
+  }
+
+  /* Flatten sidebar children into page-layout flow */
+  .sidebar {
+    display: contents;
+  }
+
+  /* Main content: full width, comes first */
+  .main-content {
+    width: 100% !important;
+    order: 0;
+  }
+
+  /* Sidebar children: pushed to bottom */
+  app-sidebar {
+    order: 10;
+    width: 100%;
+    display: block;
+  }
+
+  app-contact-person {
+    order: 11;
+    width: 100%;
+    display: block;
+  }
+
+  app-need-support {
+    order: 12;
+    width: 100%;
+    display: block;
+  }
+
+  /* ── PROGRESS STEPPER: horizontal scroll ── */
+  .progress-steps {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .progress-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── SECTION / PANEL: full width ── */
+  .section-panel,
+  .progress-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── SECTION BODY: tighter padding ── */
+  .section-body {
+    padding: 12px !important;
+    gap: 10px;
+  }
+
+  /* ══════════════════════════════════════════════
+     TOGGLE ROW — used for almost every form row
+  ══════════════════════════════════════════════ */
+
+  /* Stack toggle-row content vertically, align to start */
+  .toggle-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px;
+    width: 100%;
+  }
+
+  /* Info icons inside toggle-row: left-aligned */
+  .toggle-row > div > .info-base,
+  .toggle-row > .info-base {
+    align-self: flex-start;
+  }
+
+  /* ── TOGGLE BOX (Ja/Nein, Schnellstmöglich/Wunschtermin): stack options ── */
+  .toggle-box {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px;
+  }
+
+  .toggle-opt {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* toggle-box-check: same treatment */
+  .toggle-box-check {
+    width: 100% !important;
+    flex-direction: column;
+  }
+
+  .toggle-opt-check {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── TOGGLE AREA (info notice text): full width ── */
+  .toggle-area {
+    width: 100% !important;
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  /* ── FORM GROUP / FIELD WRAP inside toggle-row: full width ── */
+  .toggle-row .form-group,
+  .toggle-row .field-wrap {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── FORM ROW (generic side-by-side pairs): stack ── */
+  .form-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .form-row .form-group {
+    width: 100% !important;
+    flex: unset !important;
+    box-sizing: border-box;
+  }
+
+  /* ── ROW-WITH-INFO (express box, dropdown, datepicker, kuendigung): stack ── */
+  .row-with-info {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  /* Info icon at end: left-aligned */
+  .row-with-info > div > .info-base,
+  .row-with-info > .info-base {
+    align-self: flex-start;
+  }
+
+  /* ── EXPRESS BOX: icon + content stay side by side (already row), just full width ── */
+  .express-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── PROVIDER DROPDOWN (Stromanbieter): full width ── */
+  .field-wraper,
+  .select-wraper {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .field-wraper select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── DATEPICKER ROW (.field-wrap.date): keep label + picker together ── */
+  .field-wrap.date {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  /* ── KÜNDIGUNG BOX: hide center divider, stack options ── */
+  .kuendigung-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Hide the decorative vertical center line — it splits nothing when stacked */
+  .kuendigung-box::before {
+    display: none;
+  }
+
+  .kuendigung-top {
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .kuendigung-bottom {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kuendigung-opt {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── SUBMIT BUTTON: full width ── */
+  .form-actions {
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
+
+/* ── Very small screens ≤480px ── */
+@media (max-width: 480px) {
+  .section-body {
+    padding: 10px !important;
+    gap: 8px;
+  }
+
+  .section-header {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .express-header {
+    font-size: 13px;
+  }
+
+  .express-desc {
+    font-size: 13px;
+  }
+
+  .kuendigung-opt {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  .toggle-area {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .btn-primary {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+}

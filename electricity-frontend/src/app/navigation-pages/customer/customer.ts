@@ -65,7 +65,6 @@ export class Customer {
   tabs: string[] = [
     'Persönliche Daten / Verträge',
     'Zähler & Verträge',
-    'Zählerstand melden',
     'Wechselinnerung',
     'Serviceanfragen',
     'Beratervollmacht',
@@ -114,7 +113,7 @@ export class Customer {
   isDesktop: boolean = true;
 
   setActiveTab(index: number) {
-    if (this.qrScanned && index !== 5) {
+    if (this.qrScanned && index !== 4) {
       return;
     }
 
@@ -125,10 +124,10 @@ export class Customer {
     this.selectedIndex = -1;
     this.resetForm();
 
-    if (this.activeTab == 4) {
+    if (this.activeTab == 3) {
       this.fetchServiceCount();
     }
-    if (this.activeTab == 5) {
+    if (this.activeTab == 4) {
       this.checkAttorneyStatus();
     }
     this.cdr.detectChanges();
@@ -136,14 +135,14 @@ export class Customer {
 
   nextStep(step: number) {
     this.currentStep = step;
-    if (step === 2 && this.activeTab === 5) {
+    if (step === 2 && this.activeTab === 4) {
       setTimeout(() => {
         this.initSignature();
       });
     }
 
     this.isResendDisabled = true;
-    if (step === 2 && this.activeTab === 7) {
+    if (step === 2 && this.activeTab === 6) {
       setTimeout(() => {
         this.isResendDisabled = true;
         this.resendSuccess = false;
@@ -209,7 +208,7 @@ export class Customer {
       // optional flag for limited access
       localStorage.setItem('qr_mode', 'true');
       this.qrScanned = true;
-      this.activeTab = 5;
+      this.activeTab = 4;
       this.nextStep(2);
       this.cdr.detectChanges();
     } catch (e) {
@@ -1567,7 +1566,7 @@ export class Customer {
           this.attorneyCreatedOn = this.formatAttorneyDate(createdOn);
           this.isRevoked = isRevoked;
 
-          if (this.activeTab === 5 && this.approvalStatus === 'PENDING' && this.recordIsPresent) {
+          if (this.activeTab === 4 && this.approvalStatus === 'PENDING' && this.recordIsPresent) {
             this.nextStep(3);
           }
 

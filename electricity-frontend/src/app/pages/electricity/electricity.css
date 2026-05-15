@@ -1,24 +1,30 @@
-.feature-header, .feature-header1 {
+.feature-header,
+.feature-header1 {
   padding: 0.3rem 0.5rem 0.5rem 0.5rem;
 }
 
-.person-option{
+.person-option {
   /*   remaining in style.css  */
   padding-top: 0.2rem;
 }
 
 .person.active img {
-  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg) brightness(95%) contrast(96%);
+  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg)
+    brightness(95%) contrast(96%);
 }
 
 .person.active .person-count {
-  background-color: #0085e0;   /* or your brand color */
+  background-color: #0085e0; /* or your brand color */
   font-weight: 500;
 }
 
-.person:hover .icon-family-1, .person:hover .icon-family-2, .person:hover .icon-family-3,
-.person:hover .icon-family-4, .person:hover .icon-family-6 {
-  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg) brightness(95%) contrast(96%);
+.person:hover .icon-family-1,
+.person:hover .icon-family-2,
+.person:hover .icon-family-3,
+.person:hover .icon-family-4,
+.person:hover .icon-family-6 {
+  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg)
+    brightness(95%) contrast(96%);
 }
 
 .icon-family-1 {
@@ -32,12 +38,12 @@
   width: 25px;
 }
 
-.icon-family-3{
+.icon-family-3 {
   height: 30px;
   width: 35px;
 }
 
- .icon-family-4 {
+.icon-family-4 {
   height: 30px;
   width: 45px;
 }
@@ -47,29 +53,26 @@
   width: 65px;
 }
 
-
 .discount {
   top: 74%;
   right: 3%;
 }
 
-
-.consumption-number{
+.consumption-number {
   padding: 0.37rem 0.5rem 0.37rem 0.5rem;
   border: 1px solid #4a4949;
   width: 18.3rem;
   background-color: #ffffff;
 }
 
-
 .more-person {
   display: flex;
   flex-direction: column;
   gap: 0.95rem;
-  padding: 0rem;
+  /* padding: 0rem; */
 }
 
-.consumption-area{
+.consumption-area {
   flex: 1;
   border: none;
   font-size: 14px;
@@ -81,15 +84,12 @@
   background-color: #ffffff;
 }
 
-
 /*   ---------- dialog box ------------- */
 
 :host ::ng-deep .dialog-content p {
-  margin: 0 ;
+  margin: 0;
   font-size: 18px;
 }
-
-
 
 .dropdown-wrapper input {
   width: 100%;
@@ -126,4 +126,15 @@
 
 .dropdown-item:hover {
   background: #f5f5f5;
+}
+
+/* =========================
+   MOBILE HIDE REGISTRATION
+========================= */
+
+@media screen and (max-width: 768px) {
+  app-registration {
+    display: none;
+  }
+
 }

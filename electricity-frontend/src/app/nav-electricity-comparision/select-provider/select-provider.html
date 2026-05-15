@@ -8,13 +8,6 @@
         Strom | Hausstrom
       </div>
       <div class="address-card__body">
-        <!-- <ng-container *ngIf="hasAddress"> 
-         <strong>Ihre Adresse:</strong>
-          <p>{{ street }} {{ houseNumber }}<br />{{ zip }} {{ city }}</p>
-          <p class="verbrauch">
-            <strong>Verbrauch / Jahr:</strong> {{ consum | number: '1.0-0' }} kWh
-          </p>
-        </ng-container> -->
         <strong>Ihre Adresse:</strong>
         <ng-container *ngIf="hasAddress && !isEditMode; else editMode">
           <p>{{ street }} {{ houseNumber }}<br />{{ zip }} {{ city }}</p>
@@ -22,7 +15,9 @@
             <strong>Verbrauch / Jahr:</strong> {{ consum | number: '1.0-0' }} kWh
           </p>
         </ng-container>
-        <button class="btn-suche" *ngIf="hasAddress" (click)="searchMode()">Suche ändern</button>
+        <button class="btn-suche" *ngIf="hasAddress && !isEditMode" (click)="searchMode()">
+          Suche ändern
+        </button>
 
         <!-- EDIT MODE -->
         <ng-template #editMode>
@@ -30,120 +25,49 @@
             <div class="edit-column">
               <input type="text" placeholder="Your postal code" formControlName="postalCode" />
 
-              <!-- <select formControlName="city" class="box large">
-                <option [ngValue]="null" disabled>Ihre Ort</option>
-
-                <option *ngFor="let c of cityOptions" [ngValue]="c.city_id">
-                  {{ c.city }}
-                </option>
-              </select> -->
-
-              <!-- <input
-                type="text"
-                placeholder="Straße suchen..."
-                (input)="filterStreets($event)"
-                class="box large"
-              /> -->
-              <!-- <select
-                [attr.data-key]="streetDropdownKey"
-                formControlName="street"
-                class="box large"
-              >
-                <option [ngValue]="null" disabled>Ihre Straße</option>
-
-                <option *ngIf="isStreetLoading" disabled>Laden...</option>
-
-                <option
-                  *ngFor="let s of streetOptions; trackBy: trackByStreet"
-                  [ngValue]="s.street"
-                >
-                  {{ s.street }}
-                </option>
-              </select> -->
-
               <div class="dropdown-wrapper box large" #cityDropdown>
-                <input
-                  type="text"
-                  class="box large"
-                  placeholder="Ihre Ort"
-                  [(ngModel)]="citySearch"
-                  [ngModelOptions]="{ standalone: true }"
-                  (input)="onCityInput($event)"
-                  (focus)="closeAllDropdowns(); showCityDropdown = true"
-                  (click)="$event.stopPropagation()"
-                />
+                <input type="text" class="box large" placeholder="Ihre Ort" [value]="citySearch"
+                  (input)="onCityInput($event)" (focus)="closeAllDropdowns(); showCityDropdown = true"
+                  (click)="$event.stopPropagation()" />
 
                 <div class="dropdown" *ngIf="showCityDropdown">
                   <div *ngIf="filteredCityOptions.length === 0" class="dropdown-item disabled">
                     Keine Orte gefunden
                   </div>
 
-                  <div
-                    *ngFor="let c of filteredCityOptions"
-                    (click)="selectCity(c)"
-                    class="dropdown-item"
-                    spellcheck="false"
-                    translate="no"
-                  >
+                  <div *ngFor="let c of filteredCityOptions" (click)="selectCity(c)" class="dropdown-item"
+                    spellcheck="false" translate="no">
                     {{ c.city }}
                   </div>
                 </div>
               </div>
 
               <div class="dropdown-wrapper box large" #streetDropdown>
-                <input
-                  type="text"
-                  class="box large"
-                  placeholder="Ihre Straße"
-                  [value]="streetSearch"
-                  (input)="onStreetInput($event)"
-                  (focus)="closeAllDropdowns(); showDropdown = true"
-                  (click)="$event.stopPropagation()"
-                  [disabled]="addressForm.get('street')?.disabled"
-                />
+                <input type="text" class="box large" placeholder="Ihre Straße" [value]="streetSearch"
+                  (input)="onStreetInput($event)" (focus)="closeAllDropdowns(); showDropdown = true"
+                  (click)="$event.stopPropagation()" [disabled]="addressForm.get('street')?.disabled" />
 
                 <div class="dropdown" *ngIf="showDropdown">
                   <div *ngIf="isStreetLoading" class="dropdown-item">Laden...</div>
 
-                  <div
-                    *ngIf="!isStreetLoading && filteredStreetOptions.length === 0"
-                    class="dropdown-item disabled"
-                  >
+                  <div *ngIf="!isStreetLoading && filteredStreetOptions.length === 0" class="dropdown-item disabled">
                     Keine Straße gefunden
                   </div>
 
-                  <div
-                    *ngFor="let s of filteredStreetOptions"
-                    (click)="selectStreet(s)"
-                    class="dropdown-item"
-                    spellcheck="false"
-                    translate="no"
-                  >
+                  <div *ngFor="let s of filteredStreetOptions" (click)="selectStreet(s)" class="dropdown-item"
+                    spellcheck="false" translate="no">
                     {{ s.street }}
                   </div>
                 </div>
               </div>
 
-              <input
-                type="text"
-                placeholder="Hausnummer"
-                class="box small"
-                formControlName="houseNumber"
-                maxlength="6"
-              />
+              <input type="text" placeholder="Hausnummer" class="box small" formControlName="houseNumber"
+                maxlength="6" />
 
               <div class="total-consumption">
                 <label class="consumption-label">Personen im Haushalt</label>
-                <input
-                  #personsInput
-                  type="number"
-                  min="1"
-                  class="consumption-area"
-                  placeholder="z. B. 6"
-                  [value]="selectedPersons"
-                  (input)="onCustomPersonsChange(personsInput.value)"
-                />
-                <!-- <span>Personen im Haushalt</span> -->
+                <input #personsInput type="number" min="1" class="consumption-area" placeholder="z. B. 6"
+                  [value]="selectedPersons" (input)="onCustomPersonsChange(personsInput.value)" />
               </div>
 
               <div class="consum-row">
@@ -152,7 +76,7 @@
                 <span class="watt-per-year">kWh / Jahr</span>
               </div>
 
-              <button class="btn-suche" (click)="searchApply()">Adresse anwenden</button>
+              <button class="btn-suche" (click)="searchApply()">Apply Address</button>
             </div>
           </form>
         </ng-template>
@@ -167,19 +91,13 @@
       </div>
       <div class="filter-box__body">
         <label class="cb-row">
-          <input
-            type="checkbox"
-            [checked]="priceDisplayMonthly"
-            (change)="priceDisplayMonthly = true; onFilterChange()"
-          />
+          <input type="checkbox" [checked]="priceDisplayMonthly"
+            (change)="priceDisplayMonthly = true; onFilterChange()" />
           Monatlich
         </label>
         <label class="cb-row">
-          <input
-            type="checkbox"
-            [checked]="!priceDisplayMonthly"
-            (change)="priceDisplayMonthly = false; onFilterChange()"
-          />
+          <input type="checkbox" [checked]="!priceDisplayMonthly"
+            (change)="priceDisplayMonthly = false; onFilterChange()" />
           Jährlich
         </label>
       </div>
@@ -193,19 +111,13 @@
       </div>
       <div class="filter-box__body">
         <label class="cb-row">
-          <input
-            type="checkbox"
-            [checked]="kundenPrivat"
-            (change)="kundenPrivat = true; type = 'private'; onFilterChange()"
-          />
+          <input type="checkbox" [checked]="kundenPrivat"
+            (change)="kundenPrivat = true; type = 'private'; onFilterChange()" />
           Privatkunde
         </label>
         <label class="cb-row">
-          <input
-            type="checkbox"
-            [checked]="!kundenPrivat"
-            (change)="kundenPrivat = false; type = 'business'; onFilterChange()"
-          />
+          <input type="checkbox" [checked]="!kundenPrivat"
+            (change)="kundenPrivat = false; type = 'business'; onFilterChange()" />
           Geschäftskunde
         </label>
       </div>
@@ -219,19 +131,11 @@
       </div>
       <div class="filter-box__body">
         <label class="cb-row">
-          <input
-            type="checkbox"
-            [checked]="alleTarife"
-            (change)="alleTarife = true; onFilterChange()"
-          />
+          <input type="checkbox" [checked]="alleTarife" (change)="alleTarife = true; onFilterChange()" />
           Alle Tarife
         </label>
         <label class="cb-row">
-          <input
-            type="checkbox"
-            [checked]="!alleTarife"
-            (change)="alleTarife = false; onFilterChange()"
-          />
+          <input type="checkbox" [checked]="!alleTarife" (change)="alleTarife = false; onFilterChange()" />
           Nur Ökotarife
         </label>
       </div>
@@ -246,29 +150,20 @@
       <div class="filter-box__body">
         <div>
           <label class="cb-row">
-            <input
-              type="checkbox"
-              [checked]="maxTermEgal"
-              (change)="maxTermEgal = true; maxTerm24 = false; maxTerm12 = false; onFilterChange()"
-            />
+            <input type="checkbox" [checked]="maxTermEgal"
+              (change)="maxTermEgal = true; maxTerm24 = false; maxTerm12 = false; onFilterChange()" />
             Egal
           </label>
         </div>
         <div style="display: flex; flex-direction: column; gap: 0.3rem">
           <label class="cb-row">
-            <input
-              type="checkbox"
-              [checked]="maxTerm24"
-              (change)="maxTerm24 = true; maxTerm12 = false; maxTermEgal = false; onFilterChange()"
-            />
+            <input type="checkbox" [checked]="maxTerm24"
+              (change)="maxTerm24 = true; maxTerm12 = false; maxTermEgal = false; onFilterChange()" />
             Max. 24 Monate
           </label>
           <label class="cb-row">
-            <input
-              type="checkbox"
-              [checked]="maxTerm12"
-              (change)="maxTerm12 = true; maxTerm24 = false; maxTermEgal = false; onFilterChange()"
-            />
+            <input type="checkbox" [checked]="maxTerm12"
+              (change)="maxTerm12 = true; maxTerm24 = false; maxTermEgal = false; onFilterChange()" />
             Max. 12 Monate
           </label>
         </div>
@@ -284,66 +179,52 @@
       <div class="filter-box__body">
         <div>
           <label class="cb-row">
-            <input
-              type="checkbox"
-              [checked]="minGuaranteeEgal"
-              (change)="
+            <input type="checkbox" [checked]="minGuaranteeEgal" (change)="
                 minGuaranteeEgal = true;
                 minGuarantee24 = false;
                 minGuarantee12 = false;
                 minGuarantee6 = false;
                 onFilterChange()
-              "
-            />
+              " />
             Egal
           </label>
         </div>
         <div style="display: flex; flex-direction: column; gap: 0.3rem">
           <label class="cb-row">
-            <input
-              type="checkbox"
-              [checked]="minGuarantee24"
-              (change)="
+            <input type="checkbox" [checked]="minGuarantee24" (change)="
                 minGuarantee24 = true;
                 minGuarantee12 = false;
                 minGuarantee6 = false;
                 minGuaranteeEgal = false;
                 onFilterChange()
-              "
-            />
+              " />
             Min. 24 Monate
           </label>
           <label class="cb-row">
-            <input
-              type="checkbox"
-              [checked]="minGuarantee12"
-              (change)="
+            <input type="checkbox" [checked]="minGuarantee12" (change)="
                 minGuarantee12 = true;
                 minGuarantee24 = false;
                 minGuarantee6 = false;
                 minGuaranteeEgal = false;
                 onFilterChange()
-              "
-            />
+              " />
             Min. 12 Monate
           </label>
           <label class="cb-row">
-            <input
-              type="checkbox"
-              [checked]="minGuarantee6"
-              (change)="
+            <input type="checkbox" [checked]="minGuarantee6" (change)="
                 minGuarantee6 = true;
                 minGuarantee24 = false;
                 minGuarantee12 = false;
                 minGuaranteeEgal = false;
                 onFilterChange()
-              "
-            />
+              " />
             Min. 6 Monate
           </label>
         </div>
       </div>
     </div>
+    <app-contact-person></app-contact-person>
+    <app-need-support></app-need-support>
   </aside>
 
   <!-- ══════════ MAIN ══════════ -->
@@ -358,19 +239,13 @@
             <span class="filter-row__label">Sind Sie Privat- oder Geschäftskunde?</span>
             <div class="filter-row__options">
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="kundenPrivat"
-                  (change)="kundenPrivat = true; type = 'private'; onFilterChange()"
-                />
+                <input type="checkbox" [checked]="kundenPrivat"
+                  (change)="kundenPrivat = true; type = 'private'; onFilterChange()" />
                 Privatkunde
               </label>
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="!kundenPrivat"
-                  (change)="kundenPrivat = false; type = 'business'; onFilterChange()"
-                />
+                <input type="checkbox" [checked]="!kundenPrivat"
+                  (change)="kundenPrivat = false; type = 'business'; onFilterChange()" />
                 Geschäftskunde
               </label>
             </div>
@@ -379,34 +254,22 @@
             <span class="filter-row__label">Ist eine maximale Vertragslaufzeit gewünscht?</span>
             <div class="opts-grid">
               <label class="cb-row" style="padding-right: 3.1rem">
-                <input
-                  type="checkbox"
-                  [checked]="maxTermEgal"
-                  (change)="
+                <input type="checkbox" [checked]="maxTermEgal" (change)="
                     maxTermEgal = true; maxTerm24 = false; maxTerm12 = false; onFilterChange()
-                  "
-                />
+                  " />
                 Egal
               </label>
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="maxTerm24"
-                  (change)="
+                <input type="checkbox" [checked]="maxTerm24" (change)="
                     maxTerm24 = true; maxTerm12 = false; maxTermEgal = false; onFilterChange()
-                  "
-                />
+                  " />
                 Max. 24 Monate
               </label>
               <label class="cb-row"> </label>
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="maxTerm12"
-                  (change)="
+                <input type="checkbox" [checked]="maxTerm12" (change)="
                     maxTerm12 = true; maxTerm24 = false; maxTermEgal = false; onFilterChange()
-                  "
-                />
+                  " />
                 Max. 12 Monate
               </label>
             </div>
@@ -419,24 +282,14 @@
         <!-- Right column -->
         <div class="filter-col filter-col--right">
           <div class="filter-row">
-            <span class="filter-row__label"
-              >Sollen alle Tarife angezeigt werden oder nur Ökotarife?</span
-            >
+            <span class="filter-row__label">Sollen alle Tarife angezeigt werden oder nur Ökotarife?</span>
             <div class="filter-row__options filter-row__options--col">
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="alleTarife"
-                  (change)="alleTarife = true; onFilterChange()"
-                />
+                <input type="checkbox" [checked]="alleTarife" (change)="alleTarife = true; onFilterChange()" />
                 Alle Tarife
               </label>
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="!alleTarife"
-                  (change)="alleTarife = false; onFilterChange()"
-                />
+                <input type="checkbox" [checked]="!alleTarife" (change)="alleTarife = false; onFilterChange()" />
                 Nur Ökotarife
               </label>
             </div>
@@ -445,59 +298,43 @@
             <span class="filter-row__label">Ist eine Energiepreisgarantie gewünscht?</span>
             <div class="opts-grid">
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="minGuaranteeEgal"
-                  (change)="
+                <input type="checkbox" [checked]="minGuaranteeEgal" (change)="
                     minGuaranteeEgal = true;
                     minGuarantee24 = false;
                     minGuarantee12 = false;
                     minGuarantee6 = false;
                     onFilterChange()
-                  "
-                />
+                  " />
                 Egal
               </label>
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="minGuarantee24"
-                  (change)="
+                <input type="checkbox" [checked]="minGuarantee24" (change)="
                     minGuarantee24 = true;
                     minGuarantee12 = false;
                     minGuarantee6 = false;
                     minGuaranteeEgal = false;
                     onFilterChange()
-                  "
-                />
+                  " />
                 Min. 24 Monate
               </label>
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="minGuarantee12"
-                  (change)="
+                <input type="checkbox" [checked]="minGuarantee12" (change)="
                     minGuarantee12 = true;
                     minGuarantee24 = false;
                     minGuarantee6 = false;
                     minGuaranteeEgal = false;
                     onFilterChange()
-                  "
-                />
+                  " />
                 Min. 12 Monate
               </label>
               <label class="cb-row">
-                <input
-                  type="checkbox"
-                  [checked]="minGuarantee6"
-                  (change)="
+                <input type="checkbox" [checked]="minGuarantee6" (change)="
                     minGuarantee6 = true;
                     minGuarantee24 = false;
                     minGuarantee12 = false;
                     minGuaranteeEgal = false;
                     onFilterChange()
-                  "
-                />
+                  " />
                 Min. 6 Monate
               </label>
             </div>
@@ -517,11 +354,7 @@
       <!-- Top navbar -->
       <div class="comp-navbar">
         <div class="comp-navbar__left">
-          <img
-            src="assets/icons/Vergleich_weiss.png"
-            class="nav-icon-vergleich"
-            alt="stromvergleich"
-          />
+          <img src="assets/icons/Vergleich_weiss.png" class="nav-icon-vergleich" alt="stromvergleich" />
           Ihr Vergleich
         </div>
         <div class="comp-navbar__right">
@@ -533,11 +366,8 @@
       <!-- Vergleichstarif bar -->
       <div class="container-vergleich-bar">
         <div class="vergleich-bar">
-          <span>Ihr Vergleichstarif: Grundversorger voreingestellt</span> &nbsp;<span
-            class="info-base info-circ"
-            style="margin-top: 3px"
-            >i</span
-          >
+          <span>Ihr Vergleichstarif: Grundversorger voreingestellt</span> &nbsp;<span class="info-base info-circ"
+            style="margin-top: 3px">i</span>
           <a class="anpassen" (click)="openModal()">
             anpassen
             <span class="item-image">
@@ -559,25 +389,19 @@
             </div>
           </div>
           <div class="provider-price">
-            <div class="provider-price__amount" translate="no">
+            <div class="provider-price__amount">
               {{ getAveragePrice(baseRate) | number: '1.2-2' }}
               {{ priceDisplayMonthly ? '€' : '€' }}
             </div>
-            <div class="provider-price__sub" translate="no">
-              {{ priceDisplayMonthly ? 'Ø pro Monat' : 'pro Jahr' }} &nbsp;<span
-                class="info-base info-circ"
-                >i</span
-              >
+            <div class="provider-price__sub">
+              {{ priceDisplayMonthly ? 'Ø pro Monat' : 'pro Jahr' }} &nbsp;<span class="info-base info-circ">i</span>
             </div>
           </div>
         </div>
         <div class="vergleich-bar__provider" *ngIf="isLoading">
           <div class="provider-name">Wird geladen...</div>
         </div>
-        <div
-          class="vergleich-bar__provider"
-          *ngIf="!isLoading && hasLoadedRates && filteredRates.length === 0"
-        >
+        <div class="vergleich-bar__provider" *ngIf="!isLoading && hasLoadedRates && filteredRates.length === 0">
           <div class="provider-name">Keine Daten gefunden</div>
         </div>
       </div>
@@ -682,49 +506,30 @@
             <!-- Toggle detail — same class structure as original -->
             <div class="toggle-detail" (click)="toggleCard(rate)">
               Tarif- und Preisdetails
-              <span
-                class="arrow"
-                [class.top-v]="rate.uiExpanded"
-                [class.down-v]="!rate.uiExpanded"
-              ></span>
+              <span class="arrow" [class.top-v]="rate.uiExpanded" [class.down-v]="!rate.uiExpanded"></span>
             </div>
 
             <!-- Tabs + tab content — only visible when card expanded -->
             <ng-container *ngIf="rate.uiExpanded">
               <div class="detail-tabs">
-                <span
-                  class="detail-tab"
-                  [class.active]="getActiveTab(rate.rateId) === 'overview'"
-                  (click)="setTab(rate.rateId, 'overview')"
-                >
+                <span class="detail-tab" [class.active]="getActiveTab(rate.rateId) === 'overview'"
+                  (click)="setTab(rate.rateId, 'overview')">
                   Tarifübersicht
                 </span>
-                <span
-                  class="detail-tab"
-                  [class.active]="getActiveTab(rate.rateId) === 'information'"
-                  (click)="setTab(rate.rateId, 'information')"
-                >
+                <span class="detail-tab" [class.active]="getActiveTab(rate.rateId) === 'information'"
+                  (click)="setTab(rate.rateId, 'information')">
                   Tarifinformationen
                 </span>
-                <span
-                  class="detail-tab"
-                  [class.active]="getActiveTab(rate.rateId) === 'price'"
-                  (click)="setTab(rate.rateId, 'price')"
-                >
+                <span class="detail-tab" [class.active]="getActiveTab(rate.rateId) === 'price'"
+                  (click)="setTab(rate.rateId, 'price')">
                   Preisdetails
                 </span>
-                <span
-                  class="detail-tab"
-                  [class.active]="getActiveTab(rate.rateId) === 'provider'"
-                  (click)="setTab(rate.rateId, 'provider')"
-                >
+                <span class="detail-tab" [class.active]="getActiveTab(rate.rateId) === 'provider'"
+                  (click)="setTab(rate.rateId, 'provider')">
                   Anbieter
                 </span>
-                <span
-                  class="detail-tab"
-                  [class.active]="getActiveTab(rate.rateId) === 'source'"
-                  (click)="setTab(rate.rateId, 'source')"
-                >
+                <span class="detail-tab" [class.active]="getActiveTab(rate.rateId) === 'source'"
+                  (click)="setTab(rate.rateId, 'source')">
                   Stromherkunft
                 </span>
               </div>
@@ -749,7 +554,7 @@
                       <td>Grundpreis</td>
                       <td>
                         {{ rate.basePriceMonth | number: '1.2-2' }} €/Monat ({{
-                          rate.basePriceYear | number: '1.2-2'
+                        rate.basePriceYear | number: '1.2-2'
                         }}
                         €/Jahr)
                       </td>
@@ -796,10 +601,8 @@
                         <span>Neukundenbonus {{ rate.optBonus | number: '1.0-0' }} €</span>
                       </div>
                       <div class="body-info">
-                        <span
-                          >Der Bonus wird spätestens nach 12 Monaten Belieferungszeit mit der dann
-                          folgenden Belieferung gutgeschrieben oder ausbezahlt.</span
-                        >
+                        <span>Der Bonus wird spätestens nach 12 Monaten Belieferungszeit mit der dann
+                          folgenden Belieferung gutgeschrieben oder ausbezahlt.</span>
                       </div>
                     </div>
                     <div *ngIf="rate.optBonusInstant">
@@ -807,27 +610,22 @@
                         <span>Sofortbonus {{ rate.optBonusInstant | number: '1.0-0' }} €</span>
                       </div>
                       <div class="body-info">
-                        <span
-                          >Der Sofortbonus wird spätestens drei Monate nach Lieferbeginn
-                          ausgezahlt.</span
-                        >
+                        <span>Der Sofortbonus wird spätestens drei Monate nach Lieferbeginn
+                          ausgezahlt.</span>
                       </div>
                     </div>
                     <div>
                       <div class="header-info"><span>Nettopreisgarantie</span></div>
                       <div class="body-info">
-                        <span
-                          >Der Anbeiter garantiert alle Preisbestandteile des Tarifs mit Ausnahme
+                        <span>Der Anbeiter garantiert alle Preisbestandteile des Tarifs mit Ausnahme
                           der Mehrwertsteuer und der Strom- bzw. Gassteuer sowie etwaigen nach
-                          Vertragsabschluss neu eingeführten Steuern, Abgaben und Umlagen.</span
-                        >
+                          Vertragsabschluss neu eingeführten Steuern, Abgaben und Umlagen.</span>
                       </div>
                     </div>
                     <div *ngIf="rate.optEco">
                       <div class="header-info"><span>Ökotarif</span></div>
                       <div class="body-info">
-                        <span
-                          >Bei diesem Tarif wird der Strom zu 100% aus erneuerbaren Energiequellen
+                        <span>Bei diesem Tarif wird der Strom zu 100% aus erneuerbaren Energiequellen
                           erzeugt.
                         </span>
                       </div>
@@ -835,27 +633,23 @@
                     <div>
                       <div class="header-info"><span>Belieferung aller Zählerarten</span></div>
                       <div class="body-info">
-                        <span
-                          >Sollte an Ihrer Lieferstelle eine moderne Messeinrichtung oder ein
+                        <span>Sollte an Ihrer Lieferstelle eine moderne Messeinrichtung oder ein
                           intelligentes Messsystem (iMS) vom grundzuständigen Messstellenbetreiber
                           verbaut werden oder bereits eingebaut sein, erfolgt in diesem Tarif keine
                           Erhöhung der Messentgelte in der Grundgebühr aufgrund Ihres Messsystems.
-                          Sie erhalten die Preise wie im Auftrag abgeschlossen.</span
-                        >
+                          Sie erhalten die Preise wie im Auftrag abgeschlossen.</span>
                       </div>
                     </div>
                     <div *ngIf="rate.requiredEmail">
                       <div class="header-info"><span>Online-Tarif</span></div>
                       <div class="body-info">
-                        <span
-                          >Die Kommunikation des Anbieters erfolgt bei diesem Tarif grundsätzlich
+                        <span>Die Kommunikation des Anbieters erfolgt bei diesem Tarif grundsätzlich
                           online. Neben der Hinterlegung einer gültigen E-Mail-Adresse ist es bei
                           manchen Anbietern erforderlich, sich im Online-Portal des Anbieters
                           anzumelden. Informationen zu Lieferbeginn, Abschlagsplan, Abrechnung und
                           möglichen Preiserhöhungen/-senkungen werden Ihnen per E-Mail an die
                           angegebene E-Mail-Adresse zugesandt und ggf. im Kundenportal
-                          hinterlegt.</span
-                        >
+                          hinterlegt.</span>
                       </div>
                     </div>
                   </div>
@@ -923,37 +717,29 @@
                     </table>
                   </div>
                   <div class="body-info">
-                    <span
-                      >* Sie zahlen bei diesem Tarif {{ rate.partialPayment }} monatliche
-                      Abschläge.</span
-                    >
+                    <span>* Sie zahlen bei diesem Tarif {{ rate.partialPayment }} monatliche
+                      Abschläge.</span>
                   </div>
                   <div class="body-info">
-                    <span
-                      >Als Berechnungsgrundlage des geschätzten Abschlags dient der
+                    <span>Als Berechnungsgrundlage des geschätzten Abschlags dient der
                       <strong>Bruttopreis ohne Bonus im 1. Jahr.</strong>
                     </span>
                   </div>
                   <div class="body-info">
-                    <span
-                      >Sämtliche Berechnungen beziehen sich auf das erste Vertragsjahr.
+                    <span>Sämtliche Berechnungen beziehen sich auf das erste Vertragsjahr.
                       <strong>Neukundenboni</strong>
                       werden nach Ablauf von 12 Belieferungsmonaten mit der dann folgenden Rechnung
                       gutgeschrieben oder ausgezahlt. <strong>Sofortboni</strong> werden spätestens
                       drei Monate nach Lieferbeginn ausgezahlt. In den geschätzten Abschlägen werden
-                      diese Boni nicht berücksichtigt.</span
-                    >
+                      diese Boni nicht berücksichtigt.</span>
                   </div>
                   <div class="body-info">
-                    <span
-                      >Tarifversion {{ rate.rateId }}, gültig seit {{ rate.termAfterNewMaxDate }}.
+                    <span>Tarifversion {{ rate.rateId }}, gültig seit {{ rate.termAfterNewMaxDate }}.
                       <strong>Bruttopreise</strong> beinhalten alle Steuern und Abgaben.
-                      <strong>Nettopreise</strong> sind zzgl. der Mehrwertsteuer.</span
-                    >
+                      <strong>Nettopreise</strong> sind zzgl. der Mehrwertsteuer.</span>
                   </div>
                   <div class="body-info">
-                    <span
-                      >Fehlt ein Tarif oder haben Sie einen Fehler gefunden? <br />
+                    <span>Fehlt ein Tarif oder haben Sie einen Fehler gefunden? <br />
                       Dann nehmen Sie bitte Kontakt mit uns auf:
                       <a href="">mm@energiehanbel.bayern</a>
                     </span>
@@ -967,8 +753,7 @@
                   </div>
                   <div class="body-info">
                     <span>
-                      Tarif: <strong>{{ rate.rateName }}</strong
-                      ><br />
+                      Tarif: <strong>{{ rate.rateName }}</strong><br />
                       Branche: {{ rate.branch }} | Kundentyp: {{ rate.type }}<br />
                       Lieferant-ID: {{ rate.rateId }}
                     </span>
@@ -985,19 +770,18 @@
 
           <!-- Price -->
           <div class="tc-price">
-            <div class="tc-price__amount" translate="no">{{ getDisplayPrice(rate) | number: '1.2-2' }} €</div>
+            <div class="tc-price__amount">{{ getDisplayPrice(rate) | number: '1.2-2' }} €</div>
             <div class="tc-price__sub">
               {{ getDisplayPriceSuffix() }} &nbsp;<span class="info-base info-circ">i</span>
             </div>
             <div class="tc-price__savings" *ngIf="getSavingPerYear(rate)">
               Sie sparen:
-              <span class="amount" style="color: red" translate="no">
+              <span class="amount" style="color: red">
                 {{
-                  (priceDisplayMonthly ? getSavingPerYear(rate) / 12 : getSavingPerYear(rate))
-                    | number: '1.2-2'
+                (priceDisplayMonthly ? getSavingPerYear(rate) / 12 : getSavingPerYear(rate))
+                | number: '1.2-2'
                 }}
-                €</span
-              >
+                €</span>
               &nbsp;
               <span class="info-wrapper" #popoverContainer>
                 <span class="info-base info-circ" (click)="toggleInfo($event)">i</span>
@@ -1014,9 +798,7 @@
                         <br />
                         <div class="label">
                           Gespart: &nbsp; &nbsp; &nbsp;
-                          <span class="gespart" style="color: red;"
-                            >{{ getSavingPerYear(rate) | number: '1.2-2' }} €</span
-                          >
+                          <span class="gespart">{{ getSavingPerYear(rate) | number: '1.2-2' }} €</span>
                         </div>
                         <div style="margin-top: 16px">
                           (In der Preisvergleichrechnung<br />wurde nur das erste Jahr
@@ -1056,18 +838,12 @@
             <div class="form-group" style="padding-right: 20px; gap: 10px; margin-bottom: 10px">
               <div class="input-field select-wrap" style="display: inline-block">
                 <div>
-                  <span
-                    class="field-label"
-                    style="margin-left: 10px; font-size: 12px; font-weight: 500; display: block"
-                  >
+                  <span class="field-label"
+                    style="margin-left: 10px; font-size: 12px; font-weight: 500; display: block">
                     Anbieter
                   </span>
 
-                  <select
-                    class="styled-select"
-                    [(ngModel)]="selectedProviderId"
-                    (change)="onProviderChange()"
-                  >
+                  <select class="styled-select" [(ngModel)]="selectedProviderId" (change)="onProviderChange()">
                     <option *ngFor="let provider of baseProviders" [value]="provider.providerId">
                       {{ provider.providerName }}
                     </option>
@@ -1082,18 +858,12 @@
             <div class="form-group" style="padding-right: 20px; gap: 10px; margin-bottom: 10px">
               <div class="input-field select-wrap" style="display: inline-block">
                 <div>
-                  <span
-                    class="field-label"
-                    style="margin-left: 10px; font-size: 12px; font-weight: 500; display: block"
-                  >
+                  <span class="field-label"
+                    style="margin-left: 10px; font-size: 12px; font-weight: 500; display: block">
                     Tarif
                   </span>
 
-                  <select
-                    class="styled-select"
-                    [(ngModel)]="selectedRateId"
-                    (change)="onRateChange()"
-                  >
+                  <select class="styled-select" [(ngModel)]="selectedRateId" (change)="onRateChange()">
                     <option *ngFor="let rate of selectedProviderRates" [value]="rate.rateId">
                       {{ rate.rateName }}
                     </option>
@@ -1118,40 +888,28 @@
                 <div class="sub">(gerechnet auf 12 Monate, ohne Boni und Rabatte)</div>
               </div>
 
-              <div class="price" translate="no">
+              <div class="price">
                 {{
-                  activeTab === 'abschlag'
-                    ? (editableMonthlyPrice | number: '1.2-2')
-                    : (getPopupAveragePrice() | number: '1.2-2')
+                activeTab === 'abschlag'
+                ? (editableMonthlyPrice | number: '1.2-2')
+                : (getPopupAveragePrice() | number: '1.2-2')
                 }}
                 €
 
                 <span class="item-image">
-                  <img
-                    src="assets/icons/Bearbeiten_schwarz.png"
-                    (click)="toggleEditSection()"
-                    class="icon-check"
-                    style="cursor: pointer"
-                  />
+                  <img src="assets/icons/Bearbeiten_schwarz.png" (click)="toggleEditSection()" class="icon-check"
+                    style="cursor: pointer" />
                 </span>
               </div>
             </div>
 
             <div class="edit-section" *ngIf="showEditSection">
               <div class="edit-tabs">
-                <div
-                  class="tab"
-                  [class.active]="activeTab === 'price'"
-                  (click)="activeTab = 'price'"
-                >
+                <div class="tab" [class.active]="activeTab === 'price'" (click)="activeTab = 'price'">
                   Arbeits- & Grundpreis
                 </div>
 
-                <div
-                  class="tab"
-                  [class.active]="activeTab === 'abschlag'"
-                  (click)="activeTab = 'abschlag'"
-                >
+                <div class="tab" [class.active]="activeTab === 'abschlag'" (click)="activeTab = 'abschlag'">
                   Abschlag
                 </div>
               </div>
@@ -1163,19 +921,11 @@
                   <label>Mehrwertsteuer einberechnet?</label>
 
                   <div class="toggle">
-                    <div
-                      class="toggle-btn"
-                      [class.active]="isGrossPrice"
-                      (click)="setGrossMode(true)"
-                    >
+                    <div class="toggle-btn" [class.active]="isGrossPrice" (click)="setGrossMode(true)">
                       Bruttopreise (inkl. Mwst.)
                     </div>
 
-                    <div
-                      class="toggle-btn"
-                      [class.active]="!isGrossPrice"
-                      (click)="setGrossMode(false)"
-                    >
+                    <div class="toggle-btn" [class.active]="!isGrossPrice" (click)="setGrossMode(false)">
                       Nettopreise (ohne Mwst.)
                     </div>
                   </div>
@@ -1188,9 +938,6 @@
 
                     <input type="number" [(ngModel)]="editableWorkPrice" />
                   </div>
-                  <div class="field-error-msg" *ngIf="fieldErrors['workPrice']">
-                    {{ fieldErrors['workPrice'] }}
-                  </div>
                 </div>
 
                 <!-- Grundpreis type -->
@@ -1198,19 +945,13 @@
                   <label>Grundpreis in €</label>
 
                   <div class="toggle">
-                    <div
-                      class="toggle-btn"
-                      [class.active]="basePriceMode === 'year'"
-                      (click)="changeBasePriceMode('year')"
-                    >
+                    <div class="toggle-btn" [class.active]="basePriceMode === 'year'"
+                      (click)="changeBasePriceMode('year')">
                       pro Jahr
                     </div>
 
-                    <div
-                      class="toggle-btn"
-                      [class.active]="basePriceMode === 'month'"
-                      (click)="changeBasePriceMode('month')"
-                    >
+                    <div class="toggle-btn" [class.active]="basePriceMode === 'month'"
+                      (click)="changeBasePriceMode('month')">
                       pro Monat
                     </div>
                   </div>
@@ -1221,17 +962,8 @@
                   <div class="field-wrap">
                     <span class="field-label"> Grundpreis in € </span>
 
-                    <input
-                      type="number"
-                      step="0.01"
-                      [(ngModel)]="editableBasePrice"
-                      (ngModelChange)="onBasePriceInputChange()"
-                      translate="no"
-                    />
-                  </div>
-
-                  <div class="field-error-msg" *ngIf="fieldErrors['basePrice']">
-                    {{ fieldErrors['basePrice'] }}
+                    <input type="number" step="0.01" [(ngModel)]="editableBasePrice"
+                      (ngModelChange)="onBasePriceInputChange()" />
                   </div>
                 </div>
               </div>
@@ -1242,14 +974,8 @@
                   <div class="field-wrap">
                     <span class="field-label"> Abschlag in €/Monat </span>
 
-                    <input
-                      type="number"
-                      [(ngModel)]="editableMonthlyPrice"
-                      (ngModelChange)="onAbschlagInputChange($event)"
-                    />
-                  </div>
-                  <div class="field-error-msg" *ngIf="fieldErrors['monthlyPrice']">
-                    {{ fieldErrors['monthlyPrice'] }}
+                    <input type="number" [(ngModel)]="editableMonthlyPrice"
+                      (ngModelChange)="onAbschlagInputChange($event)" />
                   </div>
                 </div>
 
@@ -1265,12 +991,8 @@
                     <!-- SCROLL -->
                     <div class="abschlag-scroll" #abschlagScroll>
                       <div class="toggle abschlag-toggle">
-                        <div
-                          class="toggle-btn"
-                          *ngFor="let count of abschlagOptions"
-                          [class.active]="abschlagCount === count"
-                          (click)="changeAbschlagCount(count)"
-                        >
+                        <div class="toggle-btn" *ngFor="let count of abschlagOptions"
+                          [class.active]="abschlagCount === count" (click)="changeAbschlagCount(count)">
                           {{ count }} Abschläge
                         </div>
                       </div>
@@ -1283,12 +1005,8 @@
                   </div>
                 </div>
                 <div class="sub">
-                  <span>Ihr Vergleichstarif: Grundversorger voreingestellt</span> &nbsp;
-                  <div style="display: flex; gap: 8px">
-                    <span class="info-base info-circ" style="margin-top: 3px">i</span>
-                    Bitte beachten Sie: Da es zu Rück- oder Nachzahlungen kommen kann, spiegelt der
-                    Abschlag ggf. nicht Ihre tatsächlichen Kosten wider.
-                  </div>
+                  Bitte beachten Sie: Da es zu Rück- oder Nachzahlungen kommen kann, spiegelt der
+                  Abschlag ggf. nicht Ihre tatsächlichen Kosten wider.
                 </div>
               </div>
             </div>
@@ -1300,10 +1018,5 @@
       </div>
     </div>
     <!-- end comp-container -->
-
-    <div class="contact-support-row">
-      <app-contact-person></app-contact-person>
-      <app-need-support></app-need-support>
-    </div>
   </main>
 </div>

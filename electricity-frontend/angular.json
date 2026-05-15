@@ -59,6 +59,12 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "host": "0.0.0.0",
+            "allowedHosts": [
+              "df0c-116-193-141-198.ngrok-free.app"
+            ]
+          },
           "configurations": {
             "production": {
               "buildTarget": "electricity-frontend:build:production"

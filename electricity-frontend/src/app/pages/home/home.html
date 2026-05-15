@@ -1,4 +1,8 @@
 <div class="home-container">
+  <button class="banner-call-btn" (click)="openRegistrationPopup()">
+    <img src="assets/icons/icon_white_clean.png" class="banner-call-icon" alt="call" />
+  </button>
+
   <div class="home-left">
     <div class="electricity-container">
       <div class="electricity">
@@ -24,6 +28,62 @@
       </div>
     </div>
 
+    <!-- MOBILE ONLY ADVICE SECTION -->
+    <div class="container-advice mobile-only">
+      <div class="expert-container">
+        <div class="expert">
+          <span class="text"> Sie wünschen eine Beratung durch Experten? </span>
+        </div>
+
+        <div style="gap: 10px; display: flex">
+          <div class="icon phone">
+            <img
+              src="assets/icons/Telefonhörer_Weiss.png"
+              class="phone-icon"
+              alt="telephone-icon"
+            />
+          </div>
+          <span class="expert phone">
+            <span class="text">08157 / 999 42 - 0</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="contact">
+        <button class="contact-button">
+          <span class="icon-wrapper">
+            <img src="assets/icons/Lice-Chat_weiss.png" class="chat-icon" alt="chat-icon" />
+          </span>
+
+          <span class="text">Live-Chat</span>
+        </button>
+
+        <button class="contact-button">
+          <span class="icon-wrapper">
+            <img src="assets/icons/WhatsApp_weiss.png" class="chat-icon" alt="whats-app" />
+          </span>
+
+          <span class="text">WhatsApp</span>
+        </button>
+
+        <button class="contact-button">
+          <span class="icon-wrapper">
+            <img src="assets/icons/Mail.png" class="email-icon" alt="mail" />
+          </span>
+
+          <span class="text">E-Mail</span>
+        </button>
+
+        <button class="contact-button">
+          <span class="icon-wrapper">
+            <img src="assets/icons/Kontaktformular.png" class="chat-icon" alt="contact-form" />
+          </span>
+
+          <span class="text">Kontaktformular</span>
+        </button>
+      </div>
+    </div>
+
     <div class="service-container">
       <div class="service-container">
         <div class="our-services-header">
@@ -46,11 +106,33 @@
   <div class="home-center">
     <router-outlet></router-outlet>
   </div>
+  <!-- FLOATING CALLBACK BUTTON -->
+  <button class="callback-btn">
+    <img src="assets/icons/Telefonhörer_Weiss.png" alt="callback" class="callback-icon" />
+  </button>
 </div>
-
 <app-discount></app-discount>
 
 <div class="container-services-by-company">
+  <!-- about us -->
+  <div class="container-about">
+    <div class="container-header">Das sind wir</div>
+    <ng-container *ngFor="let about of aboutItems">
+      <div class="container-details">
+        <div class="image">
+          <img [src]="getImageUrl(about.contentUrl)" [alt]="about.heading" />
+        </div>
+        <div class="about-text">
+          <span class="about-header"
+            ><strong>{{ about.heading }}</strong></span
+          ><br />
+          <span class="details" *ngIf="about.subHeading">{{ about.subHeading }}</span>
+        </div>
+      </div>
+    </ng-container>
+    <p *ngIf="!isLoading && aboutItems.length === 0">Keine Informationen verfügbar.</p>
+  </div>
+
   <!-- other services — dynamic only -->
   <div class="container-other-services">
     <div class="main-container-service">
@@ -90,23 +172,4 @@
   </div>
 
   <app-need-support></app-need-support>
-
-  <!-- about us -->
-  <div class="container-about">
-    <div class="container-header">Das sind wir</div>
-    <ng-container *ngFor="let about of aboutItems">
-      <div class="container-details">
-        <div class="image">
-          <img [src]="getImageUrl(about.contentUrl)" [alt]="about.heading" />
-        </div>
-        <div class="about-text">
-          <span class="about-header"
-            ><strong>{{ about.heading }}</strong></span
-          ><br />
-          <span class="details" *ngIf="about.subHeading">{{ about.subHeading }}</span>
-        </div>
-      </div>
-    </ng-container>
-    <p *ngIf="!isLoading && aboutItems.length === 0">Keine Informationen verfügbar.</p>
-  </div>
 </div>

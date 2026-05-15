@@ -10,14 +10,14 @@ import org.springframework.stereotype.Repository;
 
 import com.tarifvergleich.electricity.model.ManageAdminDocument;
 
-
 @Repository
 public interface ManageAdminDocumentRepository extends JpaRepository<ManageAdminDocument, Integer> {
 
 	Optional<ManageAdminDocument> findByIdAndAdminAdminId(Integer id, Integer adminId);
+
 	List<ManageAdminDocument> findAllByAdminAdminIdOrderByDocumentCategoryAsc(Integer adminId);
+
 	Page<ManageAdminDocument> findAllByAdminAdminId(Integer adminId, Pageable pageable);
 
 	List<ManageAdminDocument> findAllByAdminAdminIdAndDocumentCategoryLike(Integer adminId, String documentCategory);
-
 }

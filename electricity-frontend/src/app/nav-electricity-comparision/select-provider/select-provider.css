@@ -13,48 +13,23 @@
   font-size: 16px;
   display: flex;
   align-items: center;
-  margin: 4px;
+  border-radius: 7px 7px 0 0;
 }
 .address-card__body {
   padding: 10px 12px 12px;
 }
-.nav-icon-strom,
-.nav-icon-vergleich,
-.icon-check,
-.icon-sort {
-  display: block;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-  vertical-align: middle;
-}
+
 .nav-icon-strom {
   width: 13px;
   height: 20px;
-  margin-right: 5px;
+  padding-right: 5px;
 }
 .nav-icon-vergleich {
   width: 20px;
   height: 20px;
-  margin-right: 5px;
+  padding-right: 5px;
 }
-.item-image {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  line-height: 0;
-}
-.page-layout img,
-.item-image img {
-  display: block;
-  margin: 0;
-  padding: 0;
-  max-width: 100%;
-  height: auto;
-}
+
 .address-card__body strong {
   display: block;
   font-size: 14px;
@@ -87,6 +62,7 @@
 .btn-suche:hover {
   background: #046fb6;
 }
+
 /* Filter sidebar boxes */
 .filter-box {
   background: #fff;
@@ -104,6 +80,7 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .filter-box__body {
   padding: 9px 10px 10px;
   display: flex;
@@ -120,12 +97,14 @@
   cursor: pointer;
   user-select: none;
 }
-.cb-row input[type='checkbox'] {
+
+.cb-row input[type="checkbox"] {
   accent-color: #0085e0;
   width: 14px;
   height: 14px;
   cursor: pointer;
 }
+
 /* Contact card */
 .contact-card {
   border-radius: 8px;
@@ -137,38 +116,18 @@
   font-weight: 600;
   font-size: 16px;
 }
+
 .partner-photo-wrap img {
   border-radius: 8px;
   width: 130px;
 }
+
 /* ── Main area ── */
-.page-layout {
-  padding: 0 !important;
-  gap: 0 !important;
-}
-.sidebar {
-  flex: 0 0 auto;
-  width: auto;
-}
 .main {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  flex: 1 1 auto;
-  width: auto;
-  min-width: 0;
-}
-
-.contact-support-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 16px;
-}
-
-.contact-support-row > * {
-  flex: 1 1 320px;
-  min-width: 280px;
+  width: 80%;
 }
 
 /* Filter top banner */
@@ -185,7 +144,6 @@
   padding: 9px;
   font-weight: 600;
   font-size: 16px;
-  margin: 4px;
 }
 /* Filter banner body: two halves split by a vertical line */
 .filter-banner__body {
@@ -203,6 +161,7 @@
   background: #0085e0;
   align-self: stretch;
 }
+
 /* Each row: bold label + options side by side */
 .filter-row {
   display: flex;
@@ -227,12 +186,14 @@
   flex-direction: column;
   gap: 4px;
 }
+
 /* options grid for energiepreisgarantie: 2 columns */
 .opts-grid {
   display: grid;
   grid-template-columns: auto auto;
   gap: 4px 16px;
 }
+
 .filter-banner__footer {
   padding: 0 18px 14px;
   display: flex;
@@ -252,6 +213,7 @@
 .btn-weiter:hover {
   background: #046fb6;
 }
+
 /* Divider between the two column groups inside filter-banner__body */
 .filter-col {
   display: flex;
@@ -262,18 +224,20 @@
   border-left: 1px solid #e5e9ee;
   padding-left: 18px;
 }
+
 /* ── Comparison Section ── */
 .comp-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
+
 .comp-navbar {
   background: #0085e0;
   color: #fff;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 5rem;
   overflow: hidden;
 }
 .comp-navbar__left {
@@ -292,6 +256,7 @@
   font-weight: 600;
   font-size: 16px;
 }
+
 /* Vergleichstarif row */
 .container-vergleich-bar {
   border-radius: 8px;
@@ -324,6 +289,7 @@
   float: right;
   cursor: pointer;
 }
+
 .vergleich-bar__provider {
   display: grid;
   grid-template-columns: 200px 1fr auto;
@@ -378,6 +344,7 @@
   gap: 4px;
   margin-top: 8px;
 }
+
 .arrow {
   width: 8px;
   height: 8px;
@@ -385,14 +352,17 @@
   border-bottom: 2px solid #000;
   display: inline-block;
 }
+
 .down-v {
   transform: rotate(-45deg);
   margin: 0 0 0 5px;
 }
+
 .top-v {
   transform: rotate(+135deg);
   margin: 8px 0 0 5px;
 }
+
 /* Green tariff count bar */
 .tariff-count-bar {
   background: #00a651;
@@ -408,6 +378,7 @@
   flex-direction: row;
   gap: 15px;
 }
+
 .tariff-count-bar strong {
   font-weight: 600;
 }
@@ -424,6 +395,7 @@
   align-items: center;
   gap: 6px;
 }
+
 /* Tariff card */
 .tariff-card {
   background: #fff;
@@ -446,7 +418,7 @@
 .tariff-card__body {
   display: grid;
   grid-template-columns: 180px 0.8fr auto;
-  gap: 1rem;
+  gap: 3rem;
   padding: 14px 16px;
 }
 .tc-logo {
@@ -476,6 +448,7 @@
   color: #333;
   margin-top: 4px;
 }
+
 .tc-details {
   font-size: 14px;
   line-height: 1.6;
@@ -513,14 +486,13 @@
   font-size: 14px;
   margin-bottom: 2px;
 }
+
 .icon-check,
 .icon-sort {
   width: 15px;
   height: 15px;
-  display: block;
-  margin: 0;
-  padding: 0;
-  vertical-align: middle;
+  display: flex;
+  justify-content: center;
 }
 .icon-sort {
   width: 15px;
@@ -528,6 +500,7 @@
   border-radius: 4px;
   border: 1.5px solid black;
 }
+
 .toggle-detail {
   font-size: 14px;
   color: #333;
@@ -552,13 +525,14 @@
   font-weight: 600;
 }
 .detail-tab::after {
-  content: '|';
+  content: "|";
   margin: 0 8px;
   font-weight: 400;
 }
 .detail-tab:last-child::after {
-  content: '';
+  content: "";
 }
+
 .detail-table,
 .price-detail,
 .table-monthly {
@@ -599,6 +573,7 @@
   width: 365px;
   padding: 2px 10px;
 }
+
 .tc-price {
   display: flex;
   flex-direction: column;
@@ -644,6 +619,7 @@
   gap: 6px;
   cursor: pointer;
 }
+
 .tc-price__vergleich .gespart {
   color: #43a047;
   font-weight: 700;
@@ -669,9 +645,11 @@
 .btn-weiter-card:hover {
   background: #046fb6;
 }
+
 .container-button {
   position: relative;
 }
+
 .dropdown-menu {
   position: absolute;
   top: 90%;
@@ -683,21 +661,26 @@
   width: 90%;
   color: #000;
 }
+
 .dropdown-menu div {
   padding: 10px;
   cursor: pointer;
 }
+
 .dropdown-menu div:hover {
   background: #f5f5f5;
 }
+
 .info-wrapper {
   position: relative;
   display: inline-block;
 }
+
 .info-popover {
   position: absolute;
   right: 0;
 }
+
 .dialog-box {
   background: white;
   border: 1px solid #00a651;
@@ -707,9 +690,11 @@
   padding: 10px;
   display: flex;
 }
+
 .header-info {
   font-weight: 600;
 }
+
 .container-information {
   display: flex;
   flex-direction: column;
@@ -720,6 +705,7 @@
   flex-direction: column;
   gap: 10px;
 }
+
 .table-monthly.blue {
   display: flex;
   flex-direction: row;
@@ -731,22 +717,27 @@
   margin-top: 16px;
   margin-bottom: 8px;
 }
+
 a {
   text-decoration: none;
   color: #0085e0;
 }
+
 .provider {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
+
 /* Edit Address */
+
 .edit-column {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* 🔥 important */
   gap: 10px;
   margin-top: 10px;
 }
+
 .edit-column input,
 .edit-column select {
   width: 100%;
@@ -758,11 +749,13 @@ a {
   color: #313030;
   background-color: #f8f9fa;
 }
+
 .edit-column input:focus,
 .edit-column select:focus {
   border-color: #0085e0;
   background: #fff;
 }
+
 .btn-save {
   height: 40px;
   border-radius: 20px;
@@ -776,9 +769,11 @@ a {
   align-items: center;
   gap: 8px;
 }
+
 .consum-row input {
   flex: 1;
 }
+
 .dropdown-wrapper input {
   width: 100%;
   border: none;
@@ -787,12 +782,14 @@ a {
   font: inherit;
   padding: 0;
 }
+
 .dropdown-wrapper {
   position: relative;
 }
+
 .dropdown {
   position: absolute;
-  top: 100%;
+  top: 100%; /* 👈 directly below input */
   left: 0;
   width: 100%;
   background: #fff;
@@ -803,24 +800,31 @@ a {
   overflow-y: auto;
   border-radius: 0 0 6px 6px;
 }
+
 .dropdown-item {
   padding: 10px 12px;
   cursor: pointer;
   font-size: 14px;
 }
+
 .dropdown-item:hover {
   background: #f5f5f5;
 }
+
 .consumption-label {
   display: block;
   font-size: 14px;
+  /* margin-bottom: 6px;
+  color: #333; */
 }
+
 .total-consumption {
   display: flex;
   flex-direction: column;
   gap: 0px;
   align-items: flex-start;
 }
+
 /* BACKDROP */
 .modal-backdrop {
   position: fixed;
@@ -831,6 +835,7 @@ a {
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
+
 /* MODAL POSITION */
 .modal {
   position: fixed;
@@ -839,6 +844,7 @@ a {
   transform: translate(-50%, -50%);
   z-index: 1001;
 }
+
 /* BOX */
 .modal-content {
   font-family: Arial, sans-serif;
@@ -850,12 +856,14 @@ a {
   border-radius: 10px;
   position: relative;
 }
+
 /* TOP DARK BAR */
 .modal-header {
   background: transparent;
   height: 50px;
   position: relative;
 }
+
 /* CLOSE BUTTON */
 .close-btn {
   position: absolute;
@@ -865,30 +873,40 @@ a {
   font-size: 22px;
   cursor: pointer;
 }
+
 /* BODY */
+/* TITLE */
 .modal-body h3 {
   margin-bottom: 12px;
   font-size: 18px;
 }
+
+/* TEXT */
 .desc {
   font-size: 13px;
   color: #333;
   line-height: 1.5;
   margin-bottom: 16px;
 }
+
 .desc-small {
   font-size: 12px;
   color: #666;
   margin: 14px 0;
 }
+
+/* FIELD */
 .field {
   margin-bottom: 12px;
 }
+
 .field label {
   display: block;
   font-size: 12px;
   margin-bottom: 4px;
 }
+
+/* SELECT STYLE */
 .fake-select {
   background: #fff;
   border: 1px solid #ccc;
@@ -898,30 +916,39 @@ a {
   justify-content: space-between;
   align-items: center;
 }
+/* PRICE ROW */
 .price-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
 }
+
+/* PRICE TEXT */
 .price-label {
   font-weight: 600;
 }
+
 .price {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 6px; /* space between price and icon */
   font-size: 20px;
   font-weight: bold;
 }
+
+/* SUB TEXT */
 .sub {
   font-size: 11px;
   color: #777;
 }
+
+/* BUTTON */
 .actions {
   text-align: right;
   margin-top: 15px;
 }
+
 .submit-btn {
   background: #0085e0;
   color: #fff;
@@ -931,11 +958,14 @@ a {
   font-size: 14px;
   cursor: pointer;
 }
+
+/* REMOVE extra padding from modal-body */
 .modal-body {
   padding: 0;
 }
+
 /* ══════════════════════════════════════════════
-   SELECT / DROPDOWN
+   SELECT / DROPDOWN (fixed overlap issue)
 ══════════════════════════════════════════════ */
 .input-field {
   display: flex;
@@ -946,13 +976,17 @@ a {
   padding: 8px 12px;
   background: #fff;
   transition: border-color 0.15s;
+  /* flex: 1; */
   position: relative;
+  /* display: inline-block; */
 }
+
 .input-field.select-wrap {
   position: relative;
   padding: 0;
   overflow: hidden;
 }
+
 .select-icon {
   position: absolute;
   left: 12px;
@@ -961,6 +995,7 @@ a {
   pointer-events: none;
   z-index: 1;
 }
+
 .styled-select {
   width: 100%;
   border: none;
@@ -973,6 +1008,7 @@ a {
   -webkit-appearance: none;
   cursor: pointer;
 }
+
 .dropdown-arrow {
   position: absolute;
   right: 10px;
@@ -980,15 +1016,19 @@ a {
   color: #888;
   pointer-events: none;
 }
+
+/* reuse from previous */
 .section {
   margin-bottom: 12px;
 }
+
 .toggle {
   display: flex;
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
 }
+
 .toggle-btn {
   flex: 1;
   padding: 10px;
@@ -997,23 +1037,12 @@ a {
   cursor: pointer;
   font-size: 13px;
 }
+
 .toggle-btn.active {
   background: #e6f0fb;
   border: 1px solid #0085e0;
-}
-
-.toggle-btn.active:first-child {
-  border-radius: 8px 0 0 8px;
-}
-
-.toggle-btn.active:last-child {
-  border-radius: 0 8px 8px 0;
-}
-.field-error-msg {
-  color: #d92d20;
-  font-size: 13px;
-  margin-top: 6px;
-  font-weight: 500;
+  /* border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px; */
 }
 .edit-tabs {
   display: flex;
@@ -1022,6 +1051,7 @@ a {
   border-bottom: 1px solid #ddd;
   margin-bottom: 15px;
 }
+
 .tab {
   padding: 10px 15px;
   cursor: pointer;
@@ -1029,11 +1059,13 @@ a {
   color: #555;
   border-bottom: 2px solid transparent;
 }
+
 .tab.active {
   color: #0085e0;
   border-bottom: 2px solid #0085e0;
   font-weight: 600;
 }
+
 .abschlag-scroll {
   width: 100%;
   overflow-x: auto;
@@ -1041,37 +1073,45 @@ a {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
+
 .abschlag-scroll::-webkit-scrollbar {
   display: none;
 }
+
 .abschlag-toggle {
   display: flex;
   flex-wrap: nowrap;
   gap: 8px;
   min-width: max-content;
 }
+
 .abschlag-toggle .toggle-btn {
   white-space: nowrap;
   flex-shrink: 0;
 }
+
 .abschlag-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .abschlag-scroll {
   overflow-x: auto;
   flex: 1;
   scrollbar-width: none;
 }
+
 .abschlag-scroll::-webkit-scrollbar {
   display: none;
 }
+
 .abschlag-toggle {
   display: flex;
   gap: 8px;
   min-width: max-content;
 }
+
 .scroll-btn {
   width: 32px;
   height: 32px;
@@ -1083,330 +1123,469 @@ a {
   font-weight: 600;
   flex-shrink: 0;
 }
-/* ============================================================
-   RESPONSIVE OVERRIDES
-   ============================================================ */
-/* ── Tablet  ≤ 1024px ─────────────────────────────────────── */
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE STYLES — MOBILE & SMALL DEVICES
+   Breakpoints: ≤1024px (tablet), ≤768px (mobile)
+══════════════════════════════════════════════ */
+
+/* ── Tablet: collapse sidebar into stacked layout ── */
 @media (max-width: 1024px) {
   .page-layout {
     flex-direction: column !important;
-    padding: 0 !important;
-    gap: 0 !important;
   }
+
   .sidebar {
     width: 100% !important;
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 0 !important;
+    max-width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
-  .address-card {
-    flex: 1 1 220px;
-    min-width: 200px;
-  }
-  .filter-box {
-    flex: 1 1 160px;
-    min-width: 140px;
-  }
+
   .main {
     width: 100% !important;
-    gap: 10px;
   }
-  .filter-banner__body {
-    grid-template-columns: 1fr !important;
-    padding: 10px 14px 6px;
-  }
-  .filter-divider {
-    display: none !important;
-  }
-  .filter-col + .filter-col {
-    border-left: none;
-    border-top: 1px solid #0085e0;
-    padding-left: 20px;
-    padding-top: 10px;
-  }
-  .vergleich-bar__provider {
-    grid-template-columns: 140px 1fr auto;
-    gap: 0 10px;
-  }
-  .tariff-card__body {
-    gap: 1.2rem;
-  }
-  .modal-content {
-    width: min(450px, 92vw);
-  }
-}
-/* ── Mobile  ≤ 768px ──────────────────────────────────────── */
-@media (max-width: 768px) {
-  .page-layout {
-    padding: 0 !important;
-    gap: 0 !important;
-    margin: 15px 20px;
 
-    .container-contact-us,
-  .main-container-service,
-  .container-contact,
-  .contact-us {
-    display: none !important;
-  }
-  }
-  .sidebar {
-    flex-direction: column !important;
-    gap: 0 !important;
-  }
-  .comp-navbar {
-    gap: 0.5rem !important;
-  }
-  .tariff-count-bar {
-    gap: 4px !important;
-  }
+  /* Cards only as wide/tall as their content — no stretching */
   .address-card,
   .filter-box {
-    flex: none !important;
+    width: 100%;
+    flex: none;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE ≤768px
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── 1. PAGE LAYOUT
+     Order on mobile:
+       [0] address-card          (sidebar > address-card)
+       [1] filter-banner         (main > filter-banner — "Filtereinstellungen")
+       [2] sidebar filter-boxes  (Preisanzeige only, rest hidden)
+       [3] comp-container        (provider cards)
+       [4] app-contact-person
+       [5] app-need-support
+     Achieved by making page-layout a flat flex column and assigning order
+     to sidebar and main, then using inner order on sidebar children.
+  ── */
+  .page-layout {
+    flex-direction: column !important;
+    gap: 12px;
+    padding: 8px !important;
+  }
+
+  /* Sidebar becomes an order-container; children will be ordered individually */
+  .sidebar {
     width: 100% !important;
-    min-width: unset !important;
+    max-width: 100% !important;
+    display: contents; /* flatten sidebar children into page-layout flow */
   }
-  .filter-box__body {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 4px 12px;
-    padding: 7px 10px 8px;
+
+  /* Main also flattens so filter-banner can be ordered between sidebar items */
+  .main {
+    width: 100% !important;
+    display: contents;
   }
-  .filter-box__header {
-    padding: 4px 10px 5px;
-    font-size: 14px;
+
+  /* ── 2. CHILD ORDERING within the flattened flow ── */
+
+  /* address-card: first */
+  .address-card {
+    order: 0;
+    width: 100%;
+    display: block;
+    overflow: visible; /* edit-mode inputs/dropdowns must not be clipped */
+    align-self: auto;
   }
-  .address-card__header {
-    padding: 4px 10px 5px;
-    font-size: 14px;
-  }
+
+  /* address-card body: no extra padding, tight fit */
   .address-card__body {
+    padding: 10px 12px 12px;
+  }
+
+  /* filter-banner (Filtereinstellungen): second — right after address card */
+  .filter-banner {
+    order: 1;
+    width: 100%;
+  }
+
+  /* Preisanzeige (first filter-box): third — kept, shown on mobile */
+  .filter-box:nth-of-type(1) {
+    order: 2;
+    width: 100%;
+    display: block;
+  }
+
+  /* ── 4. DUPLICATE FILTERS: hide sidebar boxes that duplicate filter-banner
+     Sidebar filter-boxes in order: Preisanzeige(1), Kundentyp(2),
+     Ökotarife(3), Maximale Vertragslaufzeit(4), Energiepreisgarantie(5).
+     filter-banner already covers: Kundentyp, Ökotarife, Vertragslaufzeit, Garantie.
+     So hide boxes 2–5 on mobile. ── */
+  .filter-box:nth-of-type(2),
+  .filter-box:nth-of-type(3),
+  .filter-box:nth-of-type(4),
+  .filter-box:nth-of-type(5) {
+    display: none;
+  }
+
+  /* comp-container (provider cards): fourth */
+  .comp-container {
+    order: 3;
+    width: 100%;
+  }
+
+  /* contact-person: fifth */
+  app-contact-person {
+    order: 4;
+    width: 100%;
+    display: block;
+  }
+
+  /* need-support: sixth */
+  app-need-support {
+    order: 5;
+    width: 100%;
+    display: block;
+  }
+
+  /* ── 1. FIX: Cards only take space they need — no excess height ── */
+
+  /* address-card body tight — only what content needs */
+  .address-card__body p,
+  .address-card__body .verbrauch {
+    margin-bottom: 0;
+  }
+
+  /* filter-box body: compact vertical stack */
+  .filter-box__body {
+    flex-direction: column;
+    gap: 6px;
     padding: 8px 10px 10px;
   }
+
+  /* ── FILTER BANNER: single column layout ── */
+  .filter-banner__body {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0 6px;
+    gap: 0;
+  }
+
+  .filter-divider {
+    width: 100%;
+    height: 1px;
+    align-self: auto;
+    margin: 4px 0;
+  }
+
+  .filter-col {
+    padding: 0 12px 8px;
+    gap: 10px;
+  }
+
+  .filter-col + .filter-col {
+    border-left: none;
+    border-top: 1px solid #e5e9ee;
+    padding-left: 12px;
+    padding-top: 8px;
+  }
+
+  /* Filter rows: stack label above checkboxes */
   .filter-row {
     flex-direction: column;
     gap: 5px;
+    align-items: flex-start;
   }
+
+  .filter-row__label {
+    flex-shrink: 1;
+    font-size: 13px;
+  }
+
   .opts-grid {
-    grid-template-columns: 1fr;
-    gap: 3px 12px;
+    grid-template-columns: auto auto;
+    gap: 4px 12px;
   }
-  .filter-banner__body {
-    padding: 8px 12px 4px;
-  }
-  .filter-col {
-    gap: 10px;
-    padding: 0 12px 8px;
-  }
-  .filter-col + .filter-col {
-    padding-top: 8px;
-  }
+
+  /* Footer button: full width */
   .filter-banner__footer {
-    padding: 0 12px 10px;
+    padding: 0 12px 12px;
   }
+
   .btn-weiter {
     width: 100%;
-    padding: 9px 16px;
+    padding: 10px 20px;
   }
-  .comp-container {
-    gap: 10px;
-  }
+
+  /* ── COMPARISON NAVBAR ── */
   .comp-navbar {
-    background: #0085e0;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    overflow: hidden;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
   }
+
+  .comp-navbar__left,
+  .comp-navbar__right {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  /* ── VERGLEICH BAR: provider grid → stacked ── */
   .vergleich-bar__provider {
-    grid-template-columns: 1fr;
-    gap: 4px 0;
-    padding: 8px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px 12px;
   }
-  .vergleich-bar {
-    padding: 8px 12px;
-  }
+
   .provider-price {
     text-align: left;
-    white-space: normal;
   }
+
   .provider-price__sub {
     justify-content: flex-start;
-    margin-top: 2px;
+    margin-top: 4px;
   }
-  .tariff-count-bar {
+
+  /* vergleich bar text wrap */
+  .vergleich-bar {
     flex-wrap: wrap;
     gap: 6px;
     font-size: 13px;
-    padding: 6px 12px;
   }
-  .tariff-card {
-    margin-bottom: 0;
+
+  .anpassen {
+    float: none;
+    margin-left: 0;
   }
-  .tariff-card__badge {
-    margin: 8px 12px 0;
-    font-size: 13px;
-    padding: 2px 8px;
-  }
-  .tariff-card__body {
-    grid-template-columns: 1fr !important;
-    gap: 4px;
-    padding: 10px 12px;
-  }
-  .tc-logo {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+
+  /* ── TARIFF COUNT BAR ── */
+  .tariff-count-bar {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #e5e9ee;
+    padding: 8px 12px;
+    font-size: 14px;
   }
+
+  .container-button {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* ── 3. PROVIDER CARDS: readable on mobile ── */
+  .tariff-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px 14px 14px;
+  }
+
+  /* Logo section */
+  .tc-logo__name {
+    font-size: 20px;
+  }
+
   .tc-logo__tarif {
-    margin-top: 0;
-    text-align: right;
+    font-size: 14px;
   }
+
+  /* Details section: comfortable reading size */
+  .tc-details {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
   .tc-details .arbeits {
-    margin-bottom: 8px;
+    font-size: 14px;
+    margin-bottom: 12px;
   }
+
+  .tc-check-list li {
+    font-size: 14px;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .icon-check {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .bonus-tag {
+    font-size: 14px;
+    padding: 3px 10px;
+  }
+
+  .toggle-detail {
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  /* Price section: left-aligned, prominent */
   .tc-price {
     text-align: left;
-    height: auto;
     border-top: 1px solid #e5e9ee;
-    padding-top: 8px;
+    padding-top: 12px;
   }
-  .tc-price__sub {
-    justify-content: flex-start;
+
+  .tc-price__amount {
+    font-size: 30px;
     padding-bottom: 6px;
   }
-  .tc-price__amount {
-    font-size: 26px;
-    padding-bottom: 4px;
+
+  .tc-price__sub {
+    justify-content: flex-start;
+    font-size: 14px;
   }
-  .tc-price__vergleich {
-    text-align: left;
+
+  .tc-price__savings {
+    font-size: 15px;
+    margin-top: 4px;
   }
+
   .tc-price__vergleich .label {
     justify-content: flex-start;
   }
+
+  /* Weiter button: full width, prominent */
   .btn-weiter-card {
     width: 100%;
-    padding: 9px 16px;
+    padding: 12px 20px;
     margin-left: 0;
-    text-align: center;
+    margin-top: 14px;
+    font-size: 16px;
   }
+
+  /* Badge */
+  .tariff-card__badge {
+    margin: 8px 12px 0;
+    font-size: 14px;
+  }
+
+  /* ── EXPANDED CARD DETAIL TABS: horizontal scroll ── */
   .detail-tabs {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     flex-wrap: nowrap;
-    margin-bottom: 10px;
+    gap: 0;
+    padding-bottom: 2px;
+    scrollbar-width: none;
   }
+
   .detail-tabs::-webkit-scrollbar {
     display: none;
   }
+
+  .detail-tab {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  /* Tables: horizontal scroll container */
+  .tab-content {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .detail-table,
+  .price-detail {
+    font-size: 14px;
+  }
+
   .detail-table td:first-child {
     width: auto;
-    min-width: 100px;
+    min-width: 130px;
   }
+
   .table-monthly td:first-child {
     width: auto;
+    min-width: 150px;
   }
-  .info-popover {
-    right: auto;
-    left: 0;
+
+  .price-detail td {
+    padding: 3px 6px;
   }
-  .dialog-box {
-    width: min(300px, 84vw);
-  }
+
+  /* ── MODAL: full width on mobile ── */
   .modal {
-    top: auto !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    transform: none !important;
-    width: 100%;
+    width: 95vw;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
+
   .modal-content {
-    width: 100% !important;
-    max-height: 90vh;
-    border-radius: 14px 14px 0 0;
-    padding: 16px 16px 20px;
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
   }
+
+  /* Edit tabs: tighter gap */
   .edit-tabs {
     gap: 24px;
   }
-  .price-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+
+  /* Address edit column */
+  .edit-column {
+    gap: 8px;
+  }
+
+  /* consum-row wrap */
+  .consum-row {
+    flex-wrap: wrap;
+  }
+
+  /* Sorting button */
+  .btn-sortieren {
+    width: auto;
+    min-width: 0;
   }
 }
-/* ── Small phones  ≤ 480px ────────────────────────────────── */
+
+/* ── Very small screens (≤480px) ── */
 @media (max-width: 480px) {
-  .page-layout {
-    padding: 0 !important;
-    gap: 0 !important;
-  }
-  .sidebar {
-    gap: 0 !important;
-  }
   .comp-navbar__left,
   .comp-navbar__right {
     font-size: 13px;
-    padding: 5px 10px;
   }
-  .comp-navbar {
-    gap: 0.3rem;
-  }
-  .tariff-card__badge {
-    font-size: 12px;
-    margin: 6px 10px 0;
-  }
-  .tariff-card__body {
-    padding: 8px 10px;
-    gap: 6px;
-  }
+
   .tc-logo__name {
-    font-size: 17px;
+    font-size: 18px;
   }
+
   .tc-price__amount {
+    font-size: 26px;
+  }
+
+  .provider-price__amount {
     font-size: 22px;
   }
-  .provider-price__amount {
-    font-size: 20px;
-  }
-  .detail-tab {
-    font-size: 12px;
-  }
-  .detail-tab::after {
-    margin: 0 4px;
-  }
-  .price-detail td {
-    padding: 2px 3px;
-    font-size: 12px;
-  }
-  .detail-table td {
-    font-size: 12px;
-  }
-  .filter-banner__header,
-  .filter-box__header,
-  .address-card__header {
-    font-size: 13px;
-    padding: 4px 8px 5px;
-  }
-  .cb-row {
-    font-size: 13px;
-  }
+
   .filter-row__label {
     font-size: 13px;
   }
-  .vergleich-bar {
-    padding: 6px 10px;
+
+  .opts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tariff-count-bar {
     font-size: 13px;
   }
-  .tariff-count-bar {
-    padding: 5px 10px;
-    font-size: 12px;
+
+  .filter-banner__header,
+  .filter-box__header,
+  .address-card__header {
+    font-size: 14px;
+  }
+
+  .btn-weiter,
+  .btn-weiter-card,
+  .btn-suche {
+    font-size: 15px;
   }
 }

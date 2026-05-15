@@ -1,40 +1,39 @@
 .field-wrap.date {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 .title-btn.active {
-    background: #0085e0;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 40px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: block;
-    margin-left: auto;
+  background: #0085e0;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
 }
 /* ── Validation error styles — add these to delivery-address.css ── */
 
 /* Red border on the field wrapper when invalid */
 .field-wrap.field-error input {
-    border-color: #e53935;
+  border-color: #e53935;
 }
 
 /* Small red hint text below the input */
 .error-hint {
-    display: block;
-    margin-top: 4px;
-    font-size: 12px;
-    color: #e53935;
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #e53935;
 }
 
 /* In delivery-address.css */
 .toggle-opt input[type="radio"] {
-    accent-color: #1565c0; /* match your existing blue */
+  accent-color: #1565c0; /* match your existing blue */
 }
-
 
 /* ══════════════════════════════════════════════
    SELECT / DROPDOWN (fixed overlap issue)
@@ -105,4 +104,178 @@
 
 .guideline-icon.invalid {
   background-color: #dc3545; /* Error red */
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — MOBILE ≤768px
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── PAGE LAYOUT: sidebar to bottom ── */
+  .page-layout {
+    flex-direction: column !important;
+    gap: 12px;
+    padding: 8px !important;
+  }
+
+  /* Flatten sidebar children into page-layout flow */
+  .sidebar {
+    display: contents;
+  }
+
+  /* Main content: full width, first */
+  .main-content {
+    width: 100% !important;
+    order: 0;
+  }
+
+  /* app-sidebar (provider summary): just above contact/support */
+  app-sidebar {
+    order: 10;
+    width: 100%;
+    display: block;
+  }
+
+  app-contact-person {
+    order: 11;
+    width: 100%;
+    display: block;
+  }
+
+  app-need-support {
+    order: 12;
+    width: 100%;
+    display: block;
+  }
+
+  /* ── PROGRESS STEPPER: horizontal scroll ── */
+  .progress-steps {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .progress-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── SECTION BODY: tighter padding on mobile ── */
+  .section-body {
+    padding: 14px !important;
+    gap: 14px;
+  }
+
+  /* ── FORM ROWS: stack fields vertically, one per row ── */
+  .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  /* All form-groups: full width, no fixed sizes ── */
+  .form-group {
+    width: 100% !important;
+    flex: unset !important; /* beats inline style="flex: 0 0 160px" */
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  /* field-wrap: full width */
+  .field-wrap {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Info-icon at end of form-row: align left when stacked */
+  .form-row > .info-base {
+    align-self: flex-start;
+  }
+
+  /* Salutation select: full width */
+  .input-field.select-wrap {
+    width: 100% !important;
+    display: block !important;
+    box-sizing: border-box;
+  }
+
+  /* ── TITLE BUTTONS (Dr. / Prof. / Prof. Dr.): equal-width row ── */
+  .container-salutation {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .title-btn,
+  .title-btn.active {
+    flex: 1 1 auto;
+    margin-left: 0 !important; /* remove the desktop margin-left: auto */
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 15px;
+  }
+
+  /* ── CONTAINER READONLY (locked PLZ/Ort/Straße/Hausnummer): stack rows ── */
+  .container-readonly .form-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* ── DATEPICKER ROW: keep label + picker readable ── */
+  .field-wrap.date {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  /* ── TOGGLE ROW (Ja / Nein billing): stack toggle + info icon ── */
+  .toggle-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px;
+  }
+
+  .toggle-box {
+    width: 100% !important;
+  }
+
+  /* ── BILLING ADDRESS FORM (conditional): same stacking ── */
+  .form-row .form-group[style] {
+    flex: unset !important;
+    width: 100% !important;
+  }
+
+  /* ── PRIMARY BUTTON: full width ── */
+  .btn-primary {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  /* ── SECTION PANEL: full width ── */
+  .section-panel,
+  .progress-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ── Very small screens ≤480px ── */
+@media (max-width: 480px) {
+  .section-body {
+    padding: 10px !important;
+    gap: 10px;
+  }
+
+  .title-btn,
+  .title-btn.active {
+    font-size: 14px;
+    padding: 7px 8px;
+  }
+
+  .section-header {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
 }

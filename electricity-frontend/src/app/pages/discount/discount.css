@@ -1,6 +1,6 @@
 /*start of container discount*/
 
-.container-discount {
+.container-discount{
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -8,19 +8,16 @@
   font-size: 16px;
   font-weight: 500;
   color: #ffffff;
-  background-color: #00a651;
+  background-color:  #00a651;
   margin: 1rem 0rem;
-  width: 100%;
-  height: auto;
-  margin: 15px;
 }
 
-.container-partner {
+.container-partner{
   display: flex;
   gap: 0.5rem;
 }
 
-.expert {
+.expert{
   display: flex;
   gap: 5px;
   padding-top: 0.1rem;
@@ -31,14 +28,15 @@
   position: relative;
   margin-left: 1px;
   cursor: pointer;
-  color: #ffffff;
+  color:  #ffffff;
 
   width: 1em;
   height: 1em;
 
   font-size: 0.7em;
-  font-weight: 500; /* controls the “i” size */
+  font-weight: 500;  /* controls the “i” size */
   border-radius: 50%;
+
 }
 
 .icon-check {
@@ -50,6 +48,7 @@
   position: relative;
   display: inline-block;
 }
+
 
 .dialog-box {
   display: flex;
@@ -65,7 +64,7 @@
   font-weight: 600;
   width: 100%;
   justify-content: flex-end;
-  padding-bottom: 0.2rem;
+  padding-bottom: 0.2rem ;
   height: 15px;
 }
 
@@ -73,6 +72,7 @@
   /* white-space: pre-line; */
   line-height: 1.5;
 }
+
 
 /* discount.css */
 ::ng-deep .dialog-content p {
@@ -82,4 +82,71 @@
 
 ::ng-deep .dialog-content strong {
   color: #003a5a; /* Example brand color */
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+   DISCOUNT SECTION
+========================= */
+
+@media screen and (max-width: 768px) {
+
+  .container-discount {
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 12px;
+
+    margin: 12px 0;
+  }
+
+  .container-partner {
+
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+  .expert {
+
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    font-size: 14px;
+
+    line-height: 20px;
+  }
+
+  .icon-check {
+
+    width: 20px;
+    height: 20px;
+
+    margin-top: 2px;
+  }
+
+  .info-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .info-base {
+
+    width: 14px;
+    height: 14px;
+
+    font-size: 10px;
+  }
 }

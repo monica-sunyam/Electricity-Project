@@ -1,34 +1,30 @@
 .home-container {
   display: flex;
-  margin: 0;
-  padding: 1.5rem 1.5rem 0;
+  margin: 30px 0px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  gap: 1.5rem;
+  gap: 4.5%;
   background-image: url('/assets/images/Slider_3_Strom_und_Gasvergleich_1920_700.png');
-  background-size: cover;
-  background-position: center;
+  background-size: cover; /* fill container */
+  background-position: center; /* center the image */
   background-repeat: no-repeat;
   width: 100%;
-  min-height: auto;
-  align-items: flex-start;
+  height: 29rem;
 }
 
 .home-left {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  margin: 0;
+  margin: 0.6rem 0rem 0.5rem 1.5rem;
   border-radius: 8px;
-  flex: 0 0 320px;
-  width: 320px;
+  width: 16.5%;
 }
 
 .electricity-container {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.75);
   display: flex;
   border-radius: 8px;
   width: 100%;
-  padding: 1rem;
 }
 
 .service-container {
@@ -38,57 +34,47 @@
 }
 
 .home-center {
-  flex: 1 1 auto;
-  min-width: 300px;
-  margin: 0;
+  min-width: 32rem;
+  margin: 0.6rem 0rem 1.5rem 0rem;
   border-radius: 8px;
-  width: auto;
+  width: 60%;
 }
 
-/* ----------------------------- electricity ----------------------- */
-
+/*  -----------------------------  electricity ----------------------- div */
 .electricity {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.6rem;
   box-sizing: border-box;
   border: 1px solid #003366;
   font-weight: 500;
   border-radius: 8px;
   width: 100%;
-  padding: 0.5rem;
 }
 
 .icon-btn-electricity {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-
-  border: none !important;
-  outline: none;
-  box-shadow: none;
-
-  background-color: #003366;
-  color: #fff;
-
-  border-radius: 4px;
-
-  padding: 0.3rem 0.55rem;
-
-  font-size: 12px;
-  font-weight: 500;
-
+  gap: 0.5rem;
+  align-items: center;
   cursor: pointer;
-  transition: 0.2s ease;
-
-  width: auto;
-  min-height: 30px;
-
-  white-space: nowrap;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  font-weight: 500;
+  border: none !important;
+  box-shadow: none;
+  outline: none;
+  color: #ffffff;
+  background-color: #003366;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  border-radius: 6px;
+  height: 32px;
 }
 
-.icon-btn-electricity:hover,
+.icon-btn-electricity:hover {
+  background-color: #0085e0;
+}
+
 .icon-btn-electricity.active {
   background-color: #0085e0;
 }
@@ -112,9 +98,9 @@
 .btn-text {
   padding-bottom: 0.2rem;
 }
+/* ----------------------*/
 
-/* ---------------------- our services ------------------------------ */
-
+/* ---------------------------------------------- our services  ------------------------------ */
 .service-container {
   display: flex;
   flex-direction: column;
@@ -156,6 +142,10 @@
   padding: 0.2rem 0.5rem 0.2rem 0.5rem;
 }
 
+.icon-btn-service:hover {
+  /* background-color: #e0e0e0; */
+}
+
 .icon-check {
   height: 25px;
   width: 25px;
@@ -165,34 +155,31 @@
   padding-left: 0.2rem;
 }
 
-/* ---------------------- div below the discount bar --------------------- */
+/* --------- */
+
+/*  ----------------------  div below the discount bar --------------------- */
 
 .container-services-by-company {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 2%;
   padding: 0.6rem 1.75rem;
 }
 
 .container-other-services {
   flex: 1.3;
-  min-width: 280px;
 }
-
 .container-contact-us {
   flex: 0.68;
-  min-width: 280px;
 }
 
-/* ----------------------- about us ----------------------- */
-
+/* -----------------------------------------------------  about us  ----------------------- */
 .container-about {
-  display: block;
+  display: flex;
   flex: 1.9;
   background-color: #ffffff;
   font-size: 16px;
-  min-width: 280px;
+  display: block;
 }
 
 .container-header {
@@ -241,9 +228,9 @@
 .details-para {
   margin-bottom: 0;
 }
+/* ---------------- */
 
-/* --------------------------- other services --------------------------- */
-
+/* ---------------------------------------------------------- other services --------------------------- */
 .main-container-service {
   background-color: #ffffff;
   font-size: 16px;
@@ -282,22 +269,17 @@
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
   border: 1px solid #192a5e;
-  width: 100%;
 }
 
 .container-all-services {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
   border-top-right-radius: 8px;
+  gap: 1rem;
   padding: 0.9rem 1rem;
 }
 
 .container-contact {
-  display: flex;
-  flex: 1 1 280px;
+  display: inline-block;
   padding: 0.5rem 1rem;
-  width: 100%;
 }
 
 .container-services-left,
@@ -350,76 +332,70 @@
   width: 20px;
 }
 
-/* -------------------------- responsive design ---------------- */
-
-@media (min-width: 1024px) {
-  .home-container {
-    display: flex;
-    flex-direction: row;
-    gap: 1.5rem;
-  }
-
-  .home-left {
-    flex: 0 0 320px;
-    width: 320px;
-  }
-
-  .home-center {
-    flex: 1 1 auto;
-    width: auto;
-  }
-}
-
-@media (min-width: 1200px) {
-  .home-left {
-    flex: 0 0 340px;
-    width: 340px;
-  }
-}
+/*  -------------------------- responsive design ---------------- */
 
 @media (min-width: 1600px) {
-  .home-left {
-    flex: 0 0 350px;
-    width: 350px;
+  home-left {
+    width: 16.5%;
   }
 }
 
-@media (max-width: 1023px) {
+@media (min-width: 1900px) {
+  .home-left {
+    width: 13.1%;
+  }
+}
+
+/* -------------------------- mobile responsive design ---------------- */
+
+@media screen and (max-width: 768px) {
   .home-container {
     flex-direction: column;
+    height: auto;
     gap: 1rem;
+    padding: 1rem;
+    margin: 15px 0;
+  }
+
+  .home-left {
+    width: 100%;
+    margin: 0;
   }
 
   .home-center {
     width: 100%;
-    max-width: 100%;
-    margin-left: 0;
+    min-width: 100%;
+    margin: 0;
   }
 
-  .home-left {
+  .electricity {
     width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    flex: 1 1 auto;
   }
 
+  /* buttons column wise */
+  .icon-btn-electricity,
+  .icon-btn-service,
+  .main-btn {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* below section column wise */
   .container-services-by-company {
-    padding: 0.6rem 0.8rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .home-container {
-    gap: 0.75rem;
-  }
-
-  .container-all-services {
-    grid-template-columns: 1fr;
-  }
-
-  .container-contact {
     flex-direction: column;
-    padding: 0.75rem;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .container-other-services,
+  .container-contact-us {
+    width: 100%;
+  }
+
+  /* other services single column */
+  .container-all-services {
+    flex-direction: column;
+    gap: 0.8rem;
   }
 
   .container-services-left,
@@ -427,73 +403,493 @@
     width: 100%;
   }
 
-  .container-services-by-company {
-    padding: 0.6rem 0.6rem;
-  }
-
-  .container-about,
-  .container-other-services {
-    width: 100% !important;
-    flex: 1 1 auto !important;
-  }
-}
-
-@media (max-width: 600px) {
-
-  .home-left {
-    margin: 0.6rem 0.5rem;
-  }
-
-  .home-container {
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
-
-  .container-services-by-company {
-    padding: 0.6rem 0.5rem;
-  }
-
+  /* about section responsive */
   .container-details {
     flex-direction: column;
-    padding: 0.5rem;
+  }
+
+  .image,
+  .about-text {
+    width: 100%;
   }
 
   .image img {
     width: 100%;
     height: auto;
   }
+}
 
-  .icon-btn-service,
-  .main-btn {
+/* =========================
+   MOBILE VIEW
+   Banner Separate Section
+========================= */
+
+@media screen and (max-width: 768px) {
+  .home-container {
+    /* remove desktop banner */
+    background-image: none;
+
+    /* mobile layout */
+    display: flex;
+    flex-direction: column;
+
+    height: auto;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  /* TOP BANNER ONLY */
+
+  .home-container::before {
+    content: '';
+
     width: 100%;
-    justify-content: flex-start;
+    height: 170px;
+
+    background-image: url('/assets/images/Slider_3_Strom_und_Gasvergleich_1920_700.png');
+
+    /* image fill full banner */
+    background-size: 100% 100%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: block;
+  }
+
+  /* .home-container::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: #ff6b00;
+    background-image: url('/assets/icons/Telefonhörer_Weiss.png');
+    background-size: 24px 24px;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 10;
+  } */
+}
+
+/* =========================
+   MOBILE VIEW
+   ELECTRICITY BUTTON GRID
+========================= */
+
+@media screen and (max-width: 768px) {
+  .home-left {
+    width: 100%;
+    margin: 0;
+    padding: 12px 12px;
+    gap: 1rem;
+  }
+
+  .electricity-container {
+    width: 100%;
+    background: transparent;
   }
 
   .electricity {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    justify-content: flex-start;
+    /* row wise */
+    display: grid;
+    /* mobile = 2 items per row */
+    /* grid-template-columns: repeat(2, 1fr); */
+    gap: 10px;
+    border: none;
+    background: transparent;
+  }
+
+  /* only change button width */
+
+  .icon-btn-electricity {
+    /* remove full width */
+    width: fit-content;
+    /* text based width */
+    max-width: 100%;
+    min-height: 42px;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 8px 14px;
+  }
+
+  .btn-text {
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+/* =========================
+   TABLET VIEW
+   3 / 4 ITEMS PER ROW
+========================= */
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .electricity {
+    display: grid;
+    /* tablet */
+    /* grid-template-columns: repeat(4, 1fr); */
+    gap: 12px;
+    border: none;
+    background: transparent;
   }
 
   .icon-btn-electricity {
-    width: auto;
-    flex: 0 1 auto;
-    font-size: 11px;
-    padding: 0.3rem 0.45rem;
-    min-height: 28px;
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    border-radius: 10px;
+  }
+}
+
+/* =========================
+   MOBILE ORDER CHANGE
+========================= */
+
+@media screen and (max-width: 768px) {
+  .container-services-by-company {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container-other-services {
+    order: 1;
+  }
+
+  app-need-support {
+    order: 2;
+  }
+
+  .container-about {
+    order: 3;
+  }
+}
+/* =========================
+   MOBILE RESPONSIVE
+   ABOUT SECTION
+========================= */
+
+@media screen and (max-width: 768px) {
+  .container-details {
+    display: block;
+
+    padding: 12px;
+
+    overflow: hidden;
+  }
+
+  .image {
+    float: left;
+
+    width: 110px;
+
+    margin-right: 12px;
+    margin-bottom: 8px;
+  }
+
+  .image img {
+    width: 100%;
+    height: auto;
+
+    display: block;
+
+    border-radius: 6px;
+
+    object-fit: cover;
+  }
+
+  .about-text {
+    display: block;
+
+    font-size: 13px;
+
+    line-height: 20px;
+  }
+
+  .about-header {
+    font-size: 15px;
+  }
+}
+
+/* DESKTOP HIDE */
+.mobile-only {
+  display: none;
+}
+
+/* =========================
+   MOBILE VIEW
+========================= */
+
+@media screen and (max-width: 768px) {
+  .mobile-only {
+    display: flex;
+  }
+
+  .container-advice {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    /* margin-top: 12px; */
+    padding-bottom: 0.5rem;
+
+    /* border-bottom: 1px solid #ff6b00;
+
+    background:
+      linear-gradient(#ff6b00, #ff6b00) left center / 1px 100% no-repeat,
+      linear-gradient(#ff6b00, #ff6b00) right center / 1px 100% no-repeat;
+
+    background-origin: border-box; */
+  }
+
+  .expert-container {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    text-align: center;
+
+    background-color: #003366;
+
+    border-radius: 8px;
+
+    padding: 0.7rem;
+  }
+
+  .expert {
+    color: #ffffff;
+    padding-bottom: 0;
+  }
+
+  .text {
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .phone-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .contact {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 8px;
+
+    width: 100%;
+  }
+
+  .contact-button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #ff6b00;
+
+    color: #ffffff;
+
+    box-sizing: border-box;
+  }
+
+  .chat-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .email-icon {
+    width: 18px;
+    height: 14px;
+  }
+
+  .icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* =========================
+   MOBILE ORDER CHANGE
+========================= */
+
+@media screen and (max-width: 768px) {
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+  .home-wrap {
+    padding: 0 12px;
+  }
+
+  .home-left {
+    display: contents;
+  }
+
+  /* 1 */
+  .electricity-container {
+    order: 1;
+    padding: 10px 0;
+  }
+
+  /* 2 */
+  .home-center {
+    order: 2;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  /* 3 */
+  .container-advice.mobile-only {
+    order: 3;
+    width: 100%;
+    /* margin-top: 12px; */
+  }
+  /* 4 */
+  .service-container {
+    order: 4;
+    width: 100%;
+  }
+}
+@media screen and (max-width: 768px) {
+  .expert-container {
+    display: flex;
+    flex-direction: column; /* text top, phone row bottom */
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    text-align: center;
+
+    padding: 0.7rem;
+  }
+
+  /* first text line */
+  .expert-container > .expert:first-child {
+    width: 100%;
+  }
+
+  /* phone row */
+  .icon.phone,
+  .expert.phone {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .expert.phone .text {
     white-space: nowrap;
   }
 
-  .icon,
-  .icon-cable,
-  .icon-pump {
-    width: 12px;
-    height: 12px;
+  .phone-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* HIDE BY DEFAULT (DESKTOP) */
+.callback-btn {
+  display: none;
+}
+
+/* DESKTOP HIDE */
+.banner-call-btn {
+  display: none;
+}
+
+/* MOBILE ONLY */
+@media screen and (max-width: 768px) {
+  /* .home-container {
+    position: relative;
+  } */
+
+  .banner-call-btn {
+    display: flex;
+
+    position: absolute;
+
+    /* top: 150px; */
+    right: 14px;
+
+    width: 50px;
+    height: 50px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #ff6b00;
+
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+    z-index: 50;
+
+    cursor: pointer;
   }
 
-  /* Hide Kostenloser Service on mobile */
-  .service-container {
-    display: none;
+  .banner-call-icon {
+    width: 40px;
+    height: 40px;
+
+    object-fit: contain;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .electricity {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: unset;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    width: 100%;
+  }
+
+  .icon-btn-electricity {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-height: 42px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+}
+/* desktop hide */
+.container-provider.mobile {
+  display: none;
+}
+
+/* mobile show */
+@media screen and (max-width: 768px) {
+  .container-provider.mobile {
+    display: flex;
   }
 }
