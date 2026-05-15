@@ -29,7 +29,7 @@ import { EmailCategoryComponent } from "./pages/email/email-category/email-categ
 import { EmailTemplateViewComponent } from "./pages/email-template-view/email-template-view.component";
 import { ContentPDFsComponent } from "./pages/contents/content-pdfs/content-pdfs.component";
 import { AdminSignatureComponent } from "./pages/credentials/admin-signature/admin-signature.component";
-import { StaticContentComponent } from "./pages/static-content/static-content.component";
+import { StaticContentComponent } from "./pages/contents/static-content/static-content.component";
 
 export const routes: Routes = [
   {

@@ -173,7 +173,6 @@ export class ContentPDFsComponent implements OnInit {
     }
 
     const formData = new FormData();
-
     formData.append("data", JSON.stringify(payload));
 
     // append file only if new file selected
