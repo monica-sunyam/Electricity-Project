@@ -275,4 +275,35 @@ public class EmailTemplate {
 				+ "change your monthly payment, report meter replacements, send messages to energy suppliers, request invoices, and much more.\n\n"
 				+ "Kind regards,\n\n" + "Your Support Team";
 	}
+	
+	public String createSignatureRequestEmailBody(String salutation, String lastName, String token) {
+	    String signatureUrl = "http://192.168.0.155:8080/public/customer/contract-signature?token=" + token;
+
+	    return "<div style='font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 25px;'>"
+	            + "<div style='text-align: center; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; margin-bottom: 20px;'>"
+	            + "<h2 style='color: #2e7d32; margin: 0;'>Contract Signature Required</h2>"
+	            + "</div>"
+	            + "<p>Dear " + salutation + " " + lastName + ",</p>"
+	            + "<p>We are excited to help you switch to a more cost-effective energy plan! Your contract with <strong>Tarifvergleich Electricity</strong> is almost ready.</p>"
+	            + "<p style='background-color: #f9f9f9; padding: 15px; border-left: 4px solid #2e7d32;'>"
+	            + "To finalize your switch, please review the contract details and <strong>provide your digital signature</strong> by clicking the secure link below."
+	            + "</p>"
+	            + "<div style='text-align: center; margin: 35px 0;'>"
+	            + "<!--[if mso]>"
+	            + "<v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"" + signatureUrl + "\" style=\"height:55px;v-text-anchor:middle;width:220px;\" arcsize=\"10%\" strokecolor=\"#1b5e20\" fillcolor=\"#2e7d32\">"
+	            + "<w:anchorlock/>"
+	            + "<center style=\"color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:bold;\">Sign Your Contract</center>"
+	            + "</v:roundrect>"
+	            + "<![endif]-->"
+	            + "<a href=\"" + signatureUrl + "\" style=\"background-color:#2e7d32; border-radius:5px; color:#ffffff; display:inline-block; font-family:sans-serif; font-size:16px; font-weight:bold; line-height:55px; text-align:center; text-decoration:none; width:220px; -webkit-text-size-adjust:none; mso-hide:all; box-shadow: 0 4px 6px rgba(0,0,0,0.1);\">Sign Your Contract</a>"
+	            + "</div>"
+	            + "<p style='font-size: 0.9em; color: #666;'><strong>Why is this needed?</strong> We require your signature to authorize the communication with your current energy provider and confirm the new bank mandate.</p>"
+	            + "<hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
+	            + "<p style='font-size: 0.85em; color: #888;'>If you cannot click the button, please copy this link: <br>"
+	            + "<a href=\"" + signatureUrl + "\" style='color: #2e7d32; word-break: break-all;'>" + signatureUrl + "</a></p>"
+	            + "<br>"
+	            + "<p style='margin-bottom: 0;'>Best Regards,</p>"
+	            + "<p style='margin-top: 5px;'><strong>The Tarifvergleich Support Team</strong></p>"
+	            + "</div>";
+	}
 }

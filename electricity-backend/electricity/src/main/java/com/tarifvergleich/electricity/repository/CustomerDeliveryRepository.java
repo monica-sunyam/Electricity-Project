@@ -51,7 +51,7 @@ public interface CustomerDeliveryRepository extends JpaRepository<CustomerDelive
 			+ "   LOWER(addr.street) LIKE LOWER(CONCAT('%', :search, '%'))" + ") "
 			+ "AND (:orderPlaced IS NULL OR cd.orderPlaced = :orderPlaced) "
 			+ "AND (:pending IS NULL OR co IS NULL) "
-			+ "AND (:openOrder IS NULL OR (co IS NOT NULL AND co.orderStatus = 0))"
+			+ "AND (:openOrder IS NULL OR (co IS NOT NULL AND co.orderStatus = 0 AND co.orderId IS NULL))"
 			+ "AND (:orderPlacedInEgon IS NULL OR (co IS NOT NULL AND co.adminPlacedOrder = :orderPlacedInEgon)) "
 			+ "AND (:docUploaded IS NULL OR (doc IS NOT NULL AND doc.signedFileUrl IS NOT NULL)) "
 			+ "AND (:isExpired IS NULL OR (co IS NOT NULL AND co.isExpired = :isExpired))")

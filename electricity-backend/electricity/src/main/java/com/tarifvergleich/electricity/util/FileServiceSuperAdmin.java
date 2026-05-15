@@ -3,9 +3,11 @@ package com.tarifvergleich.electricity.util;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -102,6 +104,24 @@ public class FileServiceSuperAdmin {
 		String absolutePath = rootLocation.resolve(relativePath).toString();
 
 		return absolutePath;
+	}
+
+	public String relativeToBase64(String relativePath) {
+		if (relativePath == null || relativePath.isEmpty())
+			throw new InternalServerException("Relative path not found", HttpStatus.BAD_REQUEST);
+
+		Path absolutePath = rootLocation.resolve(relativePath).normalize();
+
+		if (!Files.exists(absolutePath, LinkOption.NOFOLLOW_LINKS))
+			throw new InternalServerException("File does not exists", HttpStatus.BAD_REQUEST);
+
+		try {
+			byte[] fileContent = Files.readAllBytes(absolutePath);
+			return Base64.getEncoder().encodeToString(fileContent);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new InternalServerException("Failed to convert file to Base64", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	public void deleteFile(String relativePath) {

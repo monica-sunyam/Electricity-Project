@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/electricity
     username: postgres
-    password: 2026
+    password: root
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -60,6 +60,7 @@ app:
     cron-expression: "0 0 1 1 * ?"
   secrets:
     aesKey: "3[SQ$l4}m:PcA8RF|X>Q"
+    aes-expiry: 1
 
 springdoc:
   packages-to-scan: com.tarifvergleich.electricity

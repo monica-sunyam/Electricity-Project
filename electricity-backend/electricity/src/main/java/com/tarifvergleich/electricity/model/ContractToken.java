@@ -46,5 +46,6 @@ public class ContractToken {
 	@PrePersist
 	protected void onCreate() {
 		createdOn = Helper.getCurrentTimeBerlin();
+		used = false;
 	}
 }

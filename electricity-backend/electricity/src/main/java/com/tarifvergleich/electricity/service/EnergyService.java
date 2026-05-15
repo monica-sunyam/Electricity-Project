@@ -116,7 +116,5 @@ public class EnergyService {
 				}).body(EgonDocumentDto.class);
 	}
 	
-//	public EgonDocumentDto uploadOrderDocument(Long orderId, String base64File) {
-//		return energyApi.put().uri("/order/{orderNo}/doument", orderId.toString()).body(base64File)
-//	}
+	
 }

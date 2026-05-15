@@ -182,6 +182,35 @@ public class CustomerDto {
 		String confirmPassword;
 		String otp;
 	}
+	
+	
+	@Data
+	@Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CustomerInfoForProfile{
+		
+		private Integer customerId;
+		private String email;
+		private String firstName;
+		private String lastName;
+		private String userType;
+		private String title;
+		private String salutation;
+		private String companyName;
+		private String mobileNumber;
+		private BigInteger joinedOn;
+		private List<CustomerDeliveryResponseDto> deliveryDetails;
+		private List<CustomerAddressDto> address;
+		private Boolean isNotificationEnabled;
+
+		private String zip;
+		private String city;
+		private String street;
+		private String houseNumber;
+		private String lexofficeNumber;
+
+	}
 
 	public static SingleCustomerResponseDelivery getCustomerResponseDto(Customer customer) {
 		return SingleCustomerResponseDelivery.builder().id(customer.getCustomerId()).email(customer.getEmail())
@@ -240,6 +269,28 @@ public class CustomerDto {
 		return CustomerShortDetail.builder().id(customer.getCustomerId()).email(customer.getEmail())
 				.firstName(customer.getFirstName()).lastName(customer.getLastName()).title(customer.getTitle())
 				.userType(customer.getUserType()).salutation(customer.getSalutation()).build();
+	}
+	
+	public static CustomerInfoForProfile mapCustomerInfoForProfile(Customer customer){
+		if(customer == null) return null;
+		
+		return CustomerInfoForProfile.builder()
+				.customerId(customer.getCustomerId())
+				.email(customer.getEmail())
+				.firstName(customer.getFirstName())
+				.lastName(customer.getLastName())
+				.userType(customer.getUserType())
+				.title(customer.getTitle())
+				.salutation(customer.getSalutation())
+				.companyName(customer.getCompanyName())
+				.joinedOn(customer.getJoinedOn())
+				.isNotificationEnabled(customer.getIsNotificationEnabled())
+				.zip(customer.getZip())
+				.city(customer.getCity())
+				.street(customer.getStreet())
+				.houseNumber(customer.getHouseNumber())
+				.lexofficeNumber(customer.getLexofficeNumber())
+				.build();
 	}
 
 }

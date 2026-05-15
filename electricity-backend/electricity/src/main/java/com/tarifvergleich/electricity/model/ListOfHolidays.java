@@ -7,6 +7,7 @@ import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,7 +45,7 @@ public class ListOfHolidays {
 	@Column(name = "holiday_type", comment = "PUBLIC, COMPANY, OPTION") // SET PUBLIC FOR PUBLIC HOLIDAY AND COMAPNY FOR COMPANY RELATED HOLIDAY AND OPTION FOR OTHER RELATED
 	private String holidayType;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "admin_id")
 	@JsonIgnore
 	private AdminUser admin;

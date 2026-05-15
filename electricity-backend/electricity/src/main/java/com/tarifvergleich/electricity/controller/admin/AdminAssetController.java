@@ -109,4 +109,9 @@ public class AdminAssetController {
 		AdminSignatureDto signatureDto = objectMapper.readValue(jsonData, AdminSignatureDto.class);
 		return ResponseEntity.ok(adminAssetService.addAdminSignature(signatureDto, file));
 	}
+
+	@PostMapping("/fetch-admin-signature")
+	public ResponseEntity<?> fetchAdminSignature(@RequestBody AdminSignatureDto adminSignatureDto) {
+		return ResponseEntity.ok(adminAssetService.fetchAdminSignature(adminSignatureDto));
+	}
 }

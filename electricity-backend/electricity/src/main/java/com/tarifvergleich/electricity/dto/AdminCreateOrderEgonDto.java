@@ -1,6 +1,7 @@
 package com.tarifvergleich.electricity.dto;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -49,10 +50,9 @@ public record AdminCreateOrderEgonDto(EgonAddressDto delivery, EgonAddressDto bi
 		EgonProductDto product = new EgonProductDto(provider.getRateId(),
 				helper.toGermalDateStamp(Helper.getCurrentTimeBerlin()), delivery.getTotalConsumption(),
 				provider.getType(), provider.getBranch(), deliveryType,
-				customerConnection.getIsMovingIn() ? helper.toGermalDateStamp(customerConnection.getMoveInDate())
-						: helper.toGermalDateStamp(customerConnection.getDesiredDelivery()),
-				0, customerConnection.getMeterNumber(), customerConnection.getMarketLocationId(),
-				provider.getWorkPrice(), provider.getBasePriceYear());
+				LocalDate.of(2026, 7, 1).atStartOfDay(ZoneId.of("Europe/Berlin")).toLocalDate(), 0,
+				customerConnection.getMeterNumber(), customerConnection.getMarketLocationId(), provider.getWorkPrice(),
+				provider.getBasePriceYear());
 
 		return new AdminCreateOrderEgonDto(address, billingAddress, contactPerson, contact, payment, List.of(product));
 	}

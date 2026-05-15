@@ -7,6 +7,7 @@ import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,7 +47,7 @@ public class AdminSignature {
 	@Column(name = "last_updated_on")
 	private BigInteger lastUpdatedOn;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "admin_id")
 	@JsonIgnore
 	private AdminUser admin;

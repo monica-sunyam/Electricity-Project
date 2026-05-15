@@ -607,10 +607,16 @@ public class CustomerDetailService {
 			ContractToken validToken = contractTokenRespo.findByToken(tokenId)
 					.orElseThrow(() -> new InternalServerException("Invalid token", HttpStatus.OK));
 
+			if (validToken.getUsed())
+				throw new InternalServerException("Token already used", HttpStatus.OK);
+
 			if (validToken.getExpiryDate().compareTo(Helper.getCurrentTimeBerlin()) < 0)
 				throw new InternalServerException("Token expired", HttpStatus.OK);
 
 			customerOrderId = validToken.getOrderId();
+
+			validToken.setUsed(true);
+			contractTokenRespo.save(validToken);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -632,15 +638,30 @@ public class CustomerDetailService {
 				newSignature.setSignatureBank(newFilePath);
 			else if (newSignature.getSignatureCustomer() == null && key.equalsIgnoreCase("signatureCustomer"))
 				newSignature.setSignatureCustomer(newFilePath);
-			else if (newSignature.getSignatureDataProtection() == null && key.equalsIgnoreCase("signatureDataProtection"))
+			else if (newSignature.getSignatureDataProtection() == null
+					&& key.equalsIgnoreCase("signatureDataProtection"))
 				newSignature.setSignatureDataProtection(newFilePath);
 		});
-		
+
 		order.setCustomerContractSignature(newSignature);
-		
+
 		customerOrderRepo.save(order);
 
 		return Map.of("res", true, "message", "Customer signature added successfully");
+	}
+
+	public Map<String, Object> fetchCustomerProfile(CustomerDto customerDto) {
+
+		if (customerDto.getAdminId() == null || customerDto.getAdminId() <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+		if (customerDto.getId() == null || customerDto.getId() <= 0)
+			throw new InternalServerException("Customer id missing", HttpStatus.OK);
+
+		Customer customer = customerRepo.findByCustomerIdAndAdminAdminId(customerDto.getId(), customerDto.getAdminId())
+				.orElseThrow(
+						() -> new InternalServerException("Customer not found with this credential", HttpStatus.OK));
+
+		return Map.of();
 	}
 
 }

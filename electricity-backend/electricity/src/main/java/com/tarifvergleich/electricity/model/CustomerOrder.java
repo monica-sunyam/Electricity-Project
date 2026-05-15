@@ -55,6 +55,9 @@ public class CustomerOrder {
 	@Column(name = "is_expired")
 	private Boolean isExpired;
 	
+	@Column(name = "email_send_to_customer_for_signature")
+	private Boolean emailSendToCustomerForSignature;
+	
 	@Column(name = "expiry_on")
 	private BigInteger expiryOn;
 	
@@ -100,6 +103,7 @@ public class CustomerOrder {
 		orderStatus = 0;
 		isCancelled = false;
 		isExpired = false;
+		emailSendToCustomerForSignature = false;
 	}
 
 }

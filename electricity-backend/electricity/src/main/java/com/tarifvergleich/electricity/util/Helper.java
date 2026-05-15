@@ -15,6 +15,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.http.HttpStatus;
@@ -99,7 +100,7 @@ public class Helper {
 		ZonedDateTime zonedDateTime = localDate.atStartOfDay(zoneId);
 		return BigInteger.valueOf(zonedDateTime.toEpochSecond());
 	}
-
+	
 	public LocalDate toGermalDateStamp(BigInteger dateAndTime) {
 		ZoneId zoneId = ZoneId.of("Europe/Berlin");
 		long timeStamp = dateAndTime.longValue();
@@ -232,5 +233,9 @@ public class Helper {
 			e.printStackTrace();
 			throw new InternalServerException("Error encoding the file", HttpStatus.OK);
 		}
+	}
+	
+	public String generateUUId() {
+		return UUID.randomUUID().toString();
 	}
 }

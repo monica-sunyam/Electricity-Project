@@ -24,12 +24,15 @@ import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonDocument
 import com.tarifvergleich.electricity.dto.EgonFileSignatureResponse.EgonFileSignatureRequest;
 import com.tarifvergleich.electricity.dto.EnergyRateDto;
 import com.tarifvergleich.electricity.exception.InternalServerException;
+import com.tarifvergleich.electricity.model.AdminSignature;
 import com.tarifvergleich.electricity.model.CustomerBookingDocument;
 import com.tarifvergleich.electricity.model.CustomerConnect;
+import com.tarifvergleich.electricity.model.CustomerContractSignature;
 import com.tarifvergleich.electricity.model.CustomerDelivery;
 import com.tarifvergleich.electricity.model.CustomerOrder;
 import com.tarifvergleich.electricity.model.CustomerPayment;
 import com.tarifvergleich.electricity.model.CustomerSelectedProvider;
+import com.tarifvergleich.electricity.repository.AdminSignatureRepository;
 import com.tarifvergleich.electricity.repository.CustomerBookingDocumentRepository;
 import com.tarifvergleich.electricity.repository.CustomerDeliveryRepository;
 import com.tarifvergleich.electricity.repository.CustomerOrderRepository;
@@ -37,6 +40,7 @@ import com.tarifvergleich.electricity.service.ElectricityComparisonService;
 import com.tarifvergleich.electricity.service.EnergyService;
 import com.tarifvergleich.electricity.service.customer.CustomerBookingService;
 import com.tarifvergleich.electricity.util.FileServiceCustomer;
+import com.tarifvergleich.electricity.util.FileServiceSuperAdmin;
 import com.tarifvergleich.electricity.util.Helper;
 
 import jakarta.transaction.Transactional;
@@ -47,16 +51,16 @@ import lombok.RequiredArgsConstructor;
 public class AdminCustomerDeliveryManagementService {
 
 	private final CustomerDeliveryRepository customerDeliveryRepo;
-	private final CustomerBookingDocumentRepository bookingDocumentRepo;
 	private final Helper helper;
 	private final ElectricityComparisonService electricityComparisonService;
 	private final ObjectMapper objectMapper;
 	private final CustomerBookingService customerBookingService;
 	private final EnergyService energyService;
 	private final FileServiceCustomer fileServiceCustomer;
+	private final FileServiceSuperAdmin fileServiceSuperAdmin;
 	private final CustomerOrderRepository customerOrderRepo;
-	private final AsyncServiceAdmin asyncServiceAdmin;
 	private final CustomerBookingDocumentRepository customerBookingDocumentRepo;
+	private final AdminSignatureRepository adminSignatureRepo;
 
 	@Transactional
 	public Map<String, Object> editDeliveryDetailsByAdmin(AdminEditCustomerDeliveryRelated deliveryDetails) {
@@ -391,13 +395,43 @@ public class AdminCustomerDeliveryManagementService {
 		if (order.getCustomerBookingDocument() != null)
 			throw new InternalServerException("Contract already signed", HttpStatus.OK);
 
+		AdminSignature adminSignature = adminSignatureRepo.findByAdminAdminId(customerOrderDto.getAdminId())
+				.orElseThrow(() -> new InternalServerException("Admin signature not found with this credential",
+						HttpStatus.OK));
+
+		if (adminSignature.getFilePath().isEmpty())
+			throw new InternalServerException("Admin signature not found", HttpStatus.OK);
+
+		String fetchAdminSignature = fileServiceSuperAdmin.relativeToBase64(adminSignature.getFilePath());
+
 		CustomerDelivery delivery = order.getDelivery();
+
+		CustomerContractSignature customerSignatures = order.getCustomerContractSignature();
+
+		if (customerSignatures == null)
+			throw new InternalServerException("Customer signature is missing", HttpStatus.OK);
+
+		String fetchSignature = "";
+		String fetchSignatureBank = "";
+		String fetchSignatureCustomer = "";
+		String fetchSignatureDataProtection = "";
+		if (customerSignatures.getSignature() != null && !customerSignatures.getSignature().isEmpty())
+			fetchSignature = fileServiceCustomer.relativeToBase64(customerSignatures.getSignature());
+		if (customerSignatures.getSignatureBank() != null && !customerSignatures.getSignatureBank().isEmpty())
+			fetchSignatureBank = fileServiceCustomer.relativeToBase64(customerSignatures.getSignatureBank());
+		if (customerSignatures.getSignatureCustomer() != null && !customerSignatures.getSignatureCustomer().isEmpty())
+			fetchSignatureCustomer = fileServiceCustomer.relativeToBase64(customerSignatures.getSignatureCustomer());
+		if (customerSignatures.getSignatureDataProtection() != null
+				&& !customerSignatures.getSignatureDataProtection().isEmpty())
+			fetchSignatureDataProtection = fileServiceCustomer
+					.relativeToBase64(customerSignatures.getSignatureDataProtection());
 
 		CustomerBookingDocument bookingDoc = CustomerBookingDocument.builder().orderNo(delivery.getOrderNo())
 				.customer(delivery.getCustomerId()).customerDelivery(delivery).admin(delivery.getAdmin())
 				.customerOrder(order).build();
 
-		EgonFileSignatureRequest signature = EgonFileSignatureResponse.mapSignatures("", "", "", "", "");
+		EgonFileSignatureRequest signature = EgonFileSignatureResponse.mapSignatures(fetchSignature, fetchSignatureBank,
+				fetchAdminSignature, fetchSignatureCustomer, fetchSignatureDataProtection);
 
 		EgonDocumentDto egonBookingResponse = energyService.createBookingPdf(delivery.getOrderNo().toString(),
 				signature);
@@ -423,7 +457,12 @@ public class AdminCustomerDeliveryManagementService {
 
 		customerOrderRepo.save(order);
 
-		return Map.of();
+		String signedPdfAbsolutePath = fileServiceCustomer.getAbsolutePath(bookingDoc.getSignedFileUrl());
+
+		if (signedPdfAbsolutePath == null || signedPdfAbsolutePath.isEmpty())
+			throw new InternalServerException("Fail to convert url", HttpStatus.OK);
+
+		return Map.of("res", true, "signedPdfUrl", signedPdfAbsolutePath);
 	}
 
 	@Transactional
@@ -485,4 +524,5 @@ public class AdminCustomerDeliveryManagementService {
 
 		return Map.of("res", true, "message", "Customer signed document uploaded successfully");
 	}
+
 }

@@ -19,6 +19,8 @@ public interface ListOfHolidaysRepository extends JpaRepository<ListOfHolidays, 
 	
 	Optional<ListOfHolidays> findByAdminAdminIdAndStartDate(Integer adminId, BigInteger startDate);
 	
+	Optional<ListOfHolidays> findFirstByRangeIdOrderByIdDesc(String rangeId);
+	
 	List<ListOfHolidays> findAllByRangeId(String rangeId);
 	
 	List<ListOfHolidays> findAllByAdminAdminIdAndYearOrderByStartDateAsc(Integer adminId, Integer year);

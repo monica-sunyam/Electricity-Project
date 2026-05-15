@@ -2,8 +2,11 @@ package com.tarifvergleich.electricity.service.customer;
 
 import java.math.BigInteger;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -133,8 +136,8 @@ public class CustomerGeneralService {
 
 			}
 
-			return Map.of("res", false, "nextDate", nextThreeWorkingDays, "nextDay", dateFormatter.get("dayOfWeek"), "errorMessage",
-					"Selected day is a holiday", "holidayDated", holidayDates);
+			return Map.of("res", false, "nextDate", nextThreeWorkingDays, "nextDay", dateFormatter.get("dayOfWeek"),
+					"errorMessage", "Selected day is a holiday", "holidayDated", holidayDates);
 		}
 
 		return Map.of("res", true, "message", "valid date");
@@ -208,6 +211,40 @@ public class CustomerGeneralService {
 		mailService.sendMail(to, subject, emailBody);
 
 		return Map.of("res", true, "message", "Request added successfully");
+	}
+
+	public Map<String, Object> fetchWorkingDays(Integer adminId) {
+		if (adminId == null || adminId <= 0)
+			throw new InternalServerException("Admin id missing", HttpStatus.OK);
+
+		Map<LocalDate, String> listOfWorkingDays = new LinkedHashMap<LocalDate, String>();
+
+		BigInteger startDate = helper.toGermamUnixTimestamp(LocalDate.now(ZoneId.of("Europe/Berlin")));
+		
+		if(LocalDateTime.now(ZoneId.of("Europe/Berlin")).getHour() > 15)
+			startDate = helper.toGermamUnixTimestamp(helper.toGermalDateStamp(startDate).plusDays(1));
+
+		while (listOfWorkingDays.size() < 3) {
+
+			if (helper.toGermalDateStamp(startDate).atStartOfDay().getDayOfWeek().equals(DayOfWeek.SUNDAY))
+				startDate = helper.toGermamUnixTimestamp(helper.toGermalDateStamp(startDate).plusDays(1));
+
+			ListOfHolidays holiday = listOfHolidaysRepo.findByAdminAdminIdAndStartDate(adminId, startDate).orElse(null);
+
+			if (holiday == null) {
+				listOfWorkingDays.put(helper.toGermalDateStamp(startDate), Instant.ofEpochSecond(startDate.longValue())
+						.atZone(ZoneId.of("Europe/Berlin")).getDayOfWeek().toString());
+				
+			} else {
+				String rangeId = holiday.getRangeId();
+				ListOfHolidays tempHoliday = listOfHolidaysRepo.findFirstByRangeIdOrderByIdDesc(rangeId)
+						.orElseThrow(() -> new InternalServerException("Error fetching dates", HttpStatus.OK));
+				startDate = tempHoliday.getStartDate();
+			}
+			startDate = helper.toGermamUnixTimestamp(helper.toGermalDateStamp(startDate).plusDays(1));
+		}
+
+		return Map.of("res", true, "data", listOfWorkingDays);
 	}
 
 }
