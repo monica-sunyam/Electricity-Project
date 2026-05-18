@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/admin")
@@ -35,10 +36,12 @@ public class AdminStaticContentController {
             throw new RuntimeException(e);
         }
     }
+
     @PostMapping("/static-all")
     public ResponseEntity<List<AdminStaticContent>> getAllContent() {
         return ResponseEntity.ok(adminStaticContentService.getAllContent());
     }
+
     @PostMapping("/static-update/{id}")
     public ResponseEntity<AdminStaticContent> updateContent(
             @PathVariable Long id,
@@ -49,9 +52,15 @@ public class AdminStaticContentController {
         AdminStaticContent content = new AdminStaticContent();
         content.setTitle(title);
         content.setDescription(description);
-        AdminStaticContent updatedContent = adminStaticContentService.updateContent(id, content);
-        return ResponseEntity.ok(updatedContent);
+
+        try {
+            AdminStaticContent updatedContent = adminStaticContentService.updateContent(id, content, file);
+            return ResponseEntity.ok(updatedContent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
     @PostMapping("/static-delete/{id}")
     public ResponseEntity<Map<String, String>> deleteContent(@PathVariable Long id) {
         adminStaticContentService.deleteContent(id);

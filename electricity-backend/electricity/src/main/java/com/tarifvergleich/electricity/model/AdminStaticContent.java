@@ -1,10 +1,11 @@
 package com.tarifvergleich.electricity.model;
 
+import com.tarifvergleich.electricity.util.Helper;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.math.BigInteger;
 
 @Entity
 @Data
@@ -26,5 +27,10 @@ public class AdminStaticContent {
     private String logoPath;
 
     @Column(name = "upload_time")
-    private LocalDateTime uploadTime;
+    private BigInteger uploadTime;
+
+    @PrePersist
+    protected  void onCreate(){
+        uploadTime = Helper.getCurrentTimeBerlin();
+    }
 }
