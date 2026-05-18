@@ -388,7 +388,7 @@ export class DeliveryAddress implements OnInit, OnDestroy {
 
   openPage(): void {
     // Provider validation
-    if (!this.providerDetails) {
+   if (!this.providerDetails?.providerId) {
       this.errorMessage = 'Bitte wählen Sie zuerst einen Anbieter aus.';
       alert(this.errorMessage);
       return;

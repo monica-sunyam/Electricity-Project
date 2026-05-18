@@ -1,0 +1,491 @@
+/* ══════════════════════════════════════════════
+   PHONE / EMAIL ROW
+══════════════════════════════════════════════ */
+.email-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.prefix-input {
+    width: 70px;
+    flex-shrink: 0;
+    justify-content: center;
+    background: #f0f0f0;
+}
+
+.prefix-input input {
+    text-align: center;
+    font-weight: 600;
+    color: #444;
+}
+
+/* ══════════════════════════════════════════════
+   INPUT FIELDS
+══════════════════════════════════════════════ */
+.input-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #4a4949;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: #fff;
+    transition: border-color 0.15s;
+    /* flex: 1; */
+    position: relative;
+    /* display: inline-block; */
+}
+
+/* .input-field:focus-within {
+  border-color: #0085e0;
+  box-shadow: 0 0 0 3px rgba(0, 133, 224, 0.12);
+} */
+
+.input-field.field-error {
+    border-color: #cc0000;
+}
+
+.field-wrap.field-error {
+    border-color: #cc0000;
+}
+
+.input-field input {
+    background: transparent;
+    /* box-sizing: border-box; */
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    /* padding: 8px 40px; */
+    width: 100%;
+    border: none;
+}
+
+.input-field .material-symbols-outlined {
+    font-size: 18px;
+    color: #888;
+    flex-shrink: 0;
+}
+.pw-toggle {
+    cursor: pointer;
+    /* color: #888; */
+    font-size: 18px !important;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
+.pw-toggle:hover {
+    color: #0085e0;
+}
+
+.field-wrap {
+    position: relative;
+    /* display: flex; */
+    align-items: center;
+}
+
+.field-wrap input {
+    width: 100%;
+    padding-right: 40px;
+    box-sizing: border-box;
+}
+
+.field-wrap .material-symbols-outlined {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.btn-back,
+.btn-password,
+.btn-next {
+    font-size: 16px;
+    color: #0085e0;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    border: none;
+    background-color: #fff;
+}
+
+.code-inputs {
+    display: flex;
+    border: 1px solid black;
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+}
+
+.code-inputs input {
+    width: 70px;
+    height: 50px;
+    text-align: center;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    border-right: 1px solid black;
+}
+
+.code-inputs input:last-child {
+    border-right: none;
+}
+
+.field-wrap-checkbox {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #0085e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 500;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+/* Active (selected) state */
+.field-wrap-checkbox.active {
+    border-color: black;
+    color: white;
+    background-color: #0085e0;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+/* .field-wrap-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+} */
+
+/* Style radio as checkbox */
+.field-wrap-checkbox input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid black;
+    border-radius: 3px; /* square = checkbox look */
+    position: relative;
+    cursor: pointer;
+}
+
+/* Checked state */
+.field-wrap-checkbox input[type="radio"]:checked {
+    background-color: white;
+    border-color: white;
+}
+
+/* Tick mark */
+.field-wrap-checkbox input[type="radio"]:checked::after {
+    content: "✔";
+    position: absolute;
+    font-size: 11px;
+    color: #0085e0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+}
+
+/* When box active (your blue background) */
+.field-wrap-checkbox.active input[type="radio"] {
+    border-color: white;
+}
+
+/* ══════════════════════════════════════════════
+   PASSWORD GUIDELINES
+══════════════════════════════════════════════ */
+.password-guidelines {
+    display: flex;
+    flex-direction: column;
+}
+
+.guideline-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+/* .guideline-icon {
+
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+} */
+
+/* Green check */
+/* .guideline-row.valid .guideline-icon::before {
+  content: "✔";
+  font-size: 14px;
+  color: #2e7d32;
+} */
+
+/* Red cross */
+/* .guideline-row.invalid .guideline-icon::before {
+  content: "✖";
+  font-size: 14px;
+  color: #cc0000;
+} */
+.guideline-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* Green tick */
+.guideline-icon.valid {
+    background-image: url("/right.png");
+}
+
+/* Red cross */
+.guideline-icon.invalid {
+    background-image: url("/cross.png");
+}
+
+/* ══════════════════════════════════════════════
+   SELECT / DROPDOWN (fixed overlap issue)
+══════════════════════════════════════════════ */
+.input-field.select-wrap {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+}
+
+.select-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 18px !important;
+    color: #888;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.styled-select {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    color: #333;
+    padding: 0 12px 10px 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.dropdown-arrow {
+    position: absolute;
+    right: 10px;
+    font-size: 18px !important;
+    color: #888;
+    pointer-events: none;
+}
+
+.guideline-icon {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    background-color: #ccc; /* Default gray */
+    transition: background-color 0.3s ease;
+}
+
+.guideline-icon.valid {
+    background-color: #28a745; /* Success green */
+}
+
+.guideline-icon.invalid {
+    background-color: #dc3545; /* Error red */
+}
+
+/* Optional: Smooth transition for input background */
+input {
+    transition: background-color 0.3s ease;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — MOBILE ≤768px
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    /* ── PAGE LAYOUT: sidebar flattens to bottom ── */
+    .page-layout {
+        flex-direction: column !important;
+        gap: 12px;
+        padding: 8px !important;
+    }
+
+    /* Flatten sidebar so its children participate in page-layout flow */
+    .sidebar {
+        display: contents;
+    }
+
+    /* Main content block: full width, comes first */
+    .main-content {
+        width: 100% !important;
+        order: 0;
+    }
+
+    /* Sidebar children: pushed to the very bottom */
+    app-contact-person {
+        order: 10;
+        width: 100%;
+        display: block;
+    }
+
+    app-need-support {
+        order: 11;
+        width: 100%;
+        display: block;
+    }
+
+    /* ── PROGRESS STEPPER: allow scroll if steps overflow ── */
+    .progress-steps {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+        gap: 0;
+    }
+
+    .progress-steps::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* ── AUTH MODE TOGGLE (Registrierung / Login): stack vertically ── */
+    .container-checkbox {
+        flex-direction: column !important;
+        gap: 10px;
+    }
+
+    .field-wrap-checkbox {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* ── EMAIL-FIELD rows: always stack on mobile ──
+     Covers: phone (prefix+number), street+nr, PLZ+city,
+     email display + ändern button, email readonly + lock icon.
+  ── */
+    .email-field {
+        flex-direction: column !important;
+        gap: 10px !important;
+        align-items: stretch !important;
+    }
+
+    /* Any .input-field inside .email-field: override inline flex/width ── */
+    .email-field .input-field {
+        flex: none !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* The lock icon / ändern button span/button beside email fields:
+     not a field, so keep it inline but left-aligned */
+    .email-field > span,
+    .email-field > button.btn-next {
+        align-self: flex-start;
+        padding-left: 0 !important;
+    }
+
+    /* Prefix (+49) input: full width but visually compact */
+    .prefix-input {
+        width: 100% !important;
+        flex-shrink: unset;
+    }
+
+    /* ── SALUTATION / TITLE inline row: stack vertically ── */
+    div[style*="display: flex"][style*="gap: 15px"] {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    /* select-wrap inputs inside salutation row: full width */
+    .input-field.select-wrap {
+        width: 100% !important;
+        display: block !important;
+        box-sizing: border-box;
+    }
+
+    /* ── ALL FORM FIELDS: full width, one per row ── */
+    .form-group {
+        width: 100%;
+    }
+
+    .field-wrap {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .input-field {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* ── OTP CODE INPUTS: shrink to fit 6 cells on small screens ── */
+    .code-inputs {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .code-inputs input {
+        /* 6 cells across full width: calc((100% - borders) / 6) */
+        width: calc((100vw - 16px - 36px - 12px) / 6); /* viewport - page padding - login-row padding - borders */
+        min-width: 38px;
+        height: 44px;
+        font-size: 18px;
+        flex: 1;
+    }
+
+    /* ── LOGIN-ROW padding: tighter on mobile ── */
+    .login-row {
+        padding: 14px;
+        gap: 14px;
+    }
+
+    /* ── SECTION PANEL / PROGRESS CARD: full width ── */
+    .progress-card,
+    .section-panel,
+    .section-login {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* ── Very small screens ≤480px ── */
+@media (max-width: 480px) {
+    .code-inputs input {
+        height: 40px;
+        font-size: 16px;
+        min-width: 34px;
+    }
+
+    .login-berich {
+        font-size: 14px;
+        padding: 8px 14px;
+    }
+
+    .login-header {
+        font-size: 14px;
+    }
+
+    .login-text,
+    .login-subtext {
+        font-size: 13px;
+    }
+
+    .btn-primary {
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+}

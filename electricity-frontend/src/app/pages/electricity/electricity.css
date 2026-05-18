@@ -9,8 +9,8 @@
 }
 
 .person.active img {
-  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg)
-    brightness(95%) contrast(96%);
+  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg) brightness(95%)
+    contrast(96%);
 }
 
 .person.active .person-count {
@@ -23,8 +23,8 @@
 .person:hover .icon-family-3,
 .person:hover .icon-family-4,
 .person:hover .icon-family-6 {
-  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg)
-    brightness(95%) contrast(96%);
+  filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(1482%) hue-rotate(198deg) brightness(95%)
+    contrast(96%);
 }
 
 .icon-family-1 {
@@ -137,4 +137,73 @@
     display: none;
   }
 
+  /* ---------- ADDRESS ROWS: 2×2 grid with proportional widths ---------- */
+
+  /* Row 1: postleitzahl (narrow) + ort (wide) — already natural, just enforce widths */
+  .row.row-1 {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .row.row-1 .box.small {
+    flex: 0 0 30%;
+    width: 30%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .row.row-1 .box.large,
+  .row.row-1 .dropdown-wrapper.box.large {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Row 2: straße (wide) + hausnummer (narrow) */
+  .row.row-2 {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .row.row-2 .box.large,
+  .row.row-2 .dropdown-wrapper.box.large {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .row.row-2 .box.small {
+    flex: 0 0 28%;
+    width: 28%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Ensure the inner input inside dropdown-wrapper also fills its container */
+  .row .dropdown-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ---------- JETZT VERGLEICHEN: fit content, not full width ---------- */
+
+  .compare {
+    width: auto !important;
+    align-self: flex-start;
+    display: inline-flex;
+  }
+
+  /* ---------- HIDE 4-PERSON TAB ---------- */
+
+  .person.person-4 {
+    display: none;
+  }
 }

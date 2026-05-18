@@ -12,6 +12,5 @@ public record BaseProviderResponse(List<ProviderDataDto> result) {
 		public record RateDto(Integer rateId, String rateName, Double basePriceYear, Double basePriceMonth,
 				Double workPrice, Double workPriceNt) {
 		}
-
 	}
 }

@@ -33,5 +33,4 @@ public class AdminAssetDto {
 		private Integer adminId;
 		private List<AdminAssetDto> menu;
 	}
-
 }

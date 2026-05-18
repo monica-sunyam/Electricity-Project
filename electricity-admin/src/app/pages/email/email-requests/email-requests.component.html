@@ -90,59 +90,66 @@
       </div>
     </div>
 
-    <!-- File Upload -->
-<label class="block mb-2 font-medium">
-  Datei hochladen (optional)
-</label>
+    <!-- PDF FIELD -->
 
-<div
-  *ngFor="let field of uploadFields; let i = index"
-  class="relative mb-4"
->
+    <div class="relative">
 
-  <!-- Upload Box -->
-  <div
-    (click)="fileInput.click()"
-    class="border-2 border-dashed border-gray-200 rounded-2xl p-10 text-center text-gray-400 bg-white cursor-pointer transition duration-300 hover:border-blue-400 hover:bg-blue-50"
-  >
+      <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        Wählen PDFs (optional)
+      </label>
 
-    Klicken Sie hier, um eine Datei hochzuladen (max. 2MB)
+      <div class="flex gap-2">
 
-    <!-- Hidden Input -->
-    <input
-      type="file"
-      #fileInput
-      (change)="onFileSelected($event, i)"
-      class="hidden"
+        <select
+          #pdfSelect
+          name="pdfSelect"
+          [(ngModel)] = "selectedPdfValue"
+          class="w-full border rounded-lg p-3 text-gray-500"
+        >
+          <option value="">wählen dein Pdf</option>
+          <option
+            *ngFor="let pdf of pdfList"
+            [value]="pdf.adminDocId"
+            class="text-black"
+          >
+            {{ pdf.originalFileName }}
+          </option>
+
+        </select>
+
+        <button
+          type="button"
+          (click)="addPdf(pdfSelect.value)"
+          class="w-8 h-8 rounded-full bg-blue-500 text-white"
+        >
+          +
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- SELECTED PDF LIST -->
+
+    <div
+      *ngFor="let pdf of selectedPdfs; let i = index"
+      class="border-2 border-dashed border-gray-200 rounded-2xl p-4 mt-3 flex justify-between items-center hover:border-blue-400 hover:bg-blue-50 transition duration-200 cursor-pointer"
     >
 
-  </div>
+      <span class="text-blue-600 underline truncate">
+        {{ pdf.originalFileName }}
+      </span>
 
-  <!-- Buttons -->
-  <div class="absolute top-3 right-3 flex gap-2">
+      <button
+        type="button"
+        (click)="removePdf(i)"
+        class="w-8 h-8 rounded-full bg-red-400 text-white"
+      >
+        🗑
+      </button>
 
-    <!-- Add -->
-    <button
-      type="button"
-      (click)="addUploadField()"
-      class="w-10 h-10 rounded-full bg-blue-500 text-white"
-    >
-      +
-    </button>
+    </div>
 
-    <!-- Delete -->
-    <button
-      *ngIf="uploadFields.length > 1"
-      type="button"
-      (click)="removeUploadField(i)"
-      class="w-10 h-10 rounded-full bg-red-400 text-white"
-    >
-      🗑
-    </button>
-
-  </div>
-
-</div>
 
   @if(message) {
     <div

@@ -1,0 +1,866 @@
+<div class="page-layout">
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar">
+    <app-contact-person></app-contact-person>
+    <app-need-support></app-need-support>
+  </aside>
+
+  <!-- ══════════ MAIN CONTENT ══════════ -->
+  <div class="main-content" style="min-width: 0">
+    <div class="section-panel" *ngIf="currentStep === 0">
+      <div class="section-header">Zusammenfassung</div>
+
+      <div class="section-body tariff-details">
+        <div class="detail-row">
+          <span class="label">Vertragspartner</span>
+
+          <span class="value">
+            Herr X Eser <br />
+            geboren am 01.01.1970
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Kontoinhaber</span>
+
+          <span class="value">
+            Herr Test Eser <br />
+            An der Maukhalle 5 in <br />
+            91080 Spardorf
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Lieferstelle</span>
+
+          <span class="value">
+            An der Maukhalle 5 in <br />
+            91080 Spardorf <br />
+            Zählernummer: 123456
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Bankverbindung</span>
+
+          <span class="value"> IBAN: DE02120300000000202051 </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Produkt</span>
+
+          <span class="value">
+            Vattenfall Europe Sales <br />
+            ÖkoStrom24 Pur <br />
+            Arbeitspreis 26,80 Ct / kWh <br />
+            Grundpreis 19,90 € / Monat <br />
+            Verbrauch in kWh / Jahr: 1500 kWh <br />
+            24 Monate eingeschränkte Preisgarantie <br />
+            24 Monate Mindestlaufzeit <br />
+            6 Wochen Kündigungsfrist
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Auftragsdaten</span>
+
+          <span class="value">
+            ihre Zählernummer lautet <strong>123456</strong> <br />
+            Wechsel zum <br />
+            ihre Kundennummer <strong>123456</strong> <br />
+            beim Vorversorger <strong>Lechwerke AG</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-actions">
+        <button class="btn-primary" (click)="nextStep(1)">Auftrag speichern</button>
+      </div>
+    </div>
+
+    <div class="section-panel" *ngIf="currentStep === 1">
+      <div class="digital-signature-flow">
+        <!-- Progress stepper -->
+        <div class="progress-card">
+          <div class="progress-header">Vertrag digital unterschreiben</div>
+
+          <div class="progress-steps">
+            <!-- STEP 1 -->
+            <div class="step" [class.active]="isActiveStep(1)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(1)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 1">1</span>
+                </div>
+              </div>
+
+              <div class="step-label">Vertrag</div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step" [class.active]="isActiveStep(2)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(2)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 2">2</span>
+                </div>
+              </div>
+
+              <div class="step-label">SEPA-Mandat</div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="step" [class.active]="isActiveStep(3)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(3)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 3">3</span>
+                </div>
+              </div>
+
+              <div class="step-label">Beratungsnachw.</div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="step" [class.active]="isActiveStep(4)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(4)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 4">4</span>
+                </div>
+              </div>
+
+              <div class="step-label">zus. Unterschriften</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vertragspartner -->
+      <div class="section-header">Vertragspartner</div>
+
+      <div class="section-body tariff-details">
+        <div class="detail-row no-border">
+          <span class="label">Name</span>
+          <span class="value">Herr X Eser</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Geburtstag</span>
+          <span class="value">01.01.1970</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Telefon</span>
+          <span class="value">0176 22955923</span>
+        </div>
+      </div>
+
+      <!-- Lieferstelle -->
+      <div class="section-header">Lieferstelle</div>
+
+      <div class="section-body tariff-details">
+        <div class="detail-row no-border">
+          <span class="label">Anschrift</span>
+
+          <span class="value">
+            An der Maukhalle 5 in <br />
+            91080 Spardorf
+          </span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Zählernummer</span>
+          <span class="value">123456</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Lieferantenwechsel</span>
+          <span class="value">schnellstmöglich</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">akt. Versorger</span>
+          <span class="value">Lechwerke AG</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Kdn. Versorger</span>
+          <span class="value">123456</span>
+        </div>
+      </div>
+
+      <!-- gewähltes Produkt -->
+      <div class="section-header">gewähltes Produkt</div>
+
+      <div class="section-body tariff-details">
+        <div class="detail-row no-border">
+          <span class="label">Produktgeber</span>
+          <span class="value">Vattenfall Europe Sales</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Tarif</span>
+          <span class="value">ÖkoStrom24 Pur</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Preis im 1. Jahr</span>
+          <span class="value">640,80 €</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Verbrauch pro Jahr</span>
+          <span class="value">1500 kWh</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Arbeitspreis</span>
+          <span class="value">26,80 Ct / kWh</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Grundpreis</span>
+          <span class="value">19,90 € / Monat</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Preisgarantie</span>
+          <span class="value">24 Monate</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Laufzeit</span>
+          <span class="value">24 Monate</span>
+        </div>
+
+        <div class="detail-row no-border">
+          <span class="label">Kündigungsfrist</span>
+          <span class="value">6 Weeks</span>
+        </div>
+      </div>
+
+      <div class="legal-terms-section">
+        <div class="legal-block">
+          <div class="column-header">AGB</div>
+          <div class="scrollable-document-box">
+            <h1 class="doc-main-title">Allgemeine Geschäftsbedingungen</h1>
+            <p class="doc-subtitle">
+              der Vattenfall Europe Sales GmbH für die Strombelieferung von Privat- und
+              Gewerbekundenaußerhalb der Grundversorgung (Stand: Februar 2026)
+            </p>
+            <p class="doc-text-neutral">
+              Zur besseren Lesbarkeit verwenden wir im Text dieses Dokumentes die männliche Form.
+              Gemeint sind jedoch immer alle Geschlechter.
+            </p>
+            <p class="doc-section-heading">§ 1 Anwendungsbereich, Begriffsbestimmungen</p>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="accept-agb" class="custom-checkbox" />
+            <label for="accept-agb" class="checkbox-label">
+              Hiermit bestätige ich die AGBs gelesen und verstanden zu haben
+            </label>
+          </div>
+        </div>
+
+        <hr class="legal-divider" />
+
+        <div class="legal-block">
+          <div class="column-header">Widerrufsbelehrung</div>
+          <div class="scrollable-document-box">
+            <p class="doc-section-heading">Widerrufsbelehrung</p>
+            <p class="doc-text-bold">Widerrufsrecht:</p>
+            <p class="doc-paragraph">
+              Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu
+              widerrufen. Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsschlusses.
+              Um Ihr Widerrufsrecht auszuüben, müssen Sie uns (Vattenfall Europe Sales GmbH,
+              Überseering 12, 22297 Hamburg, Telefon 0800 255 11 55, Fax 040 657 988 008 und E-Mail
+              widerruf@vattenfall.de) mittels einer eindeutigen Erklärung (z.B. ein mit der Post
+              versandter Brief, Telefax oder E-Mail) über Ihren Entschluss, diesen Vertrag zu
+              widerrufen, informieren. Sie können dafür das beigefügte Muster-Widerrufsformular
+              verwenden, das jedoch nicht vorgeschrieben ist. Zur Wahrung der Widerrufsfrist reicht
+              es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der
+              Widerrufsfrist absenden.
+            </p>
+            <p class="doc-text-bold">Folgen des Widerrufs:</p>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="accept-widerruf" class="custom-checkbox" />
+            <label for="accept-widerruf" class="checkbox-label">
+              Hiermit bestätige ich die Widerrufsbelehrung gelesen und verstanden zu haben
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="sepa-legal-text">
+        Ich beauftrage Vattenfall Europe Sales mit der Belieferung der hier aufgeführten
+        Lieferstelle und bevollmächtige Vattenfall Europe Sales zur Vornahme aller Handlungen sowie
+        Abgabe und Entgegennahme aller Erklärungen, die im Zusammenhang mit dem Wechsel des
+        Versorgers notwendig sind, u.a. meinen derzeitigen Liefervertrag zu kündigen.
+      </div>
+
+      <div class="signature-section">
+        <label class="signature-alert-label">
+          Bitte unterschreiben Sie im folgenden Feld für den Antrag
+        </label>
+
+        <div class="signature-container">
+          <canvas #canvas class="signature-canvas webView"></canvas>
+
+          <div class="signature-actions">
+            <button type="button" class="btn-clear-signature" (click)="clearSignature(0)">
+              Unterschrift löschen
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" (click)="nextStep(2)">weiter</button>
+      </div>
+    </div>
+
+    <div class="section-panel" *ngIf="currentStep === 2">
+      <div class="digital-signature-flow">
+        <!-- Progress stepper -->
+        <div class="progress-card">
+          <div class="progress-header">Vertrag digital unterschreiben</div>
+
+          <div class="progress-steps">
+            <!-- STEP 1 -->
+            <div class="step" [class.active]="isActiveStep(1)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(1)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 1">1</span>
+                </div>
+              </div>
+
+              <div class="step-label">Vertrag</div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step" [class.active]="isActiveStep(2)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(2)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 2">2</span>
+                </div>
+              </div>
+
+              <div class="step-label">SEPA-Mandat</div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="step" [class.active]="isActiveStep(3)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(3)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 3">3</span>
+                </div>
+              </div>
+
+              <div class="step-label">Beratungsnachw.</div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="step" [class.active]="isActiveStep(4)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(4)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 4">4</span>
+                </div>
+              </div>
+
+              <div class="step-label">zus. Unterschriften</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">SEPA-Lastschriftmandat</div>
+
+      <div class="section-body tariff-details" style="gap: 10px">
+        <div class="detail-row">
+          <span class="label">Kontoinhaber</span>
+          <span class="value">Herr Test Eser</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Anschrift</span>
+          <span class="value">
+            An der Maukhalle 5 in <br />
+            91080 Spardorf
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">IBAN</span>
+          <span class="value">DE02120300000000202051</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Kreditinstitut</span>
+          <span class="value">Deutsche Kreditbank Berlin</span>
+        </div>
+
+        <div class="sepa-legal-text">
+          Ich ermächtige Vattenfall Europe Sales, die von mir nach diesem Vertrag zu entrichtenden
+          Zahlungen bei Fälligkeit von meinem Konto mittels Lastschrift einzuziehen. Zugleich weise
+          ich mein Kreditinstitut an, die von Vattenfall Europe Sales auf mein Konto gezogenen
+          Lastschriften einzulösen. Ich kann innerhalb von acht Wochen, beginnend mit dem
+          Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit
+          meinem Kreditinstitut vereinbarten Bedingungen. Meine Mandatsreferenz wird mir mit meiner
+          Vertragsbestätigung mitgeteilt.
+        </div>
+
+        <div class="signature-section">
+          <label class="signature-alert-label">
+            Bitte unterschreiben Sie im folgenden Feld für das SEPA-Lastschriftmandat
+          </label>
+
+          <div class="signature-container">
+            <canvas #canvas class="signature-canvas webView"></canvas>
+
+            <div class="signature-actions">
+              <button type="button" class="btn-clear-signature" (click)="clearSignature(0)">
+                Unterschrift löschen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-back" (click)="currentStep = 1" style="margin-right: auto">
+          &lt; Zurück
+        </button>
+        <button class="btn-primary" (click)="nextStep(3)">weiter</button>
+      </div>
+    </div>
+
+    <div class="section-panel" *ngIf="currentStep === 3">
+      <div class="digital-signature-flow">
+        <div class="flow-title">Vertrag digital unterschreiben</div>
+        <div class="digital-signature-flow">
+          <!-- Progress stepper -->
+          <div class="progress-card">
+            <div class="progress-header">Vertrag digital unterschreiben</div>
+
+            <div class="progress-steps">
+              <!-- STEP 1 -->
+              <div class="step" [class.active]="isActiveStep(1)">
+                <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(1)">
+                  <div class="inner-circle">
+                    <svg
+                      *ngIf="currentStep > 1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      class="icon-tick"
+                    >
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+
+                    <span *ngIf="currentStep <= 1">1</span>
+                  </div>
+                </div>
+
+                <div class="step-label">Vertrag</div>
+              </div>
+
+              <!-- STEP 2 -->
+              <div class="step" [class.active]="isActiveStep(2)">
+                <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(2)">
+                  <div class="inner-circle">
+                    <svg
+                      *ngIf="currentStep > 2"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      class="icon-tick"
+                    >
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+
+                    <span *ngIf="currentStep <= 2">2</span>
+                  </div>
+                </div>
+
+                <div class="step-label">SEPA-Mandat</div>
+              </div>
+
+              <!-- STEP 3 -->
+              <div class="step" [class.active]="isActiveStep(3)">
+                <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(3)">
+                  <div class="inner-circle">
+                    <svg
+                      *ngIf="currentStep > 3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      class="icon-tick"
+                    >
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+
+                    <span *ngIf="currentStep <= 3">3</span>
+                  </div>
+                </div>
+
+                <div class="step-label">Beratungsnachw.</div>
+              </div>
+
+              <!-- STEP 4 -->
+              <div class="step" [class.active]="isActiveStep(4)">
+                <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(4)">
+                  <div class="inner-circle">
+                    <svg
+                      *ngIf="currentStep > 4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      class="icon-tick"
+                    >
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+
+                    <span *ngIf="currentStep <= 4">4</span>
+                  </div>
+                </div>
+
+                <div class="step-label">zus. Unterschriften</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-body verification-container">
+        <h2 class="verification-main-title">Beratungsnachweis für Privatkunden</h2>
+
+        <div class="verification-content-body">
+          <span class="section-sub-tag">Qualitätsliste</span>
+
+          <p class="intro-paragraph">
+            Wir wollen gut und qualitätsverpflichtet beraten - und Missverständnisse sollen
+            vermieden werden. Bitte helfen Sie uns mit folgender Bestätigung:
+          </p>
+
+          <p class="intro-statement-lead">
+            Hiermit bestätige ich gegenüber dem beratenden Vertriebspartner
+          </p>
+
+          <div class="partner-meta-box">Manuel Markovic 16182</div>
+
+          <ol class="compliance-ordered-list">
+            <li>
+              Der Vertriebspartner hat nicht behauptet, er sei Mitarbeiter des örtlichen
+              Grundversorgers, der Stadtwerke vor Ort oder eines anderen Energielieferanten oder
+              stehe in einem Zusammenhang mit diesen.
+            </li>
+            <li>
+              Er hat auch nicht behauptet, die Vermittlung von Strom bzw. Gas erfolge mit Zustimmung
+              und/ oder im Auftrag des örtlichen Grundversorgers, der Stadtwerke vor Ort oder eines
+              anderen Energielieferanten.
+            </li>
+            <li>
+              Er hat ferner nicht behauptet, dass bei einem nicht durchgeführten Wechsel die Strom-
+              oder Gasversorgung nicht mehr stattfinden würde oder gefährdet sei.
+            </li>
+            <li>
+              Schließlich hat er auch nicht behauptet, mein jetziger Energielieferant sei
+              gesellschaftlich mit dem neuen Lieferanten verbunden.
+            </li>
+            <li>Er hat nicht behauptet, es dürfe nur noch Ökostrom vertrieben werden.</li>
+            <li>
+              Er hat nicht behauptet, ein evtl. bestehender Stromliefervertrag mit dem
+              Grundversorger bliebe bei Abschluss eines neuen Vertrages bestehen.
+            </li>
+            <li>
+              Gerne bestätige ich, dass ich umfassend über das Produkt Strom/ Gas und über den
+              Ablauf beim Anbieterwechsel informiert wurde.
+            </li>
+            <li>
+              Gerne bestätige ich, dass die Informationen nach der EU-Datenschutz-Grundverordnung
+              (DS-GVO) (Datenschutzhinweise) der beteiligten selbständigen Handelsvertreter und
+              Vertriebsgesellschaften mir mitgeteilt bzw. zur Verfügung gestellt wurden.
+            </li>
+          </ol>
+
+          <div class="client-meta-box">
+            X, Eser<br />
+            An der Maukhalle 5, 91080, Spardorf
+          </div>
+        </div>
+
+        <div class="dual-signature-row">
+          <!-- SIGNATURE 1 -->
+          <div class="sig-block-group">
+            <label class="sig-alert-label">
+              Unterschrift des
+              <span class="highlight">Vertriebspartners</span>
+              für
+            </label>
+
+            <div class="signature-container">
+              <canvas #canvas class="signature-canvas"></canvas>
+
+              <div class="signature-actions">
+                <button type="button" class="btn-clear-signature" (click)="clearSignature(0)">
+                  Unterschrift löschen
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIGNATURE 2 -->
+          <div class="sig-block-group">
+            <label class="sig-alert-label">
+              Unterschrift des
+              <span class="highlight">Kunden</span>
+              für den
+            </label>
+
+            <div class="signature-container">
+              <canvas #canvas class="signature-canvas"></canvas>
+
+              <div class="signature-actions">
+                <button type="button" class="btn-clear-signature" (click)="clearSignature(1)">
+                  Unterschrift löschen
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-back" (click)="currentStep = 2" style="margin-right: auto">
+          &lt; Zurück
+        </button>
+        <button class="btn-primary" (click)="nextStep(4)">weiter</button>
+      </div>
+    </div>
+
+    <div class="section-panel" *ngIf="currentStep === 4">
+      <div class="digital-signature-flow">
+        <!-- Progress stepper -->
+        <div class="progress-card">
+          <div class="progress-header">Vertrag digital unterschreiben</div>
+
+          <div class="progress-steps">
+            <!-- STEP 1 -->
+            <div class="step" [class.active]="isActiveStep(1)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(1)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 1">1</span>
+                </div>
+              </div>
+
+              <div class="step-label">Vertrag</div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step" [class.active]="isActiveStep(2)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(2)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 2">2</span>
+                </div>
+              </div>
+
+              <div class="step-label">SEPA-Mandat</div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="step" [class.active]="isActiveStep(3)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(3)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 3">3</span>
+                </div>
+              </div>
+
+              <div class="step-label">Beratungsnachw.</div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="step" [class.active]="isActiveStep(4)">
+              <div class="step-circle" style="cursor: pointer" (click)="navigateToMainStep(4)">
+                <div class="inner-circle">
+                  <svg
+                    *ngIf="currentStep > 4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="icon-tick"
+                  >
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+
+                  <span *ngIf="currentStep <= 4">4</span>
+                </div>
+              </div>
+
+              <div class="step-label">zus. Unterschriften</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-body consent-container">
+        <h2 class="consent-main-title">
+          Werbeeinwilligung <span class="required-asterisk">*</span>
+        </h2>
+
+        <div class="consent-notice-box">
+          Ich willige einer Kontaktaufnahme zu Werbezwecken zu und bestätige dies mit meiner
+          Unterschrift.
+        </div>
+
+        <div class="consent-options-group">
+          <div class="checkbox-row alignment-top">
+            <input type="checkbox" id="consent-general" class="custom-checkbox" />
+            <label for="consent-general" class="checkbox-label">
+              Vattenfall Europe Sales darf mich zu Werbezwecken kontaktieren.
+            </label>
+          </div>
+
+          <div class="checkbox-row alignment-top">
+            <input type="checkbox" id="consent-phone" class="custom-checkbox" />
+            <label for="consent-phone" class="checkbox-label">
+              Vattenfall Europe Sales darf mich zu Werbezwecken telefonisch kontaktieren.
+            </label>
+          </div>
+
+          <div class="checkbox-row alignment-top">
+            <input type="checkbox" id="consent-mobile" class="custom-checkbox" />
+            <label for="consent-mobile" class="checkbox-label">
+              Vattenfall Europe Sales darf mich zu Werbezwecken Mobil kontaktieren.
+            </label>
+          </div>
+
+          <div class="checkbox-row alignment-top">
+            <input type="checkbox" id="consent-email" class="custom-checkbox" />
+            <label for="consent-email" class="checkbox-label">
+              Vattenfall Europe Sales darf mich zu Werbezwecken per E-Mail kontaktieren.
+            </label>
+          </div>
+        </div>
+
+        <div class="signature-section mandatory-margin">
+          <div class="signature-alert-label">
+            Unterschrift des <span class="bold-text">Kunden</span>
+            <div class="sub-alert-text">
+              Diese Unterschrift ist für den Abschluss verpflichtend!
+            </div>
+          </div>
+
+          <div class="signature-container">
+            <canvas #canvas class="signature-canvas webView"></canvas>
+
+            <div class="signature-actions">
+              <button type="button" class="btn-clear-signature" (click)="clearSignature(0)">
+                Unterschrift löschen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-back" (click)="currentStep = 3" style="margin-right: auto">
+          &lt; Zurück
+        </button>
+        <button class="btn-primary">weiter</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -15,8 +15,10 @@ export class EmailRequestsComponent {
   title: string = '';
   subtitle: string = '';
   emailContent: string = '';
-  uploadFields: number[] = [0];
-  selectedFiles : any[] = [];
+
+  pdfList: any[] = [];
+  selectedPdfs: any[] = [];
+  selectedPdfValue: String = '';
   message: string = '';
   isError: boolean = false;
 
@@ -27,32 +29,57 @@ export class EmailRequestsComponent {
   ngOnInit(): void {
     this.http.get("http://localhost:8080/email-category/all")
     .subscribe((res: any) => {
+      console.log(res);
       this.categories = res;
+ 
     })
+
+    this.loadPdfs();
+  }
+  
+  loadPdfs() {
+
+    const payload = {
+      adminId: 1,
+      page: 0,
+      size: 100
+    };
+    this.http.post<any>('http://192.168.155:8080/admin/fetch-admin-documents',
+      payload
+    )
+    .subscribe({
+
+      next: (res) => {
+        console.log(res);
+        this.pdfList = res.data || res.content || res;
+      },
+
+      error: (err) => {
+        console.log(err);
+      }
+    });
   }
 
-  addUploadField() {
-    if ( this.uploadFields.length < 5) {
-      this.uploadFields.push(this.uploadFields.length);
-    } else {
-      this.message = "Maximum 5 files allowed";
-      this.isError = true;
-      setTimeout(() => {
-        this.message = "";
-      }, 2000);
-    }
+  addPdf(pdfId: any) {
+
+    const pdf = this.pdfList.find(
+      p => p.adminDocId == pdfId
+    );
+      if (
+      pdf &&
+      !this.selectedPdfs.some ( p => p.adminDocId == pdf.adminDocId
+        )
+      ) {
+          this.selectedPdfs.push(pdf);
+        }
+        this.selectedPdfValue = '';
   }
 
-  removeUploadField(index: number) {
-    this.uploadFields.splice(index, 1);
-    this.selectedFiles.splice(index, 1);
+  removePdf(index: number) {
+    this.selectedPdfs.splice(index, 1);
   }
 
-  onFileSelected(event: any, index: number) {
-    this.selectedFiles[index] = event.target.files[0];
-  }
-
-    submitForm() {
+  submitForm() {
 
       if (
         !this.selectedCategory ||
@@ -72,14 +99,16 @@ export class EmailRequestsComponent {
       }
 
       const body = {
+
         title: this.title,
         subtitle: this.subtitle,
         emailContent: this.emailContent,
         createdBy: 'Admin',
 
-        category: {
-          cateId: this.selectedCategory
-        }
+        cateId: this.selectedCategory,
+
+        pdfIds: this.selectedPdfs.map(pdf => pdf.adminDocId)
+
       };
 
       this.http.post(
@@ -96,6 +125,7 @@ export class EmailRequestsComponent {
           this.subtitle = '';
           this.emailContent = '';
           this.selectedCategory = '';
+          this.selectedPdfs = [];
 
           setTimeout(() => {
             this.message = '';
@@ -103,6 +133,8 @@ export class EmailRequestsComponent {
         },
 
         error: (err) => {
+
+          console.log(err);
 
           this.message = 'Submission Failed';
           this.isError = true;

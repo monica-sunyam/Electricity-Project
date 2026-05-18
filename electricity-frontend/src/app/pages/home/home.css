@@ -3,7 +3,7 @@
   margin: 30px 0px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   gap: 4.5%;
-  background-image: url('/assets/images/Slider_3_Strom_und_Gasvergleich_1920_700.png');
+  background-image: url("/assets/images/Slider_3_Strom_und_Gasvergleich_1920_700.png");
   background-size: cover; /* fill container */
   background-position: center; /* center the image */
   background-repeat: no-repeat;
@@ -405,7 +405,7 @@
     height: auto;
 
     margin: 0;
-    padding: 0 12px;
+    padding: 0;
 
     gap: 0;
 
@@ -415,18 +415,20 @@
   }
 
   .home-container::before {
-    content: '';
+    content: "";
 
-    width: 100%;
+    width: 100vw;
     height: 170px;
 
     display: block;
 
-    background-image: url('/assets/images/Slider_3_Strom_und_Gasvergleich_1920_700.png');
+    background-image: url("/assets/images/Slider_3_Strom_und_Gasvergleich_1920_700.png");
 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+
+    margin-left: calc(-50vw + 50%);
   }
 
   .home-left {
@@ -443,10 +445,8 @@
     min-width: 100%;
 
     margin-bottom: 12px;
-  }
-
-  .home-wrap {
     padding: 0 12px;
+    box-sizing: border-box;
   }
 
   /* ---------- ELECTRICITY SECTION ---------- */
@@ -456,43 +456,100 @@
 
     width: 100%;
 
-    padding: 10px 0;
+    padding: 10px 12px;
 
     background: transparent;
+    box-sizing: border-box;
+
+    position: relative;
+    /* Do NOT use overflow:hidden here — it would clip the scrollable row.
+       The ::after pseudo-element sits inside and uses pointer-events:none. */
+    overflow: visible;
+  }
+
+  /* Right-side fade + chevron arrow to hint horizontal scroll */
+  .electricity-container::after {
+    content: "›";
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    width: 36px;
+    height: calc(100% - 20px);
+    background: linear-gradient(to right, transparent 0%, rgba(245, 245, 245, 0.92) 55%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 4px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #003366;
+    pointer-events: none;
+    border-radius: 0 8px 8px 0;
+    z-index: 2;
   }
 
   .electricity {
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: unset;
-    gap: 10px;
+    flex-wrap: nowrap; /* single row — no wrapping */
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
     border: none;
     background: transparent;
     width: 100%;
+    padding: 0 0 6px 0; /* space for scrollbar thumb */
+
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    /* Always-visible thin scrollbar so users know it's scrollable */
+    scrollbar-width: thin;
+    scrollbar-color: #003366 rgba(0, 51, 102, 0.15);
+  }
+
+  /* Webkit scrollbar styling */
+  .electricity::-webkit-scrollbar {
+    height: 4px;
+  }
+  .electricity::-webkit-scrollbar-track {
+    background: rgba(0, 51, 102, 0.1);
+    border-radius: 4px;
+  }
+  .electricity::-webkit-scrollbar-thumb {
+    background: #003366;
+    border-radius: 4px;
   }
 
   .icon-btn-electricity {
     display: inline-flex;
 
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 
+    flex: 0 0 auto; /* don't shrink — enables horizontal scroll */
     width: auto;
+    min-width: 100px; /* enough room for icon + short label */
 
     min-height: 42px;
 
-    padding: 8px 14px;
+    padding: 8px 12px;
 
     border-radius: 10px;
 
-    white-space: nowrap;
+    /* Let the button itself wrap to accommodate multi-word labels */
+    white-space: normal;
 
-    flex: 0 0 auto;
+    scroll-snap-align: start;
+
+    box-sizing: border-box;
   }
 
   .btn-text {
-    font-size: 14px;
-    text-align: center;
+    font-size: 13px;
+    text-align: left;
+    white-space: normal;
+    line-height: 1.2;
   }
 
   /* ---------- MOBILE ADVICE ---------- */
@@ -501,20 +558,7 @@
     display: flex;
   }
 
-  .container-advice.mobile-only {
-    order: 3;
-
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 0.5rem;
-
-    padding-bottom: 0.5rem;
-
-    box-sizing: border-box;
-  }
+  /* (container-advice styles consolidated above) */
 
   .expert-container {
     display: flex;
@@ -619,6 +663,8 @@
   .service-container {
     order: 4;
     width: 100%;
+    padding: 0 6px;
+    box-sizing: border-box;
   }
 
   .icon-btn-service,
@@ -626,6 +672,159 @@
     width: 100%;
 
     justify-content: flex-start;
+  }
+
+  /* ---------- HIDE 4-FAMILY TAB IN COMPARISON SECTION ON MOBILE ---------- */
+
+  /* Target by data attribute (recommended: add data-persons="4" to the button in the comparison component) */
+  [data-persons="4"],
+  [data-family="4"],
+  /* Target by common class patterns used for person-count tabs */
+  .person-tab-4,
+  .tab-4-persons,
+  .persons-4 {
+    display: none !important;
+  }
+
+  /* ---------- ADDRESS DROPDOWNS: 2 rows × 2 items ---------- */
+
+  .address-fields,
+  .address-row,
+  .form-address,
+  [class*="address"] .form-group-row,
+  [class*="address"] .input-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  /* Pincode: narrow (5 digits) — scoped to form elements only */
+  .address-fields .field-pincode,
+  .address-row .field-pincode,
+  input[class*="plz"],
+  input[class*="postleitzahl"],
+  select[class*="plz"],
+  input[name*="plz"],
+  input[name*="zip"],
+  input[name*="postal"],
+  select[name*="plz"] {
+    flex: 0 0 30% !important;
+    width: 30% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* City: wide — scoped to form elements only to avoid matching
+     unrelated classes that contain "city" as a substring (e.g. "electricity") */
+  .address-fields .field-city,
+  .address-row .field-city,
+  input[class*="ort"],
+  input[class*="city"],
+  input[class*="stadt"],
+  select[class*="ort"],
+  select[class*="city"],
+  select[class*="stadt"],
+  input[name*="ort"],
+  input[name*="city"],
+  select[name*="ort"] {
+    flex: 0 0 calc(70% - 8px) !important;
+    width: calc(70% - 8px) !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Generic address fields fall into 50/50 — scoped to direct children of address wrappers only */
+  .address-fields > input,
+  .address-fields > select,
+  .address-row > input,
+  .address-row > select {
+    flex: 0 0 calc(50% - 4px);
+    width: calc(50% - 4px);
+    box-sizing: border-box;
+  }
+
+  /* ---------- JETZT VERGLEICHEN BUTTONS - no full width ---------- */
+
+  button[class*="vergleich"],
+  button[class*="compare"],
+  .jetzt-vergleichen,
+  [class*="jetzt"] button,
+  button.submit-btn,
+  .vergleichen-btn,
+  input[type="submit"][value*="Vergleich"],
+  button[type="submit"] {
+    width: auto !important;
+    min-width: unset !important;
+    align-self: flex-start !important;
+    display: inline-flex !important;
+  }
+
+  /* ---------- LIVE CHAT REMOVAL ---------- */
+
+  .contact-button:first-child,
+  .contact .contact-button[data-type="livechat"],
+  .contact .contact-button:has(.chat-icon[alt="chat-icon"]) {
+    display: none !important;
+  }
+
+  /* ---------- REMAINING CONTACT OPTIONS: single horizontal row ---------- */
+
+  .contact {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    grid-template-columns: unset !important;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .contact .contact-button {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 6px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .contact .contact-button .text {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- STICKY CONTAINER-ADVICE ---------- */
+
+  .container-advice.mobile-only {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.5rem;
+
+    padding: 0.5rem 12px;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+
+    box-sizing: border-box;
+
+    background-color: #f5f5f5;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+
+    /* Ensure it never covers content above — page must have enough bottom padding */
+  }
+
+  /* Give the footer enough bottom padding so it clears the fixed advice bar.
+     Target common Angular footer selectors — adjust the tag name if yours differs. */
+  app-footer,
+  footer,
+  [class*="footer"] {
+    padding-bottom: 170px !important;
   }
 
   /* ---------- SERVICES COMPANY ---------- */
@@ -636,7 +835,7 @@
 
     gap: 1rem;
 
-    padding: 1rem;
+    padding: 1rem; /* normal padding — no artificial extra clearance here */
   }
 
   .container-other-services {
@@ -716,10 +915,11 @@
 
     position: absolute;
 
+    top: 80px;
     right: 14px;
 
-    width: 50px;
-    height: 50px;
+    width: 38px;
+    height: 38px;
 
     align-items: center;
     justify-content: center;
@@ -737,8 +937,8 @@
   }
 
   .banner-call-icon {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
 
     object-fit: contain;
   }

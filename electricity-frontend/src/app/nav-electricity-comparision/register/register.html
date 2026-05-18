@@ -427,7 +427,7 @@
           </div>
 
           <!-- Phone number -->
-          <div class="email-field">
+          <div class="email-field no-column">
             <div class="input-field prefix-input">
               <input type="text" value="+49" readonly />
             </div>
@@ -564,7 +564,7 @@
               Wir haben Ihnen bereits einen neuen Code an Ihre E-Mail-Adresse gesendet.
             </ng-template>
           </div>
-          <div class="email-field">
+          <div class="email-field no-column">
             <div class="input-field" style="flex: 1; background-color: #afadad; border: none">
               <span class="material-symbols-outlined" style="color: black">account_circle</span>
               <input
@@ -686,7 +686,7 @@
           <div class="login-text">
             Fertig! Mit einem Klick auf „Anmelden und fortfahren“ gelangen Sie zu Ihrem Kundenkonto.
           </div>
-          <div class="email-field">
+          <div class="email-field no-column">
             <div class="input-field" style="flex: 1; background-color: #afadad; border: none">
               <span class="material-symbols-outlined" style="color: black">account_circle</span>
               <input
@@ -740,7 +740,7 @@
               >
               <input #emailField name="email" type="email" [value]="email" [(ngModel)]="email" />
             </div>
-            <button class="btn-next" style="margin-left: 10px">
+            <button class="btn-next">
               ändern
               <span
                 ><img
@@ -798,7 +798,7 @@
       <div class="container-login" *ngIf="authMode === 'login' && currentStep === 5">
         <div class="login-berich" style="background-color: #00a651">Bereits eingeloggt</div>
         <div class="login-row">
-          <div class="email-field">
+          <div class="email-field no-column">
             <div class="input-field" style="flex: 1; background-color: #afadad; border: none">
               <span class="material-symbols-outlined" style="color: black">account_circle</span>
               <input
@@ -889,7 +889,7 @@
                 [(ngModel)]="email"
               />
             </div>
-            <button class="btn-next" style="margin-left: 10px">
+            <button class="btn-next">
               ändern
               <span
                 ><img
@@ -1024,7 +1024,7 @@
           <div class="login-text">
             Wir haben bereits einen neuen Code an Ihre E-Mail-Adresse gesendet.
           </div>
-          <div class="email-field">
+          <div class="email-field no-column">
             <div class="input-field" style="flex: 1; background-color: #afadad; border: none">
               <span class="material-symbols-outlined" style="color: black">account_circle</span>
               <input

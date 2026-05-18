@@ -1,19 +1,172 @@
-<div class="page-layout">
-  <!-- ══════════ SIDEBAR ══════════ -->
-  <aside class="sidebar">
-    <!-- Ansprechpartner -->
-    <app-contact-person></app-contact-person>
-    <app-need-support></app-need-support>
-  </aside>
-  <!-- /sidebar -->
+<div class="impressum-page">
+  <!-- Banner Image -->
+  <div class="banner">
+    <img src="assets/images/imprintBanner.png" alt="Banner" />
+  </div>
+  <div class="page-layout">
+    <!-- ══════════ SIDEBAR ══════════ -->
+    <aside class="sidebar">
+      <!-- Ansprechpartner -->
+      <app-contact-person></app-contact-person>
+      <app-need-support></app-need-support>
+    </aside>
+    <!-- /sidebar -->
 
-  <div class="main-content" style="min-width: 0">
-    <!-- <div class="contact-berich">Kontaktformular</div> -->
-    <div class="contact-section">
-      <div class="contact-section-header">Kontaktformular</div>
+    <div class="main-content" style="min-width: 0">
+      <!-- <div class="contact-berich">Kontaktformular</div> -->
 
-      <div class="contact-wrapper"></div>
+      <div class="contact-section">
+        <div class="contact-section-header">Kontaktformular</div>
+
+        <div class="contact-wrapper">
+          <div class="text-block">
+            <div class="tab-header">
+              Sie haben Fragen zu unseren Tarifvergleichen für Strom und Gas?
+            </div>
+            <div class="tab-text">
+              Unser Experten-Team hilft gerne weiter und beantwortet Ihre Anfragen in der Regel
+              innerhalb von 24 Stunden. Denn Kundenzufriedenheit steht bei uns an erster Stelle.
+              Bitte geben Sie alle Daten und Ihr Anliegen in das Formular ein und klicken Sie
+              anschließend auf den Button „Anfrage abschicken“.
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-wrap">
+                <span class="field-label">Anrede</span>
+                <input type="text" [(ngModel)]="formData.salutation" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['salutation']">
+                {{ fieldErrors['salutation'] }}
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-wrap">
+                <span class="field-label">Titel</span>
+                <input type="text" [(ngModel)]="formData.title" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-wrap">
+                <span class="field-label">Vorname</span>
+                <input type="text" [(ngModel)]="formData.firstName" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['firstName']">
+                {{ fieldErrors['firstName'] }}
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-wrap">
+                <span class="field-label">Nachname</span>
+                <input type="text" [(ngModel)]="formData.lastName" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['lastName']">
+                {{ fieldErrors['lastName'] }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-wrap">
+                <span class="field-label">Ihre Mailadresse </span>
+                <input type="email" [(ngModel)]="formData.email" />
+              </div>
+              <div class="field-error-msg" *ngIf="fieldErrors['email']">
+                {{ fieldErrors['email'] }}
+              </div>
+            </div>
+            <!-- <div class="form-group">
+            <div class="field-wrap">
+              <span class="field-label">Ihre Kundennummer oder Vertragsnummer</span>
+              <input type="text" [(ngModel)]="formData.contactNumber" />
+            </div>
+            <div class="field-error-msg" *ngIf="fieldErrors['contactNumber']">
+              {{ fieldErrors['contactNumber'] }}
+            </div>
+          </div> -->
+          </div>
+
+          <div class="text-block">
+            <div class="tab-header">Betreff auswählen</div>
+            <div class="tab-text">
+              Bitte suchen Sie im Dropdown-Menü den passenden Betreff für Ihr Anliegen aus
+            </div>
+          </div>
+          <div class="contact-fields">
+            <div #dropdownContainer class="form-group service-input">
+              <div class="field-wrap dropdown-wrap" (click)="toggleDropdown($event)">
+                <input
+                  type="text"
+                  [value]="selectedCategory?.serviceName || ''"
+                  placeholder="Bitte wählen..."
+                  readonly
+                />
+
+                <span class="arrow"></span>
+
+                <div class="dropdown" *ngIf="showDropdown">
+                  <div
+                    class="dropdown-item"
+                    *ngFor="let item of categories"
+                    (click)="selectCategory(item, $event)"
+                  >
+                    {{ item.serviceName }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group label">
+              <div class="tab-header">Ihr Anfragetext</div>
+            </div>
+            <textarea
+              class="textarea"
+              rows="5"
+              placeholder="Wie können wir Ihnen weiterhelfen?"
+              [(ngModel)]="formData.inquiry"
+            ></textarea>
+            <div class="field-error-msg" *ngIf="fieldErrors['inquiry']">
+              {{ fieldErrors['inquiry'] }}
+            </div>
+
+            <div class="hint-box">
+              <div class="hint-content">
+                <div class="hint-title-row">
+                  <img src="assets/icons/lamp.png" alt="hint" />
+                  <div class="text-block">
+                    <p class="hint-title">Hinweis zum Datenschutz:</p>
+
+                    <p>
+                      Mit dem Absenden des Formulars erkläre ich mich mit der Verarbeitung meiner
+                      Daten gemäß der <a>Datenschutzerklärung</a> einverstanden.
+                    </p>
+                    <p>Meine Daten werden selbstverständlich absolut vertraulich behandelt.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                margin-top: 10px;
+              "
+            >
+              <button class="btn-primary" (click)="submitForm()">
+                <span class="spinner"></span>
+                Anfrage abschicken
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <br />
   </div>
 </div>

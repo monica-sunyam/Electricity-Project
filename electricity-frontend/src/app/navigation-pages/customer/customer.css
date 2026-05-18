@@ -830,6 +830,9 @@
 .form-group.full {
   width: 100%;
 }
+.postcode{
+  flex: 0 0 160px;
+}
 
 .textarea {
   /* width: 100%; */
@@ -2785,7 +2788,7 @@
 
   /* TOGGLE */
   .toggle-row {
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: flex-start;
     gap: 12px;
   }
@@ -2857,5 +2860,23 @@
   .list-header,
   .list-row {
     font-size: 13px;
+  }
+}
+@media (max-width: 768px) {
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .form-row .form-group {
+    width: 100%;
+    max-width: 100%;
+  }
+  .postcode{
+    flex: none;
+  }
+  .container-readonly{
+    padding-right: 0;
   }
 }

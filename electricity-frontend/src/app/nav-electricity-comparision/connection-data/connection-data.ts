@@ -221,22 +221,20 @@ export class ConnectionData implements OnInit, OnDestroy {
       //   ' Bitte bestätigen Sie, dass Sie die Daten später absenden werden.';
 
       if (!this.customerNumber) {
-        errors['customerNumber'] =
-          'Bitte Kundennummer angeben';
+        errors['customerNumber'] = 'Bitte Kundennummer angeben';
+        this.cdr.detectChanges();
+      }
+
+      // Meter number — required unless the user checked "Ich reiche … nach"
+      // Meter number validation
+      if (!this.meterNumber || this.meterNumber.trim() === '') {
+        errors['meterNumber'] = 'Bitte geben Sie Ihre Zählernummer ein.';
+        this.cdr.detectChanges();
+      } else if (/\s/.test(this.meterNumber)) {
+        errors['meterNumber'] = 'Die Zählernummer darf keine Leerzeichen enthalten.';
         this.cdr.detectChanges();
       }
     }
-
-    // Meter number — required unless the user checked "Ich reiche … nach"
-    // Meter number validation
-    if (!this.meterNumber || this.meterNumber.trim() === '') {
-      errors['meterNumber'] = 'Bitte geben Sie Ihre Zählernummer ein.';
-      this.cdr.detectChanges();
-    } else if (/\s/.test(this.meterNumber)) {
-      errors['meterNumber'] = 'Die Zählernummer darf keine Leerzeichen enthalten.';
-      this.cdr.detectChanges();
-    }
-
     // Market Location ID (optional)
     if (this.marketLocationId?.trim()) {
       if (!/^\d{11}$/.test(this.marketLocationId)) {

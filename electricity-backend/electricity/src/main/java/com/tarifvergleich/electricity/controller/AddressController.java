@@ -45,5 +45,4 @@ public class AddressController {
 		String city= payload.get("city");
 		return ResponseEntity.ok(addressService.fetchStreet(zip, city));		
 	}
-
 }

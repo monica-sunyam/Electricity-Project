@@ -1,7 +1,16 @@
 package com.tarifvergleich.electricity.model;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+
+import java.util.List;
+
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+
+import java.math.BigInteger;
+
+import com.tarifvergleich.electricity.util.Helper;
 
 @Entity
 @Table(name = "email_management")
@@ -24,11 +33,18 @@ public class AdminEmailManagement {
     private String createdBy;
 
     @Column(name = "created_date")
-    private Instant createdDate;
+    private BigInteger createdDate;
 
     @ManyToOne
     @JoinColumn(name = "cate_id")
     private AdminEmailRequestCategory category;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "email_management_documents", joinColumns = @JoinColumn(name = "email_management_id"),
+        inverseJoinColumns = @JoinColumn(name = "document_id")
+    )
+    private List<ManageAdminDocument> documents;
 
     public Long getId() {
         return id;
@@ -74,12 +90,25 @@ public class AdminEmailManagement {
 		this.createdBy = createdBy;
 	}
 	
-	public Instant getCreatedDate() {
+	public BigInteger getCreatedDate() {
 		return createdDate;
 	}
 	
-	public void setCreatedDate(Instant createdDate) {
+	public void setCreatedDate(BigInteger createdDate) {
 		this.createdDate = createdDate;
+	}
+	
+	public List<ManageAdminDocument> getDocuments() {
+	    return documents;
+	}
+
+	public void setDocuments(List<ManageAdminDocument> documents) {
+	    this.documents = documents;
+	}
+	
+	@PrePersist
+	protected void onCreate() {
+		createdDate = Helper.getCurrentTimeBerlin();
 	}
 
 }

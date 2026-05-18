@@ -29,6 +29,7 @@ import { EmailCategoryComponent } from "./pages/email/email-category/email-categ
 import { EmailTemplateViewComponent } from "./pages/email-template-view/email-template-view.component";
 import { ContentPDFsComponent } from "./pages/contents/content-pdfs/content-pdfs.component";
 import { AdminSignatureComponent } from "./pages/credentials/admin-signature/admin-signature.component";
+import { EmailTemplateListComponent } from "./pages/email/email-template-list/email-template-list.component";
 import { StaticContentComponent } from "./pages/contents/static-content/static-content.component";
 
 export const routes: Routes = [
@@ -173,6 +174,14 @@ export const routes: Routes = [
         path: "bookings/:id",
         component: BookingDetailComponent,
         title: "Buchungsdetails",
+      },
+      {
+        path: "email-template",
+        component: EmailTemplateListComponent
+      },
+      {
+        path: "email-template/create",
+        component: EmailRequestsComponent
       },
       {
         path: "email-requests",

@@ -1,19 +1,38 @@
- .container-data {
-  display: flex; flex-direction: row; font-size: 14px;
+.container-data {
+  display: flex;
+  flex-direction: row;
+  font-size: 14px;
 }
-.header {font-weight: 600;}
-.togglr-row { align-items: center;}
+.header {
+  font-weight: 600;
+}
+.togglr-row {
+  align-items: center;
+}
 .toggle-column {
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
   align-items: start;
   padding-left: 10px;
   gap: 5px;
 }
-.toggle-box { display: flex; flex: 1; }
-.toggle-area {padding: 6px 10px; display: flex; flex-direction: column; gap: 6px; }
-.notice { display: flex; gap: 6px; font-size: 14px;}
+.toggle-box {
+  display: flex;
+  flex: 1;
+}
+.toggle-area {
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.notice {
+  display: flex;
+  gap: 6px;
+  font-size: 14px;
+}
 
-.container-express{
+.container-express {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -28,11 +47,376 @@
   text-decoration: none;
 }
 
-.link-hint:hover { text-decoration: underline; }
-.icon-tick{display: flex; justify-content: center; height: 20px; width: 20px;  padding-left: 10px; }
+.link-hint:hover {
+  text-decoration: underline;
+}
+.icon-tick {
+  display: flex;
+  justify-content: center;
+  height: 20px;
+  width: 20px;
+  padding-left: 10px;
+}
 .error-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #e53935;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — MOBILE ≤768px
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── PAGE LAYOUT: sidebar to bottom ── */
+  .page-layout {
+    flex-direction: column !important;
+    gap: 12px;
+    padding: 8px !important;
+  }
+
+  /* Flatten sidebar children into page-layout flow */
+  .sidebar {
+    display: contents;
+  }
+
+  /* Main content: full width, comes first */
+  .main-content {
+    width: 100% !important;
+    order: 2;
+  }
+
+  /* Sidebar children: pushed to bottom */
+  app-sidebar {
+    order: 1;
+    width: 100%;
     display: block;
-    margin-top: 4px;
+  }
+
+  app-contact-person {
+    order: 11;
+    width: 100%;
+    display: block;
+  }
+
+  app-need-support {
+    order: 12;
+    width: 100%;
+    display: block;
+  }
+
+  /* ── PROGRESS STEPPER: horizontal scroll ── */
+  .progress-steps {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .progress-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── SECTION / PANEL: full width ── */
+  .section-panel,
+  .progress-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── SECTION BODY: tighter padding ── */
+  .section-body {
+    padding: 12px !important;
+    gap: 10px;
+  }
+
+  /* ══════════════════════════════════════════════
+     TOGGLE ROW — used for almost every form row
+  ══════════════════════════════════════════════ */
+
+  /* Stack toggle-row content vertically, align to start */
+  .toggle-row {
+    /* flex-direction: column !important; */
+    align-items: flex-start !important;
+    gap: 8px;
+    width: 100%;
+  }
+
+  /* Info icons inside toggle-row: left-aligned */
+  .toggle-row > div > .info-base,
+  .toggle-row > .info-base {
+    align-self: flex-start;
+  }
+
+  /* ── TOGGLE BOX (Ja/Nein, Schnellstmöglich/Wunschtermin): stack options ── */
+  .toggle-box {
+    /* flex-direction: column !important; */
+    width: 100% !important;
+    gap: 8px;
+  }
+
+  .toggle-opt {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* toggle-box-check: same treatment */
+  .toggle-box-check {
+    width: 100% !important;
+    flex-direction: column;
+  }
+
+  .toggle-opt-check {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── TOGGLE AREA (info notice text): full width ── */
+  .toggle-area {
+    width: 100% !important;
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  /* ── FORM GROUP / FIELD WRAP inside toggle-row: full width ── */
+  .toggle-row .form-group,
+  .toggle-row .field-wrap {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── FORM ROW (generic side-by-side pairs): stack ── */
+  .form-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .form-row .form-group {
+    width: 100% !important;
+    flex: unset !important;
+    box-sizing: border-box;
+  }
+
+  /* ── ROW-WITH-INFO (express box, dropdown, datepicker, kuendigung): stack ── */
+  .row-with-info {
+    /* flex-direction: column !important; */
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  /* Info icon at end: left-aligned */
+  .row-with-info > div > .info-base,
+  .row-with-info > .info-base {
+    align-self: flex-start;
+  }
+
+  /* ── EXPRESS BOX: icon + content stay side by side (already row), just full width ── */
+  .express-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── PROVIDER DROPDOWN (Stromanbieter): full width ── */
+  .field-wraper,
+  .select-wraper {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .field-wraper select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── DATEPICKER ROW (.field-wrap.date): keep label + picker together ── */
+  .field-wrap.date {
+    /* flex-direction: column; */
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  /* ── KÜNDIGUNG BOX: hide center divider, stack options ── */
+  .kuendigung-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Hide the decorative vertical center line — it splits nothing when stacked */
+  .kuendigung-box::before {
+    display: none;
+  }
+
+  .kuendigung-top {
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .kuendigung-bottom {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kuendigung-opt {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── SUBMIT BUTTON: full width ── */
+  .form-actions {
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
+
+/* ── Very small screens ≤480px ── */
+@media (max-width: 480px) {
+  .section-body {
+    padding: 10px !important;
+    gap: 8px;
+  }
+
+  .section-header {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .express-header {
+    font-size: 13px;
+  }
+
+  .express-desc {
+    font-size: 13px;
+  }
+
+  .kuendigung-opt {
     font-size: 12px;
-    color: #e53935;
+    padding: 8px 10px;
+  }
+
+  .toggle-area {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .btn-primary {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* TOGGLE */
+  .toggle-row {
+    /* flex-direction: column; */
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .toggle-box {
+    width: 100%;
+
+    display: flex;
+    gap: 10px;
+  }
+
+  .toggle-opt {
+    flex: 1;
+    justify-content: start;
+  }
+
+  /* Prevent overflow */
+  * {
+    box-sizing: border-box;
+  }
+  .service-input {
+    width: auto;
+  }
+
+  .field-wrap.date input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  ::ng-deep .mat-mdc-form-field-flex {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    width: 100% !important;
+  }
+
+  ::ng-deep .mat-datepicker-toggle {
+    flex-shrink: 0;
+  }
+
+  .container-express{
+    margin-bottom: 10px;
+  }
+}
+@media screen and (max-width: 768px) {
+
+  /* remove desktop connector */
+  .step::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* remove any old after line */
+  .step::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .progress-steps {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+
+  .progress-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .step {
+    position: relative;
+    flex: 0 0 110px;
+    min-width: 110px;
+    text-align: center;
+  }
+
+  /* custom mobile line */
+  .step:not(:last-child) .step-circle::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    width: 38px;
+    height: 2px;
+    background: #bdbdbd;
+    transform: translateY(-50%);
+  }
+
+  .step-circle {
+    position: relative;
+    margin: 0 auto;
+  }
 }

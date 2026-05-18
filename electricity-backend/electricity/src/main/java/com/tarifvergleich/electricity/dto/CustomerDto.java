@@ -286,5 +286,4 @@ public class CustomerDto {
 				.zip(customer.getZip()).city(customer.getCity()).street(customer.getStreet())
 				.houseNumber(customer.getHouseNumber()).lexofficeNumber(customer.getLexofficeNumber()).build();
 	}
-
 }

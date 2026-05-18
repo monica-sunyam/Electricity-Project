@@ -867,6 +867,19 @@ button[mat-icon-button] {
   font-weight: 600;
 }
 
+.btn-back,
+.btn-password,
+.btn-next {
+  font-size: 16px;
+  color: #0085e0;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  border: none;
+  background-color: #fff;
+  cursor: pointer;
+}
+
 /* Section panels */
 .section-panel {
   display: flex;
@@ -1084,4 +1097,50 @@ button[mat-icon-button] {
   overflow: hidden;
 
   padding: 16px !important;
+}
+@media screen and (max-width: 768px) {
+
+  /* hide desktop full line */
+  .progress-steps::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  .progress-steps {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 10px;
+  }
+
+  .progress-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .step {
+    position: relative;
+    flex: 0 0 110px;
+    min-width: 110px;
+    text-align: center;
+  }
+
+  /* custom line */
+  .step:not(:last-child) .step-circle::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    width: 38px;
+    height: 2px;
+    background: #4a4949;
+    transform: translateY(-50%);
+  }
+
+  .step-circle {
+    position: relative;
+    margin: 0 auto;
+  }
 }

@@ -211,7 +211,7 @@
 } */
 
 /* Style radio as checkbox */
-.field-wrap-checkbox input[type="radio"] {
+.field-wrap-checkbox input[type='radio'] {
   appearance: none;
   -webkit-appearance: none;
   width: 16px;
@@ -223,14 +223,14 @@
 }
 
 /* Checked state */
-.field-wrap-checkbox input[type="radio"]:checked {
+.field-wrap-checkbox input[type='radio']:checked {
   background-color: white;
   border-color: white;
 }
 
 /* Tick mark */
-.field-wrap-checkbox input[type="radio"]:checked::after {
-  content: "✔";
+.field-wrap-checkbox input[type='radio']:checked::after {
+  content: '✔';
   position: absolute;
   font-size: 11px;
   color: #0085e0;
@@ -240,7 +240,7 @@
 }
 
 /* When box active (your blue background) */
-.field-wrap-checkbox.active input[type="radio"] {
+.field-wrap-checkbox.active input[type='radio'] {
   border-color: white;
 }
 
@@ -290,12 +290,12 @@
 
 /* Green tick */
 .guideline-icon.valid {
-  background-image: url("/right.png");
+  background-image: url('/right.png');
 }
 
 /* Red cross */
 .guideline-icon.invalid {
-  background-image: url("/cross.png");
+  background-image: url('/cross.png');
 }
 
 /* ══════════════════════════════════════════════
@@ -360,12 +360,10 @@ input {
   transition: background-color 0.3s ease;
 }
 
-
 /* ══════════════════════════════════════════════
    RESPONSIVE — MOBILE ≤768px
 ══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-
   /* ── PAGE LAYOUT: sidebar flattens to bottom ── */
   .page-layout {
     flex-direction: column !important;
@@ -431,14 +429,20 @@ input {
     gap: 10px !important;
     align-items: stretch !important;
   }
-
+  .no-column {
+    flex-direction: row !important;
+  }
   /* Any .input-field inside .email-field: override inline flex/width ── */
   .email-field .input-field {
-    flex: none !important;
+    /* flex: none !important; */
     width: 100% !important;
     box-sizing: border-box;
   }
-
+  .email-field.no-column .prefix-input {
+    width: 60px !important;
+    min-width: 60px;
+    flex: 0 0 60px;
+  }
   /* The lock icon / ändern button span/button beside email fields:
      not a field, so keep it inline but left-aligned */
   .email-field > span,
@@ -454,7 +458,7 @@ input {
   }
 
   /* ── SALUTATION / TITLE inline row: stack vertically ── */
-  div[style*="display: flex"][style*="gap: 15px"] {
+  div[style*='display: flex'][style*='gap: 15px'] {
     flex-direction: column !important;
     gap: 10px !important;
   }
@@ -489,7 +493,9 @@ input {
 
   .code-inputs input {
     /* 6 cells across full width: calc((100% - borders) / 6) */
-    width: calc((100vw - 16px - 36px - 12px) / 6); /* viewport - page padding - login-row padding - borders */
+    width: calc(
+      (100vw - 16px - 36px - 12px) / 6
+    ); /* viewport - page padding - login-row padding - borders */
     min-width: 38px;
     height: 44px;
     font-size: 18px;

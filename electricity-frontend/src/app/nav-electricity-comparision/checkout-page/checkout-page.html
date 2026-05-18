@@ -58,7 +58,7 @@
       </div>
 
       <ng-container>
-        <div class="section-panel">
+        <!-- <div class="section-panel">
           <div class="section-header">Ausgewählter Tarif</div>
           <div class="section-body container-data">
             <div class="toggle-column left">
@@ -72,6 +72,41 @@
               <span>{{ valueOrFallback(selectedProvider?.rateName) }}</span>
               <span>{{ valueOrFallback(selectedAddress?.consumption) }} kWh</span>
               <span>
+                {{ valueOrFallback(selectedAddress?.street) }}
+                {{ valueOrFallback(selectedAddress?.houseNumber) }},
+                {{ valueOrFallback(selectedAddress?.zip) }}
+                {{ valueOrFallback(selectedAddress?.city) }}
+              </span>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="section-panel">
+          <div class="section-header">Ausgewählter Tarif</div>
+
+          <div class="section-body tariff-details">
+            <div class="detail-row">
+              <span class="label">Anbieter</span>
+              <span class="value">
+                {{ valueOrFallback(selectedProvider?.providerName) }}
+              </span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Tarifname</span>
+              <span class="value">
+                {{ valueOrFallback(selectedProvider?.rateName) }}
+              </span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Jahresverbrauch</span>
+              <span class="value"> {{ valueOrFallback(selectedAddress?.consumption) }} kWh </span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Adresse</span>
+              <span class="value">
                 {{ valueOrFallback(selectedAddress?.street) }}
                 {{ valueOrFallback(selectedAddress?.houseNumber) }},
                 {{ valueOrFallback(selectedAddress?.zip) }}
@@ -316,7 +351,7 @@
             </button>
           </div>
 
-          <div class="section-body container-data">
+          <!-- <div class="section-body container-data">
             <div class="toggle-column left">
               <span>Ziehen Sie an der angegebenen Adresse neu ein?</span>
               <span>Zählernummer</span>
@@ -332,6 +367,37 @@
               <span>{{ currentProviderLabel }}</span>
               <span>{{ cancellationLabel }}</span>
               <span>{{ desiredDeliveryLabel }}</span>
+            </div>
+          </div> -->
+          <div class="section-body tariff-details" *ngIf="formData as data">
+            <div class="detail-row">
+              <span class="label">Ziehen Sie an der angegebenen Adresse neu ein?</span>
+              <span class="value">{{ moveInLabel }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Zählernummer</span>
+              <span class="value">{{ meterNumberLabel }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Marktlokations-ID</span>
+              <span class="value">{{ marketLocationLabel }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Ihr derzeitiger Stromanbieter</span>
+              <span class="value">{{ currentProviderLabel }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Kündigung des bisherigen Vertrags</span>
+              <span class="value">{{ cancellationLabel }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="label">Gewünschter Liefertermin</span>
+              <span class="value">{{ desiredDeliveryLabel }}</span>
             </div>
           </div>
         </div>
@@ -567,10 +633,7 @@
           {{ scheduleErrorMessage }}
         </div>
 
-        <div
-          class="form-actions"
-          style="display: flex; flex-direction: row; gap: 16px; width: 100%"
-        >
+        <div class="form-actions">
           <button
             class="btn-primary"
             type="button"

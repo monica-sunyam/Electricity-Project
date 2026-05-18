@@ -18,9 +18,8 @@ import com.tarifvergleich.electricity.exception.InternalServerException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class MailService {
 	private final JavaMailSender mailSender;
 

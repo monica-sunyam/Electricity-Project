@@ -7,23 +7,16 @@
     <div class="electricity-container">
       <div class="electricity">
         @if (isLoading) {
-          <p>Lade Services...</p>
+        <p>Lade Services...</p>
         } @else {
-          <button
-            *ngFor="let item of sidebarItems"
-            class="icon-btn-electricity"
-            [routerLink]="[getRouterLink(item.originalFileName)]"
-            routerLinkActive="active"
-          >
-            <span class="electricity-comparison">
-              <img
-                [src]="getImageUrl(item.contentUrl)"
-                [class]="getIconClass(item.originalFileName)"
-                [alt]="item.originalFileName"
-              />
-            </span>
-            <span class="btn-text">{{ getLabel(item.originalFileName) }}</span>
-          </button>
+        <button *ngFor="let item of sidebarItems" class="icon-btn-electricity"
+          [routerLink]="[getRouterLink(item.originalFileName)]" routerLinkActive="active">
+          <span class="electricity-comparison">
+            <img [src]="getImageUrl(item.contentUrl)" [class]="getIconClass(item.originalFileName)"
+              [alt]="item.originalFileName" />
+          </span>
+          <span class="btn-text">{{ getLabel(item.originalFileName) }}</span>
+        </button>
         }
       </div>
     </div>
@@ -37,11 +30,7 @@
 
         <div style="gap: 10px; display: flex">
           <div class="icon phone">
-            <img
-              src="assets/icons/Telefonhörer_Weiss.png"
-              class="phone-icon"
-              alt="telephone-icon"
-            />
+            <img src="assets/icons/Telefonhörer_Weiss.png" class="phone-icon" alt="telephone-icon" />
           </div>
           <span class="expert phone">
             <span class="text">08157 / 999 42 - 0</span>
@@ -50,7 +39,7 @@
       </div>
 
       <div class="contact">
-        <button class="contact-button">
+        <button class="contact-button" data-type="livechat">
           <span class="icon-wrapper">
             <img src="assets/icons/Lice-Chat_weiss.png" class="chat-icon" alt="chat-icon" />
           </span>
@@ -123,9 +112,7 @@
           <img [src]="getImageUrl(about.contentUrl)" [alt]="about.heading" />
         </div>
         <div class="about-text">
-          <span class="about-header"
-            ><strong>{{ about.heading }}</strong></span
-          ><br />
+          <span class="about-header"><strong>{{ about.heading }}</strong></span><br />
           <span class="details" *ngIf="about.subHeading">{{ about.subHeading }}</span>
         </div>
       </div>
@@ -142,11 +129,7 @@
           <ng-container *ngFor="let service of otherServices; let i = index">
             <button class="main-btn" *ngIf="i % 2 === 0">
               <span class="container-services">
-                <img
-                  [src]="getImageUrl(service.contentUrl)"
-                  class="icon-transport"
-                  [alt]="service.heading"
-                />
+                <img [src]="getImageUrl(service.contentUrl)" class="icon-transport" [alt]="service.heading" />
               </span>
               <span class="btn-text">{{ service.heading }}</span>
             </button>
@@ -156,11 +139,7 @@
           <ng-container *ngFor="let service of otherServices; let i = index">
             <button class="main-btn" *ngIf="i % 2 !== 0">
               <span class="container-services">
-                <img
-                  [src]="getImageUrl(service.contentUrl)"
-                  class="icon-transport"
-                  [alt]="service.heading"
-                />
+                <img [src]="getImageUrl(service.contentUrl)" class="icon-transport" [alt]="service.heading" />
               </span>
               <span class="btn-text">{{ service.heading }}</span>
             </button>

@@ -1,0 +1,929 @@
+.tariff-details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.label {
+  width: 450px;
+  min-width: 450px;
+  font-weight: 600;
+}
+
+.value {
+  flex: 1;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+.detail-row:not(:last-child) {
+  padding-bottom: 24px;
+  border-bottom: 1px solid #d9d9d9;
+}
+.detail-row.no-border {
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+.section-header {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.image-tick {
+  display: inline-flex;
+  align-items: center;
+}
+
+.icon-tick {
+  width: 15px;
+  height: 15px;
+}
+
+/* ══════════════════════════════════════════════
+    STEP 2 SPECIFIC STYLES
+══════════════════════════════════════════════ */
+
+.sepa-legal-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333333;
+  margin-top: 8px;
+  text-align: justify;
+}
+
+.signature-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.signature-alert-label {
+  color: #e52e2e; /* Red alert color matching the portal image */
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.signature-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.signature-pad-placeholder {
+  width: 100%;
+  max-width: 400px;
+  height: 180px;
+  border: 1px solid #7a7a7a;
+  background-color: #ffffff;
+  position: relative;
+  border-radius: 4px;
+}
+
+/* Simulated visual line for signatures */
+.signature-baseline {
+  position: absolute;
+  bottom: 30px;
+  left: 5%;
+  width: 90%;
+  border: 0;
+  border-bottom: 1px dashed #cccccc;
+  margin: 0;
+}
+
+.btn-clear-signature {
+  background: none;
+  border: none;
+  color: #333333;
+  text-decoration: underline;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.btn-clear-signature:hover {
+  color: #000000;
+}
+
+/* Secondary auxiliary button alignment styling if used */
+.btn-secondary {
+  background: none;
+  border: 1px solid #d9d9d9;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+}
+/* ══════════════════════════════════════════════
+    TOP PROGRESS INDICATOR FLOW
+══════════════════════════════════════════════ */
+
+.digital-signature-flow {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.flow-title {
+  font-size: 22px;
+  font-weight: 400;
+  color: #333333;
+}
+
+.flow-steps-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 40px; /* Space out items across screen layouts */
+  flex-wrap: wrap;
+}
+
+.flow-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.35; /* Faded state when step isn't completed yet */
+  transition: opacity 0.25s ease-in-out;
+}
+
+/* Turns step active or filled color green once currentStep evaluates true */
+.flow-step.active {
+  opacity: 1;
+}
+
+.step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-tick {
+  width: 18px;
+  height: 18px;
+  fill: #4caf50; /* Green checkmark matching your interface image */
+}
+
+.step-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #222222;
+}
+
+.flow-divider {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  margin: 16px 0 28px 0;
+}
+
+/* ══════════════════════════════════════════════
+    RESPONSIVE ADJUSTMENTS (MOBILE)
+══════════════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  .digital-signature-flow {
+    gap: 14px;
+  }
+
+  .flow-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .flow-steps-container {
+    gap: 16px 20px; /* Tight grid wrap space for tablet and mobile sizes */
+  }
+
+  .step-text {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .flow-steps-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2x2 grid layout balance for small portrait screen viewports */
+    gap: 12px;
+  }
+}
+/* ══════════════════════════════════════════════
+    RESPONSIVE UPDATES FOR STEP 2
+══════════════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  .signature-pad-placeholder {
+    max-width: 100%; /* Spans full width on mobile screens */
+    height: 160px;
+  }
+
+  .form-actions {
+    gap: 12px;
+  }
+
+  .btn-secondary {
+    width: 100%;
+    order: 2; /* Drops back button below main actionable item on mobile viewports */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sepa-legal-text {
+    font-size: 13px;
+  }
+
+  .signature-alert-label {
+    font-size: 13px;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — MOBILE ≤768px
+══════════════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  * {
+    box-sizing: border-box;
+  }
+
+  /* PAGE LAYOUT */
+  .page-layout {
+    display: flex;
+    flex-direction: column !important;
+    gap: 12px;
+    padding: 8px !important;
+  }
+
+  .sidebar {
+    display: contents;
+  }
+
+  .main-content {
+    width: 100% !important;
+    min-width: 0;
+    order: 2;
+  }
+
+  app-sidebar {
+    order: 1;
+    width: 100%;
+    display: block;
+  }
+
+  app-contact-person {
+    order: 3;
+    width: 100%;
+    display: block;
+  }
+
+  app-need-support {
+    order: 4;
+    width: 100%;
+    display: block;
+  }
+
+  /* SECTION */
+  .section-panel,
+  .progress-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .section-body {
+    padding: 12px !important;
+  }
+
+  /* DETAIL ROW */
+  .detail-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .label {
+    width: 100%;
+    min-width: 100%;
+    font-size: 18px;
+  }
+
+  .value {
+    width: 100%;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* FORM ROW */
+  .form-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .form-row .form-group {
+    width: 100% !important;
+    flex: unset !important;
+  }
+
+  /* TOGGLE */
+  .toggle-row {
+    align-items: flex-start !important;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .toggle-box {
+    width: 100% !important;
+    display: flex;
+    gap: 10px;
+  }
+
+  .toggle-opt {
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .toggle-box-check {
+    width: 100% !important;
+    flex-direction: column;
+  }
+
+  .toggle-opt-check {
+    width: 100%;
+  }
+
+  /* TOGGLE AREA */
+  .toggle-area {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  /* FIELD WRAPPERS */
+  .toggle-row .form-group,
+  .toggle-row .field-wrap,
+  .field-wraper,
+  .select-wraper {
+    width: 100% !important;
+  }
+
+  .field-wraper select {
+    width: 100%;
+  }
+
+  /* ROW WITH INFO */
+  .row-with-info {
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .row-with-info > div > .info-base,
+  .row-with-info > .info-base,
+  .toggle-row > div > .info-base,
+  .toggle-row > .info-base {
+    align-self: flex-start;
+  }
+
+  /* DATE FIELD */
+  .field-wrap.date {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .field-wrap.date input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* KÜNDIGUNG */
+  .kuendigung-box {
+    width: 100%;
+  }
+
+  .kuendigung-box::before {
+    display: none;
+  }
+
+  .kuendigung-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .kuendigung-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kuendigung-opt {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* EXPRESS */
+  .express-box {
+    width: 100%;
+  }
+
+  .container-express {
+    margin-bottom: 10px;
+  }
+
+  .container-readonly {
+    padding-right: 0;
+  }
+
+  /* BUTTON */
+  .form-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* SERVICE INPUT */
+  .service-input {
+    width: auto;
+  }
+
+  /* MATERIAL DATEPICKER */
+  ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  ::ng-deep .mat-mdc-form-field-flex {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    width: 100% !important;
+  }
+
+  ::ng-deep .mat-datepicker-toggle {
+    flex-shrink: 0;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   VERY SMALL DEVICES ≤480px
+══════════════════════════════════════════════ */
+@media screen and (max-width: 480px) {
+  .section-body {
+    padding: 10px !important;
+  }
+
+  .label {
+    font-size: 16px;
+  }
+
+  .value {
+    font-size: 15px;
+  }
+
+  .express-header,
+  .express-desc,
+  .toggle-area {
+    font-size: 13px;
+  }
+
+  .toggle-area {
+    padding: 10px;
+  }
+
+  .kuendigung-opt {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  .btn-primary {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+}
+/* ══════════════════════════════════════════════
+    LEGAL & TERMS DOCUMENT BLOCKS
+══════════════════════════════════════════════ */
+
+.legal-terms-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.legal-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Scrollable border boxes mimicking the image viewports */
+.scrollable-document-box {
+  width: 100%;
+  height: 260px;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
+  padding: 24px;
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+
+/* Document Typography Details */
+.doc-main-title {
+  font-size: 34px;
+  font-weight: 400;
+  color: #333333;
+  margin: 0 0 16px 0;
+}
+
+.doc-subtitle {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #111111;
+  margin-bottom: 24px;
+}
+
+.doc-text-neutral {
+  font-size: 14px;
+  color: #555555;
+  margin-bottom: 16px;
+}
+
+.doc-section-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 8px;
+}
+
+.doc-text-bold {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  margin: 12px 0 4px 0;
+}
+
+.doc-paragraph {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333333;
+  margin: 0;
+  text-align: justify;
+}
+
+/* Checkbox Alignment Framework */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.custom-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #7a7a7a;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.checkbox-label {
+  font-size: 15px;
+  font-weight: 400;
+  color: #333333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.legal-divider {
+  border: 0;
+  border-top: 1px solid #eaeaea;
+  margin: 12px 0;
+}
+
+/* ══════════════════════════════════════════════
+    RESPONSIVE UTILITIES FOR LEGAL BLOCKS
+══════════════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  .scrollable-document-box {
+    height: 200px;
+    padding: 16px;
+  }
+
+  .doc-main-title {
+    font-size: 24px;
+  }
+
+  .checkbox-label {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .custom-checkbox {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ══════════════════════════════════════════════
+    STEP 3: BERATUNGSNACHWEIS DETAILS
+══════════════════════════════════════════════ */
+
+.verification-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.verification-main-title {
+  font-size: 26px;
+  font-weight: 400;
+  color: #222222;
+  margin: 0 0 10px 0;
+}
+
+.verification-content-body {
+  display: flex;
+  flex-direction: column;
+  color: #333333;
+}
+
+.section-sub-tag {
+  font-size: 15px;
+  font-weight: 500;
+  color: #555555;
+  margin-bottom: 16px;
+}
+
+.intro-paragraph {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+.intro-statement-lead {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 12px 0;
+}
+
+.partner-meta-box,
+.client-meta-box {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #111111;
+  padding: 4px 0;
+}
+
+.partner-meta-box {
+  margin-bottom: 20px;
+}
+
+.client-meta-box {
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+
+/* Numbered compliance tracking point list definitions */
+.compliance-ordered-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.compliance-ordered-list li {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333333;
+  padding-left: 4px;
+}
+
+/* Split Signature Layout Management */
+.dual-signature-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.sig-block-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sig-block-group .sig-alert-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444444;
+}
+
+.sig-block-group .sig-alert-label .highlight {
+  color: #e52e2e; /* Highlights red context labels safely */
+  font-weight: 600;
+}
+
+.smaller-pad {
+  max-width: 100% !important;
+  height: 150px !important;
+}
+
+/* ══════════════════════════════════════════════
+    RESPONSIVE VARIATIONS (STEP 3)
+══════════════════════════════════════════════ */
+@media screen and (max-width: 850px) {
+  .dual-signature-row {
+    grid-template-columns: 1fr; /* Stacks layout fields cleanly on smaller screens */
+    gap: 32px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .verification-main-title {
+    font-size: 20px;
+  }
+
+  .compliance-ordered-list {
+    padding-left: 16px;
+    gap: 12px;
+  }
+
+  .compliance-ordered-list li {
+    font-size: 13px;
+  }
+}
+
+/* ══════════════════════════════════════════════
+    STEP 4: WERBEEINWILLIGUNG DETAILS
+══════════════════════════════════════════════ */
+
+.consent-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consent-main-title {
+  font-size: 26px;
+  font-weight: 400;
+  color: #222222;
+  margin: 0;
+}
+
+.required-asterisk {
+  color: #e52e2e;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+/* Thin bordered context header string box */
+.consent-notice-box {
+  width: 100%;
+  max-width: 540px;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333333;
+  box-sizing: border-box;
+}
+
+.consent-options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Fix vertical alignment for multi-line checkbox strings */
+.checkbox-row.alignment-top {
+  align-items: flex-start;
+}
+
+.checkbox-row.alignment-top .custom-checkbox {
+  margin-top: 1px;
+}
+
+.mandatory-margin {
+  margin-top: 12px;
+}
+
+.signature-alert-label .bold-text {
+  font-weight: 700;
+}
+
+.sub-alert-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e52e2e;
+  margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════════
+    RESPONSIVE VARIATIONS (STEP 4)
+══════════════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  .consent-main-title {
+    font-size: 21px;
+  }
+
+  .consent-notice-box {
+    max-width: 100%;
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+.signature-section {
+  margin-top: 24px;
+}
+
+.signature-alert-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.signature-canvas {
+  width: 100%;
+  height: 220px;
+  border: 1px dashed #bdbdbd;
+  border-radius: 10px;
+  background: #fafafa;
+  touch-action: none;
+}
+
+.webView {
+  width: 50% !important;
+}
+.signature-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.btn-clear-signature {
+  border: none;
+  background: #f3f4f6;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-clear-signature:hover {
+  background: #e5e7eb;
+}
+.signature-canvas {
+  width: 100%;
+  height: 220px;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}
+/* MOBILE */
+@media (max-width: 768px) {
+  .signature-container {
+    padding: 12px;
+  }
+
+  .webView {
+    width: 100%;
+  }
+  .signature-canvas {
+    height: 180px;
+  }
+
+  .signature-actions {
+    justify-content: stretch;
+  }
+
+  .btn-clear-signature {
+    width: 100%;
+  }
+}

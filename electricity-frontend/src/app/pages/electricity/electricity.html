@@ -13,13 +13,8 @@
       <div class="feature-header">Hausstrom-Vergleich</div>
       <form [formGroup]="addressForm" class="feature-grid">
         <div class="row row-1">
-          <input
-            type="text"
-            placeholder="Ihre Postleitzahl"
-            class="box small"
-            formControlName="postalCode"
-            maxlength="5"
-          />
+          <input type="text" placeholder="Ihre Postleitzahl" class="box small" formControlName="postalCode"
+            maxlength="5" />
           <!-- <div class="input-arrow"> -->
           <!-- <input type="text" placeholder="Ihre Ort" class="box large" formControlName="city"
               [attr.list]="'cityList'" />
@@ -34,29 +29,18 @@
               </option>
             </select> -->
           <div class="dropdown-wrapper box large" #cityDropdown>
-            <input
-              type="text"
-              class="box large"
-              placeholder="Ihre Ort"
-              [value]="citySearch"
-              (input)="onCityInput($event)"
-              (focus)="closeAllDropdowns(); showCityDropdown = true"
-              (click)="$event.stopPropagation()"
-            />
+            <input type="text" class="box large" placeholder="Ihre Ort" [value]="citySearch"
+              (input)="onCityInput($event)" (focus)="closeAllDropdowns(); showCityDropdown = true"
+              (click)="$event.stopPropagation()" />
 
             <div class="dropdown" *ngIf="showCityDropdown">
-              
+
               <div *ngIf="filteredCityOptions.length === 0" class="dropdown-item disabled">
                 Keine Orte gefunden
               </div>
 
-              <div
-                *ngFor="let c of filteredCityOptions"
-                (click)="selectCity(c)"
-                class="dropdown-item"
-                spellcheck="false"
-                translate="no"
-              >
+              <div *ngFor="let c of filteredCityOptions" (click)="selectCity(c)" class="dropdown-item"
+                spellcheck="false" translate="no">
                 {{ c.city }}
               </div>
             </div>
@@ -84,45 +68,24 @@
             </option>
           </select> -->
           <div class="dropdown-wrapper box large" #streetDropdown>
-            <input
-              type="text"
-              class="box large"
-              placeholder="Ihre Straße"
-              [value]="streetSearch"
-              (input)="onStreetInput($event)"
-              (focus)="closeAllDropdowns(); showDropdown = true"
-              (click)="$event.stopPropagation()"
-              [disabled]="addressForm.get('street')?.disabled"
-            />
+            <input type="text" class="box large" placeholder="Ihre Straße" [value]="streetSearch"
+              (input)="onStreetInput($event)" (focus)="closeAllDropdowns(); showDropdown = true"
+              (click)="$event.stopPropagation()" [disabled]="addressForm.get('street')?.disabled" />
 
             <div class="dropdown" *ngIf="showDropdown">
               <div *ngIf="isStreetLoading" class="dropdown-item">Laden...</div>
 
-              <div
-                *ngIf="!isStreetLoading && filteredStreetOptions.length === 0"
-                class="dropdown-item disabled"
-              >
+              <div *ngIf="!isStreetLoading && filteredStreetOptions.length === 0" class="dropdown-item disabled">
                 Keine Straße gefunden
               </div>
 
-              <div
-                *ngFor="let s of filteredStreetOptions"
-                (click)="selectStreet(s)"
-                class="dropdown-item"
-                spellcheck="false"
-                translate="no"
-              >
+              <div *ngFor="let s of filteredStreetOptions" (click)="selectStreet(s)" class="dropdown-item"
+                spellcheck="false" translate="no">
                 {{ s.street }}
               </div>
             </div>
           </div>
-          <input
-            type="text"
-            placeholder="Hausnummer"
-            class="box small"
-            formControlName="houseNumber"
-            maxlength="6"
-          />
+          <input type="text" placeholder="Hausnummer" class="box small" formControlName="houseNumber" maxlength="6" />
         </div>
       </form>
 
@@ -132,45 +95,26 @@
       <div class="container-person">
         <div class="compare-person" *ngIf="!showCustomInput">
           <div class="person-option">
-            <button
-              type="button"
-              class="person"
-              (click)="selectPersons(1)"
-              [class.active]="selectedPersons === 1"
-            >
+            <button type="button" class="person" (click)="selectPersons(1)" [class.active]="selectedPersons === 1">
               <span class="person-icon">
                 <img src="assets/icons/Familie_1.png" class="icon-family-1" alt="family" />
               </span>
               <span class="person-count">1</span>
             </button>
-            <button
-              type="button"
-              class="person"
-              (click)="selectPersons(2)"
-              [class.active]="selectedPersons === 2"
-            >
+            <button type="button" class="person" (click)="selectPersons(2)" [class.active]="selectedPersons === 2">
               <span class="person-icon">
                 <img src="assets/icons/Familie_2.png" class="icon-family-2" alt="family" />
               </span>
               <span class="person-count">2</span>
             </button>
-            <button
-              type="button"
-              class="person"
-              (click)="selectPersons(3)"
-              [class.active]="selectedPersons === 3"
-            >
+            <button type="button" class="person" (click)="selectPersons(3)" [class.active]="selectedPersons === 3">
               <span class="person-icon">
                 <img src="assets/icons/Familie_3.png" class="icon-family-3" alt="family" />
               </span>
               <span class="person-count">3</span>
             </button>
-            <button
-              type="button"
-              class="person"
-              (click)="selectPersons(4)"
-              [class.active]="selectedPersons === 4"
-            >
+            <button type="button" class="person person-4" (click)="selectPersons(4)"
+              [class.active]="selectedPersons === 4">
               <span class="person-icon">
                 <img src="assets/icons/Familie_4.png" class="icon-family-4" alt="family" />
               </span>
@@ -195,21 +139,13 @@
               <mat-icon class="close-button" (click)="closeCustomInput()">close</mat-icon>
             </div>
             <div class="total-consumption">
-              <input
-                #personsInput
-                type="number"
-                min="1"
-                class="consumption-area"
-                placeholder="z. B. 6"
-                (input)="onCustomPersonsChange(personsInput.value)"
-                [value]="selectedPersons"
-              />
+              <input #personsInput type="number" min="1" class="consumption-area" placeholder="z. B. 6"
+                (input)="onCustomPersonsChange(personsInput.value)" [value]="selectedPersons" />
               <span>Personen im Haushalt</span>
             </div>
             <div class="total-consumption">
               <span id="consumptionValue" class="consumption-number">
-                {{ consumption | number }}</span
-              >
+                {{ consumption | number }}</span>
               <span class="watt-per-year">kWh / Jahr</span>
             </div>
           </div>
@@ -238,8 +174,7 @@
         <span class="amount">850€</span>
       </div>
       <div class="item-discount-bottom">
-        <span class="item-price"
-          >sparen
+        <span class="item-price">sparen
           <mat-icon class="info-icon" (click)="openInfo(infoDialog, discountinfo)">
             info_i
           </mat-icon>
